@@ -1,0 +1,85 @@
+
+
+
+ This is a simple ElectricAccelerator Nagios plugin called
+ check_ea_agents.pl.
+
+ Nagios plugin execution
+
+   It is a perl script which is designed to be run on the Cluster
+   Manager. It is set up to be run with no arguments.  Arguments could
+   easily be added to tune it to your requirements as neccessary.
+
+
+ Nagios plugin output
+
+   Here is an example of the output which conforms to the Nagios plugin
+   specifications.
+
+     EA_AGENTS CRITICAL | TOTAL=12 DISABLED=6 LIVE=5 DEAD=1 NOHEARTBEAT=0
+
+
+ Nagios plugin exit codes
+
+   The exit codes defined by the Nagios specification are
+
+     0 - OK
+     1 - WARNING
+     2 - CRITICAL
+     3 - UNKNOWN
+
+   The pluin only uses OK, CRITICAL, and UNKNOWN.
+
+
+ Nagios performance data
+
+   There are other plugins for Nagios that can add additional
+   reporting on monitored services via "performance data" output by the
+   plugin. The check_ea_agents.pl plugin prints the following performance data.
+
+     Performance data
+
+       TOTAL        - The total number of agents installed on the CM
+       DISABLED     - The number of agents in the disabled state.
+       LIVE         - The number of "enabled" agents that are alive
+       DEAD         - The number of "enabled" agents that are not alive
+       NOHEARTBEAT  - The number of "enabled" agents with hearbeat older then 5 minutes
+
+
+   The plugin uses the cmtool command getAgents to collect the
+   required data. Here is an example of the xml output by the getAgent
+   command.
+
+    <agent>
+      <agentId>1</agentId>
+      <agentKey>263786994</agentKey>
+      <agentName>wrc-s76-1</agentName>
+      <agentVersion>6.1.0.44495 64-bit (build_6.1_44495_OPT_2012.06.01_18:40:15)</agentVersion>
+      <efsVersion>6.1.0.44495 64-bit (build_6.1_44495_OPT_2012.06.01_18:39:07)</efsVersion>
+      <enabled>1</enabled>
+      <hostName>wrc-s76</hostName>
+      <lastPingTime>2012-10-13T00:40:49.596Z</lastPingTime>
+      <platform>linux</platform>
+      <status>1</status>
+      <statusDetail>Most recent heartbeat from Agent to CM failed. </statusDetail>
+      <inPenaltyBox>0</inPenaltyBox>
+    </agent>
+
+ Nagios plugin setup
+
+   The plugin requires authentication with the Cluster Manager in order
+   to access agent data. For simplicity it is hard coded the
+   authenticate using the user "nagios", with the password "nagios". It
+   is reccommended that this user be created to have very minimal
+   permissions. It only needs read access to the server, and only to
+   agent information.
+
+
+
+  - 
+    Local Variables: 
+      mode: outline
+      outline-regexp: "[ ]+"
+      fill-column: 72
+      fill-prefix: "\t"
+    End:
