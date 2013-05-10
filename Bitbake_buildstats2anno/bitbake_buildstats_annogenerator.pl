@@ -1,3 +1,15 @@
+#!/usr/bin/perl
+###
+# bitbake_buildstats_annogenerator - based on buildstats output from a bitbake build, generate ElectricInsight compatible annotation data
+#
+# Usage:
+#	./<path-to-this-script> <path-to-bitbake-build-stats> <anno-outfile>
+#		Defaults:
+#			path-to-bitbake-build-stats: 	cwd
+#			anno-outfile:					./bitbake_anno.xml
+#
+###
+
 use strict ;
 use warnings ;
 use POSIX;
@@ -6,14 +18,19 @@ use File::Basename;
 use List::Util qw(first max maxstr min minstr reduce shuffle sum);
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 
-my $basecwd = basename(getcwd);
-if($basecwd eq "all"){
-    $basecwd = "";
+my $bitbake_buildstats = ".";
+my $outfile = "./bitbake_anno.xml";
+if($ARGV[0]){
+	$bitbake_buildstats = $ARGV[0];
+}
+if($ARGV[1]){
+	$outfile = $ARGV[1];
 }
 
 my %annotasks = ();
 my $normalizer = LONG_MAX;
 
+# This is a mapping to enable generation of different ElectricInsight job-categories, for e.g. color-coding and reporting purposes 
 my %jobtype_mapping = (
 	do_compile 					=> {type => "rule", namesuffix => "   .o"},
 	do_configure				=> {type => "end"},
@@ -42,16 +59,14 @@ for(my $i=0; $i<1; $i++){
 	$thread_end_mapping{$i} = 0.0;
 }
 
+analyze_dir($bitbake_buildstats);
+print "\nGenerating annotation from bitbake buildstats at $bitbake_buildstats into $outfile...\n";
+open FILE, ">$outfile" or die $!;
 
-analyze_dir(".");
-#exit;
-print "\nTasks:\n";
-print "Normalizer: $normalizer\n";
-# normalize start/end-times and generate a new hash of same content
-open FILE, ">yocto_bitbake_anno.xml" or die $!;
+# Add some generic preamble data to annotation - should not be significant
 print FILE '<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE build SYSTEM "build.dtd">
-<build id="14" cm="192.168.27.10:8030" start="Tue 16 Apr 2013 05:08:54 PM CEST">
+<build id="'.int(rand(10000)).'" cm="192.168.27.10:8030" start="Tue 16 Apr 2013 05:08:54 PM CEST">
 <make level="0" cmd="emake -f waba0810.mkf --emake-cm=192.168.27.10 --emake-maxagents=1 --emake-annodetail=file,waiting,history,env --emake-annofile=emake-anno-@ECLOUD_BUILD_ID@.xml --emake-debug=jnfgh --emake-logfile=emake-debug-@ECLOUD_BUILD_ID@.log" cwd="/opt/ecloud/spiroot/a1/source" mode="gmake3.81">';
 foreach my $value (sort {$annotasks{$a}{Started} <=> $annotasks{$b}{Started} } keys %annotasks)
 {
