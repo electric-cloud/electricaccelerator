@@ -1,0 +1,225 @@
+
+<!-- build.dtd                                                              -->
+<!-- The DTD for Emake's annotated output.                                  -->
+<!--                                                                        -->
+<!-- Copyright (c) 2004 Electric Cloud, Inc.                                -->
+<!-- All rights reserved.                                                   -->
+
+<!ENTITY % hexnum "CDATA">
+<!ENTITY % job "(message*, job)">
+<!ENTITY % valueName "name NMTOKEN #REQUIRED">
+<!-- Can't use NMTOKEN because Windows has environment variables like
+     "=D:". -->
+<!ENTITY % envValueName "name CDATA #REQUIRED">
+
+<!ELEMENT build
+    (properties?, environment?, (message | make)*, (fs, message*)?, metrics?)
+>
+<!ATTLIST build
+    id    CDATA #REQUIRED
+    cm    CDATA #IMPLIED
+    start CDATA #REQUIRED
+>
+
+<!-- Out of band build messages -->
+
+<!ELEMENT message (#PCDATA) >
+<!ATTLIST message
+    thread    %hexnum;            #REQUIRED
+    time      CDATA               #REQUIRED
+    code      CDATA               #REQUIRED
+    severity  ( warning | error ) #REQUIRED
+>
+
+<!-- Properties list -->
+
+<!ELEMENT properties (property*) >
+<!ELEMENT property   (#PCDATA) >
+<!ATTLIST property
+    %valueName;
+>
+
+<!-- Environment list -->
+
+<!ELEMENT environment (var*) >
+<!ELEMENT var   (#PCDATA) >
+<!ATTLIST var
+    %envValueName;
+    op    ( add | modify | delete )     "add"
+>
+
+<!-- File system dump -->
+
+<!ELEMENT fs      (roots, symRoots, (content|name)*) >
+<!ELEMENT roots   (root+) >
+<!ELEMENT root    (#PCDATA) >
+<!ATTLIST root
+    nameid CDATA #REQUIRED
+>
+<!ELEMENT symRoots (symRoot*) >
+<!ELEMENT symRoot (#PCDATA) >
+<!ATTLIST symRoot
+    symLinkPath CDATA #REQUIRED
+>
+<!ELEMENT content (contentver+)>
+<!ATTLIST content
+    contentid CDATA #REQUIRED
+>
+<!ELEMENT contentver EMPTY>
+<!ATTLIST contentver
+    job CDATA #REQUIRED
+>
+<!ELEMENT name    (namever*) >
+<!ATTLIST name
+    nameid CDATA #REQUIRED
+    dir    CDATA #REQUIRED
+    name   CDATA #REQUIRED
+>
+<!ELEMENT namever EMPTY>
+<!ATTLIST namever
+    job       CDATA #REQUIRED
+    contentid CDATA #REQUIRED
+>
+
+<!-- Metrics list -->
+
+<!ELEMENT metrics (metric*) >
+<!ELEMENT metric  (#PCDATA) >
+<!ATTLIST metric
+    %valueName;
+>
+
+<!-- Make subtree -->
+
+<!ELEMENT make
+    (environment?, ( message | job | make )*)
+>
+<!ATTLIST make
+    level CDATA #REQUIRED
+    cmd   CDATA #REQUIRED
+    cwd   CDATA #REQUIRED
+    owd   CDATA #IMPLIED
+    mode  ( gmake3.81 | gmake3.80 | gmake3.79.1 | nmake8 | nmake7 | symbian | cygwin | devenv | ant | ant17 | ant18 | external ) #REQUIRED
+>
+
+<!-- Job -->
+
+<!ELEMENT job
+    (environment?,(output | command | conflict)*,depList?,opList?,registryOpList?,message*,timing+,failed?,waitingJobs?)
+>
+<!ATTLIST job
+    thread    %hexnum;  #REQUIRED
+    id        ID    #REQUIRED
+    status    ( normal | rerun | conflict | reverted | skipped ) "normal"
+    type      ( continuation | end | exist | external | 
+                follow | parse | remake | rule | subbuild | 
+                alpha | omega | update ) #REQUIRED
+    name      CDATA #IMPLIED
+    file      CDATA #IMPLIED
+    line      CDATA #IMPLIED
+    neededby  IDREF #IMPLIED
+    partof    IDREF #IMPLIED
+    node      CDATA #IMPLIED
+>
+
+<!-- Command and related output, output blocks can contain nested -->
+<!-- make subtrees in local mode.                                 -->
+
+<!ELEMENT command
+    (argv,inline*,(output | make)*)
+>
+<!ATTLIST command
+    line  CDATA #IMPLIED
+>
+<!ELEMENT argv (#PCDATA)>
+<!ELEMENT inline (#PCDATA)>
+<!ATTLIST inline
+    file        CDATA   #REQUIRED
+>
+<!ELEMENT output (#PCDATA)>
+<!ATTLIST output
+    src   ( prog | make ) "make"
+>
+
+<!-- Conflict description -->
+
+<!ELEMENT conflict EMPTY>
+<!ATTLIST conflict
+    type       ( file | cascade | name | key | value ) "cascade"
+    writejob   IDREF #IMPLIED
+    file       CDATA #IMPLIED
+    rerunby    IDREF #IMPLIED
+    key        CDATA #IMPLIED
+    value      CDATA #IMPLIED
+>
+
+<!-- Job failure code -->
+
+<!ELEMENT failed EMPTY>
+<!ATTLIST failed
+    code      CDATA #REQUIRED
+>
+
+<!-- List of jobs waiting for this job, local mode only -->
+
+<!ELEMENT waitingJobs EMPTY>
+<!ATTLIST waitingJobs
+    idList IDREFS #IMPLIED
+>
+
+<!-- Start and stop times of this job -->
+
+<!ELEMENT timing EMPTY>
+<!ATTLIST timing
+    invoked   CDATA #REQUIRED
+    completed CDATA #REQUIRED
+    node      CDATA #IMPLIED
+>
+
+<!-- Dependency list, only used when annoDetail includes 'history' -->
+
+<!ELEMENT depList (dep*)>
+<!ELEMENT dep     EMPTY>
+<!ATTLIST dep
+    type     ( file | key | value ) "file"
+    writejob IDREF #REQUIRED
+    file     CDATA #IMPLIED
+    key      CDATA #IMPLIED
+    value    CDATA #IMPLIED
+>
+
+<!-- Operation list, only present when annoDetail includes                 -->
+<!-- 'file' or 'lookup'                                                    -->
+
+<!ELEMENT opList (op*)>
+<!ELEMENT op     EMPTY>
+<!ATTLIST op
+    type     ( lookup | read | create | modify | unlink | rename |
+               link | modifyAttrs | append | blindcreate | submake ) #REQUIRED
+    file     CDATA #REQUIRED
+    other    CDATA #IMPLIED
+    found    ( 1 | 0 ) "1"
+    isdir    ( 1 | 0 ) "0"
+    filetype ( file | symlink | dir ) "file"
+    atts     CDATA #IMPLIED
+>
+
+<!-- Registry operation list, only present when annoDetail includes        -->
+<!-- 'registry'                                                            -->
+
+<!ELEMENT registryOpList (regop*)>
+<!ELEMENT regop     EMPTY>
+<!ATTLIST regop
+    type         ( createkey | deletekey | readvalue | setvalue | setvalueif | 
+                   deletevalue | lookupkey | readkey ) #REQUIRED
+    key          CDATA #REQUIRED
+    value        CDATA #IMPLIED
+    datatype     ( none | sz | expandsz | binary | dword | dwordbe | 
+                   link | multisz | resourcelist | resourcedesc | 
+                   resourcereqs | qword ) "none"
+    data         CDATA #IMPLIED
+    readdata     CDATA #IMPLIED
+    readdatatype ( none | sz | expandsz | binary | dword | dwordbe | 
+                   link | multisz | resourcelist | resourcedesc | 
+                   resourcereqs | qword ) "none"
+>

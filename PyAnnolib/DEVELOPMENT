@@ -1,0 +1,123 @@
+This is the documenation for how to develop PyAnnolib source code.
+
+How it works
+============
+An annotation file can be huge, with hundreds of thousands of records.
+To be able to read the annotation file one record at a time, a SAX
+XML parser was created. However, to give a more object-oriented
+reprsentation of the annotation file to the programmer, PyAnnolib
+actually uses two distinct SAX parsers.
+
+When opening an annotation file via AnnotatedBuild(), the first
+SAX parser is invoked. It reads only the "header" of the annotation file,
+which contains all the meta-data about the build, but not the
+actual job records.
+
+Then, when parseJobs() is called, it uses the second SAX parser to
+parse individual Job records.
+
+There is [possibly] a footer at the end of the annoation file, which is
+the section on metrics. The metrics are meta-data about the build,
+so they belong with the data associated with AnnotatedBuild. But, of course,
+the metrics data will not be available for AnnotatedBuild until all
+the job records are parsed, because they come a the end of the file.
+
+Technical note:
+---------------
+The method for switching between the two SAX parsers is interesting,
+as the SAX library doesn't handle that gracefully. Once the header
+is parsed, an exception is thrown, telling AnnotedBuild that it is
+finished with the header. When the first parseJobs() is run, using
+the second SAX parser, it skips over the header (which is wasted I/O,
+but not too bad), and starts parsing the first job record.
+
+Globals
+=======
+Any constant strings which are used by clients reading the
+annotation file should be declared as varialbes at the top of
+annolib.py. This allows the client to use these "global" variables
+instead of hard-coding strings, and thus avoid typos.
+
+The Classes
+===========
+FinishedHeaderException(Exception):
+
+    This is the exception that is used to stop the first SAX parser
+    and hand control back to the AnnoatedBuild object.
+
+AnnotatedBuild:
+
+    This is the main user-facing class. It represents one annotation
+    file (which is one "annotated" build).
+
+class AnnoXMLNames:
+
+    This class simply holds the XML element and attribute names
+    that are used by the SAX parsers. The two SAX parsers inherit
+    from this class.
+
+class AnnoXMLHeaderHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
+
+    This is the SAX parser for the "header" portion of the annotation file.
+
+class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
+
+    This is the SAX parser for the "body" and "footer" part of the
+    annotation file. The body contains all the Job records,
+    and the footer contains the metrics.
+
+class Job:
+
+    This models a single Job record. A Job record can have:
+        * 1 MakeProcess object
+        * 1 Timing object
+        * 0 or more Dependency objects
+        * 0 or more Operation objects
+        * 0 or more Command objects
+        * 0 or 1 Conflict objects
+
+    One could think of a the AnnotatedBuild having mulitple MakeProcess
+    objects, and each MakeProcess object containing the Job objects.
+    However, PyAnnolib was written primarily as a way to analyze Jobs,
+    so the object model is such that AnnotatedBuilds contain Jobs,
+    and Jobs are associated with MakeProcesses. This could be modified
+    in the future if so desired.
+
+class MakeProcess:
+class Operation:
+class Timing:
+class Command:
+class Dependency:
+class Conflict:
+
+    These classes are one-to-one mappings to the associated records
+    in the annotation file.
+
+
+The Unit Tests
+==============
+
+To run the unit tests, simply run:
+
+$ ./unittest
+
+To add to the unit tests, add a new module to the utlib directory,
+and imporat its TestCase sub-class(es) in the main "unittest" script
+(see the examples in it).
+
+There are helper routins in utlib/util.py for running commands, if
+needed.
+
+Annotation files used for the unit tests can be put into the utfiles
+directory
+
+
+The unit test framework is built to work with Jenkins and JUnitXML.
+A zipped copy of JUnitXML is included; it's a Python library for
+producing JUnit-compatible XML test results directly from the
+"unittest" Python module. More info at:
+
+    https://github.com/kyrus/python-junit-xml
+
+If "unittest" sees it is running under Hudson or Jenkins,
+it will create a "unittest.xml" file in the current directory.

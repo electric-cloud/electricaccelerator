@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+"""
+This sample programs shows the rules jobs that have
+commands, with a bit of detail about reads/writes.
+"""
+
+import argparse
+from pyannolib import annolib
+
+num_jobs = 0
+
+def run(filename):
+
+    build = annolib.AnnotatedBuild(filename)
+
+    print "Build ID:", build.getBuildID()
+    props = build.getProperties()
+    print "CWD:", props["CWD"]
+    print "AnnoDetail:", props["AnnoDetail"]
+
+
+    def job_cb(job):
+        global num_jobs
+        num_jobs += 1
+
+        if job.getType() not in [annolib.JOB_TYPE_RULE]:
+            return
+
+        if not job.getCommands():
+            return
+
+        print
+        print "Job", job.getID(), job.getType()
+        print "Retval:", job.getRetval()
+
+        make_output = job.getOutput()
+        if make_output:
+            print "Make Log:"
+            print "-" * 40
+            try:
+                print make_output,
+            except UnicodeEncodeError:
+                print "<unicode>"
+            print "-" * 40
+        else:
+            print "Not shown in make log"
+
+        print "Commands:"
+        for cmd in job.getCommands():
+            print "\tCmdline:\n\t", cmd.getArgv()
+
+            output = cmd.getOutput()
+            if output:
+                print "\tOutput:"
+                print "=" * 40
+                print output
+                print "=" * 40
+            else:
+                print "\tNo Output"
+
+        print "Read:"
+        for op in job.getOperations():
+            if op.getType() != annolib.OP_TYPE_READ:
+                continue
+            if op.getFileType() == annolib.OP_FILETYPE_SYMLINK:
+                continue
+            if op.getFileType() == annolib.OP_FILETYPE_DIR:
+                continue
+            print "\t", op.getFile()
+
+        print "Create:"
+        for op in job.getOperations():
+            if op.getType() != annolib.OP_TYPE_CREATE:
+                continue
+            print "\t", op.getFile()
+
+
+    build.parseJobs(job_cb)
+    print "Total number of jobs:", num_jobs
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("annotation_file")
+
+    options = parser.parse_args()
+
+    run(options.annotation_file)
+
+if __name__ == "__main__":
+    main()

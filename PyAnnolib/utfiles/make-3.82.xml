@@ -1,0 +1,2026 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE build SYSTEM "build.dtd">
+<build id="219798" cm="sjc-buildcm2:8030" start="Fri 11 Jan 2013 10:14:59 AM PST">
+<properties>
+<property name="CommandLine">/sw/licensed/ecloud/latest/64/bin/emake --emake-cm=sjc-buildcm2 --emake-build-label=EC_EMAKE --emake-annodetail=file,history,waiting --emake-history=create --emake-root=/ws/gilramir-sjc/prj/make-3.82 --emake-resource=sjc-cel-5.03-x86-64</property>
+<property name="Version">5.3.0.35969 64-bit (build_5.3_35969_OPT_2010.12.10_07:07:48)</property>
+<property name="CWD">/ws/gilramir-sjc/prj/make-3.82</property>
+<property name="PID">11258</property>
+<property name="HistoryFile">emake.data</property>
+<property name="HistoryExists">no</property>
+<property name="HistoryMD5">00000000000000000000000000000000</property>
+<property name="AnnoDetail">basic,file,history,waiting</property>
+</properties>
+<environment>
+<var name="CCACHE_DIR">/auto/ccache</var>
+<var name="CCACHE_GCC_FARM_PATH">/opt/teambuilder/bin</var>
+<var name="CCACHE_NOLINK">true</var>
+<var name="CCACHE_PATH">/router/bin</var>
+<var name="CCACHE_SETUP">true</var>
+<var name="CCACHE_TMPDIR">/tmp</var>
+<var name="CC_DIFF_OPTS">-u</var>
+<var name="CISCO_MAKE_WAS_HERE">YES</var>
+<var name="COLORTERM"></var>
+<var name="CVS_RSH">ssh</var>
+<var name="DISPLAY">sjc-ads-1261:1.0</var>
+<var name="EDITOR">vim</var>
+<var name="GCONF_GLOBAL_LOCKS">1</var>
+<var name="GCONF_SHARED_LOCKS">1</var>
+<var name="GS_LIB">/users/gilramir/.fonts</var>
+<var name="GTK2_RC_FILES">/etc/gtk-2.0/gtkrc:/users/gilramir/.gtkrc-2.0:/users/gilramir/.kde/share/config/gtkrc</var>
+<var name="GTK_RC_FILES">/etc/gtk/gtkrc:/users/gilramir/.gtkrc:/users/gilramir/.kde/share/config/gtkrc</var>
+<var name="G_BROKEN_FILENAMES">1</var>
+<var name="HISTSIZE">1000</var>
+<var name="HOME">/users/gilramir</var>
+<var name="HOSTNAME">sjc-ads-1261</var>
+<var name="KDEDIR">/usr</var>
+<var name="KDE_FULL_SESSION">true</var>
+<var name="KDE_MULTIHEAD">false</var>
+<var name="KONSOLE_DCOP">DCOPRef(konsole-31490,konsole)</var>
+<var name="KONSOLE_DCOP_SESSION">DCOPRef(konsole-31490,session-8)</var>
+<var name="LANG">en_US.UTF-8</var>
+<var name="LD_LIBRARY_PATH"></var>
+<var name="LESSOPEN">|/usr/bin/lesspipe.sh %25s</var>
+<var name="LOGNAME">gilramir</var>
+<var name="LS_COLORS">no=00:fi=00:di=00;34:ln=00;36:pi=40;33:so=00;35:bd=40;33;01:cd=40;33;01:or=01;05;37;41:mi=01;05;37;41:ex=00;32:*.cmd=00;32:*.exe=00;32:*.com=00;32:*.btm=00;32:*.bat=00;32:*.sh=00;32:*.csh=00;32:*.tar=00;31:*.tgz=00;31:*.arj=00;31:*.taz=00;31:*.lzh=00;31:*.zip=00;31:*.z=00;31:*.Z=00;31:*.gz=00;31:*.bz2=00;31:*.bz=00;31:*.tz=00;31:*.rpm=00;31:*.cpio=00;31:*.jpg=00;35:*.gif=00;35:*.bmp=00;35:*.xbm=00;35:*.xpm=00;35:*.png=00;35:*.tif=00;35:</var>
+<var name="MAIL">/var/spool/mail/gilramir</var>
+<var name="MAKE">/sw/licensed/ecloud/latest/64/bin/emake</var>
+<var name="MANPATH">/ws/gilramir-sjc/distro/cel-5.03-x86-64/man:/ws/gilramir-sjc/distro/cel-5.03-x86-64/share/man:/router/man:/usr/man:/usr/share/man:/usr/local/man:/usr/atria/doc/man:/usr/cisco/man</var>
+<var name="MYDISTRO">/ws/gilramir-sjc/distro/cel-5.03-x86-64</var>
+<var name="NB">/nobackup/gilramir</var>
+<var name="NNTPSERVER">usenet.cisco.com</var>
+<var name="PATH">/sw/licensed/ecloud/latest/bin:/router/bin:/usr/cisco/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/usr/atria/bin:/sbin:/opt/electriccloud/electriccommander/bin:/sw/packages/ccache/2.3.4/bin:/opt/teambuilder/bin:/router/bin:/users/gilramir/bin:/ws/gilramir-sjc/distro/cel-5.03-x86-64/bin:/router/bin:/users/gilramir/bin:/ws/gilramir-sjc/distro/cel-5.03-x86-64/bin:/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/usr/atria/bin:/usr/cisco/bin:/usr/atria/bin:/usr/cisco/bin</var>
+<var name="PRINTER">SJ24-3-f8-8</var>
+<var name="PWD">/users/gilramir/prj/make-3.82</var>
+<var name="SESSION_MANAGER">local/sjc-ads-1261:/tmp/.ICE-unix/31046</var>
+<var name="SHELL">/bin/bash</var>
+<var name="SHLVL">6</var>
+<var name="SSH_AGENT_PID">30962</var>
+<var name="SSH_ASKPASS">/usr/libexec/openssh/gnome-ssh-askpass</var>
+<var name="SSH_AUTH_SOCK">/tmp/ssh-tzQtk30960/agent.30960</var>
+<var name="SSH_CLIENT">::ffff:10.154.212.27 57021 22</var>
+<var name="SSH_CONNECTION">::ffff:10.154.212.27 57021 ::ffff:171.70.58.203 22</var>
+<var name="SSH_TTY">/dev/pts/0</var>
+<var name="TEAMBUILDER_RELPATH">1</var>
+<var name="TEAMBUILDER_SYSTEM">cisco:cross</var>
+<var name="TERM">xterm</var>
+<var name="TFTP">/tftpboot/gilramir</var>
+<var name="THIS_SERVER">cel-5.03-x86-64</var>
+<var name="TMPDIR">/nobackup/gilramir/tmp</var>
+<var name="TZ">PST8PDT</var>
+<var name="USER">gilramir</var>
+<var name="VAS_LOGONSERVER">ada-sjc2-c1-4-w.cisco.com</var>
+<var name="VNCDESKTOP">gilramir-sjc-503 CEL-5.03</var>
+<var name="VWS">/ws/gilramir-sjc</var>
+<var name="WINDOWID">31457291</var>
+<var name="WS">/ws/gilramir-sjc</var>
+<var name="WWW">/nfs/wwwPeople/gilramir</var>
+<var name="XCURSOR_SIZE"></var>
+<var name="XCURSOR_THEME">default</var>
+<var name="_">/sw/licensed/ecloud/latest/64/bin/emake</var>
+<var name="chmdo">() {  chmod
+}</var>
+<var name="ct">() {  cleartool "$@"
+}</var>
+<var name="grpe">() {  grep "$@"
+}</var>
+<var name="jbos">() {  jobs
+}</var>
+<var name="lsco">() {  cleartool lsprivate -co -short
+}</var>
+<var name="lsprivate">() {  cleartool lsprivate -other -short -do
+}</var>
+<var name="mkdircd">() {  mkdir "$@" &amp;&amp; cd "$1"
+}</var>
+<var name="mroe">() {  more "$@"
+}</var>
+<var name="rmview">() {  VIEW=$(ct pwv | grep 'Working directory view' | awk '{print $4;}');
+ if [ "$VIEW" != '**' ]; then
+ cd ~;
+ echo Removing $VIEW;
+ cc_rmview -force -view "$VIEW" -vob /vob/ios;
+ fi
+}</var>
+</environment>
+<make level="0" cmd="/sw/licensed/ecloud/latest/64/bin/emake --emake-cm=sjc-buildcm2 --emake-build-label=EC_EMAKE --emake-annodetail=file,history,waiting --emake-history=create --emake-root=/ws/gilramir-sjc/prj/make-3.82 --emake-resource=sjc-cel-5.03-x86-64" cwd="/ws/gilramir-sjc/prj/make-3.82" mode="gmake">
+<job id="J0000000000894090" thread="42803960" type="parse">
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/alloca.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getloadavg.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/ar.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/arscan.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/commands.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/default.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/dir.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/expand.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/file.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/function.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt1.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/hash.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/implicit.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/job.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/loadavg-getloadavg.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/main.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/misc.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/read.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remake.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-cstms.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-stub.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/rule.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/signame.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/strcache.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/variable.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/version.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vmsjobs.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vpath.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/Makefile"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config" filetype="dir" isdir="1"/>
+</opList>
+<timing invoked="0.848531" completed="0.955003" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000901fb0" thread="42803960" type="exist" name=".deps/vpath.Po">
+<timing invoked="0.955022" completed="0.955033" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902000" thread="42803960" type="exist" name=".deps/vmsjobs.Po">
+<timing invoked="0.955035" completed="0.955040" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902050" thread="42803960" type="exist" name=".deps/version.Po">
+<timing invoked="0.955041" completed="0.955048" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009020a0" thread="42803960" type="exist" name=".deps/variable.Po">
+<timing invoked="0.955049" completed="0.955053" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009020f0" thread="42803960" type="exist" name=".deps/strcache.Po">
+<timing invoked="0.955055" completed="0.955059" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902140" thread="42803960" type="exist" name=".deps/signame.Po">
+<timing invoked="0.955060" completed="0.955065" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902190" thread="42803960" type="exist" name=".deps/rule.Po">
+<timing invoked="0.955066" completed="0.955071" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009021e0" thread="42803960" type="exist" name=".deps/remote-stub.Po">
+<timing invoked="0.955073" completed="0.955077" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902230" thread="42803960" type="exist" name=".deps/remote-cstms.Po">
+<timing invoked="0.955079" completed="0.955083" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902280" thread="42803960" type="exist" name=".deps/remake.Po">
+<timing invoked="0.955085" completed="0.955089" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009022d0" thread="42803960" type="exist" name=".deps/read.Po">
+<timing invoked="0.955091" completed="0.955097" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902320" thread="42803960" type="exist" name=".deps/misc.Po">
+<timing invoked="0.955098" completed="0.955102" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902370" thread="42803960" type="exist" name=".deps/main.Po">
+<timing invoked="0.955104" completed="0.955108" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009023c0" thread="42803960" type="exist" name=".deps/loadavg-getloadavg.Po">
+<timing invoked="0.955110" completed="0.955116" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902410" thread="42803960" type="exist" name=".deps/job.Po">
+<timing invoked="0.955117" completed="0.955121" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902460" thread="42803960" type="exist" name=".deps/implicit.Po">
+<timing invoked="0.955123" completed="0.955127" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009024b0" thread="42803960" type="exist" name=".deps/hash.Po">
+<timing invoked="0.955128" completed="0.955132" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902500" thread="42803960" type="exist" name=".deps/getopt1.Po">
+<timing invoked="0.955134" completed="0.955142" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902550" thread="42803960" type="exist" name=".deps/getopt.Po">
+<timing invoked="0.955144" completed="0.955148" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009025a0" thread="42803960" type="exist" name=".deps/function.Po">
+<timing invoked="0.955149" completed="0.955153" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009025f0" thread="42803960" type="exist" name=".deps/file.Po">
+<timing invoked="0.955155" completed="0.955159" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902640" thread="42803960" type="exist" name=".deps/expand.Po">
+<timing invoked="0.955160" completed="0.955166" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902690" thread="42803960" type="exist" name=".deps/dir.Po">
+<timing invoked="0.955167" completed="0.955171" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009026e0" thread="42803960" type="exist" name=".deps/default.Po">
+<timing invoked="0.955173" completed="0.955177" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902730" thread="42803960" type="exist" name=".deps/commands.Po">
+<timing invoked="0.955178" completed="0.955184" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902780" thread="42803960" type="exist" name=".deps/arscan.Po">
+<timing invoked="0.955186" completed="0.955190" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009027d0" thread="42803960" type="exist" name=".deps/ar.Po">
+<timing invoked="0.955191" completed="0.955195" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902820" thread="42803960" type="exist" name=".deps/getloadavg.Po">
+<timing invoked="0.955197" completed="0.955200" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902870" thread="42803960" type="exist" name=".deps/alloca.Po">
+<timing invoked="0.955202" completed="0.955208" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J00000000009028c0" thread="42803960" type="rule" name="config/dospaths.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955210" completed="0.955233" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902910" thread="42803960" type="rule" name="config/gettext.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955236" completed="0.955249" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902960" thread="42803960" type="rule" name="config/iconv.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955251" completed="0.955260" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J00000000009029b0" thread="42803960" type="rule" name="config/isc-posix.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955262" completed="0.955271" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902a00" thread="42803960" type="rule" name="config/lib-ld.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955272" completed="0.955284" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902a50" thread="42803960" type="rule" name="config/lib-link.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955286" completed="0.955294" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902aa0" thread="42803960" type="rule" name="config/lib-prefix.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955296" completed="0.955307" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902af0" thread="42803960" type="rule" name="config/nls.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955309" completed="0.955318" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902b40" thread="42803960" type="rule" name="config/po.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955319" completed="0.955330" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902b90" thread="42803960" type="rule" name="config/progtest.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955333" completed="0.955345" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902be0" thread="42803960" type="rule" name="acinclude.m4" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955348" completed="0.955361" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902c30" thread="42803960" type="rule" name="configure.in" file="Makefile" line="419" neededby="J0000000000902cd0">
+<timing invoked="0.955363" completed="0.955371" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902c80 J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902c80" thread="42803960" type="rule" name="aclocal.m4" file="Makefile" line="417" neededby="J0000000000902cd0">
+<timing invoked="0.955373" completed="0.956359" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902cd0 J0000000000902d20 J0000000000902e60"/>
+</job>
+<job id="J0000000000902cd0" thread="42803960" type="rule" name="Makefile.in" file="Makefile" line="388" neededby="J0000000000902dc0">
+<timing invoked="0.956364" completed="0.956715" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902dc0"/>
+</job>
+<job id="J0000000000902d20" thread="42803960" type="rule" name="configure" file="Makefile" line="415" neededby="J0000000000902d70">
+<timing invoked="0.956720" completed="0.957394" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902d70"/>
+</job>
+<job id="J0000000000902d70" thread="42803960" type="rule" name="config.status" file="Makefile" line="412" neededby="J0000000000902dc0">
+<timing invoked="0.957401" completed="0.957410" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902dc0 J0000000000902eb0"/>
+</job>
+<job id="J0000000000902dc0" thread="42803960" type="rule" name="Makefile" file="Makefile" line="402">
+<timing invoked="0.957412" completed="0.957418" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902e10"/>
+</job>
+<job id="J0000000000902e10" thread="42803960" type="remake">
+<timing invoked="0.957420" completed="0.957429" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000902e60" thread="42803960" type="rule" name="config.h.in" file="Makefile" line="430" neededby="J0000000000902eb0">
+<timing invoked="0.957431" completed="0.958360" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902eb0"/>
+</job>
+<job id="J0000000000902eb0" thread="42803960" type="rule" name="stamp-h1" file="Makefile" line="427" neededby="J0000000000902f00">
+<timing invoked="0.958371" completed="0.958387" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902f00"/>
+</job>
+<job id="J0000000000902f00" thread="42803960" type="rule" name="config.h" file="Makefile" line="421" neededby="J0000000000902f50">
+<command line="422-425">
+<argv>if test ! -f config.h; then \
+	  rm -f stamp-h1; \
+	  /sw/licensed/ecloud/latest/64/bin/emake  stamp-h1; \
+	else :; fi</argv>
+</command>
+<timing invoked="0.958390" completed="1.018589" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000902f50"/>
+</job>
+<job id="J0000000000902f50" thread="42803960" type="rule" name="all" file="Makefile" line="381">
+<command line="382">
+<argv>/sw/licensed/ecloud/latest/64/bin/emake  all-recursive</argv>
+<output>/sw/licensed/ecloud/latest/64/bin/emake  all-recursive
+</output>
+</command>
+<timing invoked="1.018598" completed="1.076295" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008986e0 J000000000090c390"/>
+</job>
+<make level="1" cmd="/sw/licensed/ecloud/latest/64/bin/emake all-recursive" cwd="/ws/gilramir-sjc/prj/make-3.82" mode="gmake">
+<job id="J000000000090c390" thread="42803960" type="parse">
+<output>make[1]: Entering directory `/ws/gilramir-sjc/prj/make-3.82'
+</output>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/alloca.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getloadavg.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/ar.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/arscan.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/commands.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/default.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/dir.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/expand.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/file.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/function.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt1.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/hash.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/implicit.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/job.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/loadavg-getloadavg.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/main.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/misc.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/read.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remake.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-cstms.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-stub.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/rule.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/signame.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/strcache.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/variable.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/version.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vmsjobs.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vpath.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/Makefile"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config" filetype="dir" isdir="1"/>
+</opList>
+<timing invoked="1.076305" completed="1.111367" node="sjc5-bc-010-9"/>
+</job>
+<job id="J00000000008f6bb0" thread="42803960" type="exist" name=".deps/vpath.Po">
+<timing invoked="1.111383" completed="1.111390" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6c00" thread="42803960" type="exist" name=".deps/vmsjobs.Po">
+<timing invoked="1.111392" completed="1.111396" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6c50" thread="42803960" type="exist" name=".deps/version.Po">
+<timing invoked="1.111398" completed="1.111402" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6ca0" thread="42803960" type="exist" name=".deps/variable.Po">
+<timing invoked="1.111404" completed="1.111408" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6cf0" thread="42803960" type="exist" name=".deps/strcache.Po">
+<timing invoked="1.111410" completed="1.111414" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6d40" thread="42803960" type="exist" name=".deps/signame.Po">
+<timing invoked="1.111415" completed="1.111419" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6d90" thread="42803960" type="exist" name=".deps/rule.Po">
+<timing invoked="1.111421" completed="1.111424" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6de0" thread="42803960" type="exist" name=".deps/remote-stub.Po">
+<timing invoked="1.111426" completed="1.111434" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6e30" thread="42803960" type="exist" name=".deps/remote-cstms.Po">
+<timing invoked="1.111436" completed="1.111439" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6e80" thread="42803960" type="exist" name=".deps/remake.Po">
+<timing invoked="1.111441" completed="1.111445" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6ed0" thread="42803960" type="exist" name=".deps/read.Po">
+<timing invoked="1.111446" completed="1.111451" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6f20" thread="42803960" type="exist" name=".deps/misc.Po">
+<timing invoked="1.111452" completed="1.111458" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6f70" thread="42803960" type="exist" name=".deps/main.Po">
+<timing invoked="1.111459" completed="1.111463" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f6fc0" thread="42803960" type="exist" name=".deps/loadavg-getloadavg.Po">
+<timing invoked="1.111465" completed="1.111468" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7010" thread="42803960" type="exist" name=".deps/job.Po">
+<timing invoked="1.111470" completed="1.111474" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7060" thread="42803960" type="exist" name=".deps/implicit.Po">
+<timing invoked="1.111475" completed="1.111481" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f70b0" thread="42803960" type="exist" name=".deps/hash.Po">
+<timing invoked="1.111482" completed="1.111486" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7100" thread="42803960" type="exist" name=".deps/getopt1.Po">
+<timing invoked="1.111488" completed="1.111491" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7150" thread="42803960" type="exist" name=".deps/getopt.Po">
+<timing invoked="1.111493" completed="1.111498" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f71a0" thread="42803960" type="exist" name=".deps/function.Po">
+<timing invoked="1.111500" completed="1.111503" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f71f0" thread="42803960" type="exist" name=".deps/file.Po">
+<timing invoked="1.111505" completed="1.111508" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7240" thread="42803960" type="exist" name=".deps/expand.Po">
+<timing invoked="1.111510" completed="1.111514" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7290" thread="42803960" type="exist" name=".deps/dir.Po">
+<timing invoked="1.111515" completed="1.111520" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f72e0" thread="42803960" type="exist" name=".deps/default.Po">
+<timing invoked="1.111522" completed="1.111526" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7330" thread="42803960" type="exist" name=".deps/commands.Po">
+<timing invoked="1.111527" completed="1.111531" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7380" thread="42803960" type="exist" name=".deps/arscan.Po">
+<timing invoked="1.111533" completed="1.111536" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f73d0" thread="42803960" type="exist" name=".deps/ar.Po">
+<timing invoked="1.111538" completed="1.111547" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7420" thread="42803960" type="exist" name=".deps/getloadavg.Po">
+<timing invoked="1.111549" completed="1.111552" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7470" thread="42803960" type="exist" name=".deps/alloca.Po">
+<timing invoked="1.111554" completed="1.111558" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f74c0" thread="42803960" type="rule" name="config/dospaths.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111559" completed="1.111577" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7510" thread="42803960" type="rule" name="config/gettext.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111580" completed="1.111590" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7560" thread="42803960" type="rule" name="config/iconv.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111592" completed="1.111603" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f75b0" thread="42803960" type="rule" name="config/isc-posix.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111605" completed="1.111615" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7600" thread="42803960" type="rule" name="config/lib-ld.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111617" completed="1.111628" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7650" thread="42803960" type="rule" name="config/lib-link.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111630" completed="1.111639" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f76a0" thread="42803960" type="rule" name="config/lib-prefix.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111641" completed="1.111650" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f76f0" thread="42803960" type="rule" name="config/nls.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111651" completed="1.111662" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7740" thread="42803960" type="rule" name="config/po.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111664" completed="1.111672" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7790" thread="42803960" type="rule" name="config/progtest.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111674" completed="1.111685" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f77e0" thread="42803960" type="rule" name="acinclude.m4" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111687" completed="1.111695" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7830" thread="42803960" type="rule" name="configure.in" file="Makefile" line="419" neededby="J00000000008f78d0">
+<timing invoked="1.111696" completed="1.111708" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7880 J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f7880" thread="42803960" type="rule" name="aclocal.m4" file="Makefile" line="417" neededby="J00000000008f78d0">
+<timing invoked="1.111711" completed="1.111727" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f78d0 J00000000008f7920"/>
+</job>
+<job id="J00000000008f78d0" thread="42803960" type="rule" name="Makefile.in" file="Makefile" line="388" neededby="J00000000008f79c0">
+<timing invoked="1.111729" completed="1.111746" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f79c0"/>
+</job>
+<job id="J00000000008f7920" thread="42803960" type="rule" name="configure" file="Makefile" line="415" neededby="J00000000008f7970">
+<timing invoked="1.111748" completed="1.111762" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7970"/>
+</job>
+<job id="J00000000008f7970" thread="42803960" type="rule" name="config.status" file="Makefile" line="412" neededby="J00000000008f79c0">
+<timing invoked="1.111763" completed="1.111769" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f79c0"/>
+</job>
+<job id="J00000000008f79c0" thread="42803960" type="rule" name="Makefile" file="Makefile" line="402">
+<timing invoked="1.111770" completed="1.111778" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f7a10"/>
+</job>
+<job id="J00000000008f7a10" thread="42803960" type="remake">
+<timing invoked="1.111780" completed="1.111784" node="sjc5-bc-010-9"/>
+</job>
+<job id="J00000000008f7a60" thread="42803960" type="rule" name="all-recursive" file="Makefile" line="592">
+<command line="593-615">
+<argv>fail= failcom='exit 1'; \
+	for f in x $MAKEFLAGS; do \
+	  case $f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	target=`echo all-recursive | sed s/-recursive//`; \
+	list='glob config po doc '; for subdir in $list; do \
+	  echo "Making $target in $subdir"; \
+	  if test "$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$target-am"; \
+	  else \
+	    local_target="$target"; \
+	  fi; \
+	  (CDPATH="${ZSH_VERSION+.}:" &amp;&amp; cd $subdir &amp;&amp; /sw/licensed/ecloud/latest/64/bin/emake  $local_target) \
+	  || eval $failcom; \
+	done; \
+	if test "$dot_seen" = "no"; then \
+	  /sw/licensed/ecloud/latest/64/bin/emake  "$target-am" || exit 1; \
+	fi; test -z "$fail"</argv>
+<output src="prog">Making all in glob
+</output>
+</command>
+<timing invoked="1.111786" completed="1.159728" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000090eae0 J00000000009419e0 J000000000094b320 J0000000000952470 J00000000009595c0 J000000000095dfa0"/>
+</job>
+<make level="2" cmd="/sw/licensed/ecloud/latest/64/bin/emake all" cwd="/ws/gilramir-sjc/prj/make-3.82/glob" mode="gmake">
+<job id="J00000000009419e0" thread="42803960" type="parse">
+<output>make[2]: Entering directory `/ws/gilramir-sjc/prj/make-3.82/glob'
+</output>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/glob" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/glob/.deps/fnmatch.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/glob/.deps/glob.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/glob/Makefile"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/glob/.deps" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82" filetype="dir" isdir="1"/>
+</opList>
+<timing invoked="1.159737" completed="1.187601" node="sjc5-bc-010-9"/>
+</job>
+<job id="J00000000008f8af0" thread="42803960" type="exist" name=".deps/glob.Po">
+<timing invoked="1.187610" completed="1.187616" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f90e0"/>
+</job>
+<job id="J00000000008f8b40" thread="42803960" type="exist" name=".deps/fnmatch.Po">
+<timing invoked="1.187618" completed="1.187622" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f90e0"/>
+</job>
+<job id="J00000000008f8b90" thread="42803960" type="rule" name="../config/dospaths.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187624" completed="1.187640" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8be0" thread="42803960" type="rule" name="../config/gettext.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187642" completed="1.187654" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8c30" thread="42803960" type="rule" name="../config/iconv.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187656" completed="1.187667" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8c80" thread="42803960" type="rule" name="../config/isc-posix.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187669" completed="1.187680" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8cd0" thread="42803960" type="rule" name="../config/lib-ld.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187766" completed="1.187803" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8d20" thread="42803960" type="rule" name="../config/lib-link.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187807" completed="1.187822" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8d70" thread="42803960" type="rule" name="../config/lib-prefix.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187824" completed="1.187843" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8dc0" thread="42803960" type="rule" name="../config/nls.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187845" completed="1.187861" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8e10" thread="42803960" type="rule" name="../config/po.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187864" completed="1.187887" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8e60" thread="42803960" type="rule" name="../config/progtest.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187891" completed="1.187907" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8eb0" thread="42803960" type="rule" name="../acinclude.m4" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187909" completed="1.187926" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8f00" thread="42803960" type="rule" name="../configure.in" file="Makefile" line="250" neededby="J00000000008f8fa0">
+<timing invoked="1.187928" completed="1.188016" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8f50 J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8f50" thread="42803960" type="rule" name="../aclocal.m4" file="Makefile" line="248" neededby="J00000000008f8fa0">
+<timing invoked="1.188022" completed="1.188052" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f8fa0 J00000000008f8ff0"/>
+</job>
+<job id="J00000000008f8fa0" thread="42803960" type="rule" name="Makefile.in" file="Makefile" line="221" neededby="J00000000008f9090">
+<timing invoked="1.188055" completed="1.189318" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f9090"/>
+</job>
+<job id="J00000000008f8ff0" thread="42803960" type="rule" name="../configure" file="Makefile" line="246" neededby="J00000000008f9040">
+<timing invoked="1.189329" completed="1.189355" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f9040"/>
+</job>
+<job id="J00000000008f9040" thread="42803960" type="rule" name="../config.status" file="Makefile" line="243" neededby="J00000000008f9090">
+<timing invoked="1.189359" completed="1.189392" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f9090"/>
+</job>
+<job id="J00000000008f9090" thread="42803960" type="rule" name="Makefile" file="Makefile" line="234">
+<timing invoked="1.189396" completed="1.189424" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f90e0 J00000000008f9130"/>
+</job>
+<job id="J00000000008f90e0" thread="42803960" type="remake">
+<timing invoked="1.189427" completed="1.189433" node="sjc5-bc-010-9"/>
+</job>
+<job id="J00000000008f9130" thread="42803960" type="rule" name="all-am" file="Makefile" line="366" neededby="J00000000008f9180">
+<timing invoked="1.189435" completed="1.189467" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000008f9180"/>
+</job>
+<job id="J00000000008f9180" thread="42803960" type="rule" name="all" file="Makefile" line="217">
+<output>make[2]: Nothing to be done for `all'.
+</output>
+<timing invoked="1.189469" completed="1.189489" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000941920"/>
+</job>
+<job id="J0000000000941920" thread="42803960" type="end">
+<output>make[2]: Leaving directory `/ws/gilramir-sjc/prj/make-3.82/glob'
+</output>
+<timing invoked="1.189491" completed="1.189508" node="sjc5-bc-010-9"/>
+</job>
+</make>
+<job id="J0000000000948800" thread="42803960" type="follow" partof="J00000000008f7a60">
+<output src="prog">Making all in config
+</output>
+<timing invoked="1.189510" completed="1.189556" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000090eae0"/>
+</job>
+<make level="2" cmd="/sw/licensed/ecloud/latest/64/bin/emake all" cwd="/ws/gilramir-sjc/prj/make-3.82/config" mode="gmake">
+<job id="J000000000094b320" thread="42803960" type="parse">
+<output>make[2]: Entering directory `/ws/gilramir-sjc/prj/make-3.82/config'
+</output>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config/Makefile"/>
+</opList>
+<timing invoked="1.189559" completed="1.205319" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000935330" thread="42803960" type="rule" name="../config/dospaths.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205346" completed="1.205415" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935380" thread="42803960" type="rule" name="../config/gettext.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205419" completed="1.205441" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J00000000009353d0" thread="42803960" type="rule" name="../config/iconv.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205443" completed="1.205476" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935420" thread="42803960" type="rule" name="../config/isc-posix.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205482" completed="1.205495" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935470" thread="42803960" type="rule" name="../config/lib-ld.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205498" completed="1.205515" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J00000000009354c0" thread="42803960" type="rule" name="../config/lib-link.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205517" completed="1.205546" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935510" thread="42803960" type="rule" name="../config/lib-prefix.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205549" completed="1.205561" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935560" thread="42803960" type="rule" name="../config/nls.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205564" completed="1.205581" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J00000000009355b0" thread="42803960" type="rule" name="../config/po.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205583" completed="1.205612" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935600" thread="42803960" type="rule" name="../config/progtest.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205615" completed="1.205642" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935650" thread="42803960" type="rule" name="../acinclude.m4" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205644" completed="1.205656" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J00000000009356a0" thread="42803960" type="rule" name="../configure.in" file="Makefile" line="232" neededby="J0000000000935740">
+<timing invoked="1.205657" completed="1.205688" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009356f0 J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J00000000009356f0" thread="42803960" type="rule" name="../aclocal.m4" file="Makefile" line="230" neededby="J0000000000935740">
+<timing invoked="1.205691" completed="1.205707" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000935740 J0000000000935790"/>
+</job>
+<job id="J0000000000935740" thread="42803960" type="rule" name="Makefile.in" file="Makefile" line="203" neededby="J0000000000935830">
+<timing invoked="1.205715" completed="1.206406" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000935830"/>
+</job>
+<job id="J0000000000935790" thread="42803960" type="rule" name="../configure" file="Makefile" line="228" neededby="J00000000009357e0">
+<timing invoked="1.206450" completed="1.206497" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009357e0"/>
+</job>
+<job id="J00000000009357e0" thread="42803960" type="rule" name="../config.status" file="Makefile" line="225" neededby="J0000000000935830">
+<timing invoked="1.206506" completed="1.206519" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000935830"/>
+</job>
+<job id="J0000000000935830" thread="42803960" type="rule" name="Makefile" file="Makefile" line="216">
+<timing invoked="1.206521" completed="1.206547" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000935880 J00000000009358d0"/>
+</job>
+<job id="J0000000000935880" thread="42803960" type="remake">
+<timing invoked="1.206550" completed="1.206555" node="sjc5-bc-010-9"/>
+</job>
+<job id="J00000000009358d0" thread="42803960" type="rule" name="all-am" file="Makefile" line="272" neededby="J0000000000935920">
+<timing invoked="1.206561" completed="1.206584" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000935920"/>
+</job>
+<job id="J0000000000935920" thread="42803960" type="rule" name="all" file="Makefile" line="200">
+<output>make[2]: Nothing to be done for `all'.
+</output>
+<timing invoked="1.206586" completed="1.206626" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000948ab0"/>
+</job>
+<job id="J0000000000948ab0" thread="42803960" type="end">
+<output>make[2]: Leaving directory `/ws/gilramir-sjc/prj/make-3.82/config'
+</output>
+<timing invoked="1.206630" completed="1.206641" node="sjc5-bc-010-9"/>
+</job>
+</make>
+<job id="J000000000094f970" thread="42803960" type="follow" partof="J00000000008f7a60">
+<output src="prog">Making all in po
+</output>
+<timing invoked="1.206643" completed="1.206660" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000090eae0"/>
+</job>
+<make level="2" cmd="/sw/licensed/ecloud/latest/64/bin/emake all" cwd="/ws/gilramir-sjc/prj/make-3.82/po" mode="gmake">
+<job id="J0000000000952470" thread="42803960" type="parse">
+<output>make[2]: Entering directory `/ws/gilramir-sjc/prj/make-3.82/po'
+</output>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/po" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/po/Makefile"/>
+</opList>
+<timing invoked="1.206662" completed="1.225456" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000911e70" thread="42803960" type="rule" name="Makefile" file="Makefile" line="441">
+<timing invoked="1.225464" completed="1.227265" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000911ec0"/>
+</job>
+<job id="J0000000000911ec0" thread="42803960" type="remake">
+<timing invoked="1.227277" completed="1.227283" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000911f10" thread="42803960" type="rule" name="make.pot" file="Makefile" line="210" neededby="J0000000000911f60">
+<timing invoked="1.227285" completed="1.228048" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000911f60"/>
+</job>
+<job id="J0000000000911f60" thread="42803960" type="rule" name="stamp-po" file="Makefile" line="174" neededby="J0000000000911fb0">
+<timing invoked="1.228054" completed="1.228062" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000911fb0"/>
+</job>
+<job id="J0000000000911fb0" thread="42803960" type="rule" name="all-yes" file="Makefile" line="163" neededby="J0000000000912000">
+<timing invoked="1.228064" completed="1.228077" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000912000"/>
+</job>
+<job id="J0000000000912000" thread="42803960" type="rule" name="all" file="Makefile" line="161">
+<output>make[2]: Nothing to be done for `all'.
+</output>
+<timing invoked="1.228079" completed="1.228090" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000094fbb0"/>
+</job>
+<job id="J000000000094fbb0" thread="42803960" type="end">
+<output>make[2]: Leaving directory `/ws/gilramir-sjc/prj/make-3.82/po'
+</output>
+<timing invoked="1.228092" completed="1.228100" node="sjc5-bc-010-9"/>
+</job>
+</make>
+<job id="J0000000000956ac0" thread="42803960" type="follow" partof="J00000000008f7a60">
+<output src="prog">Making all in doc
+</output>
+<timing invoked="1.228102" completed="1.228112" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000090eae0"/>
+</job>
+<make level="2" cmd="/sw/licensed/ecloud/latest/64/bin/emake all" cwd="/ws/gilramir-sjc/prj/make-3.82/doc" mode="gmake">
+<job id="J00000000009595c0" thread="42803960" type="parse">
+<output>make[2]: Entering directory `/ws/gilramir-sjc/prj/make-3.82/doc'
+</output>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/doc" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/doc/Makefile"/>
+</opList>
+<timing invoked="1.228114" completed="1.288290" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000933160" thread="42803960" type="rule" name="../config/dospaths.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288302" completed="1.288322" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J00000000009331b0" thread="42803960" type="rule" name="../config/gettext.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288324" completed="1.288337" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933200" thread="42803960" type="rule" name="../config/iconv.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288338" completed="1.288351" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933250" thread="42803960" type="rule" name="../config/isc-posix.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288352" completed="1.288364" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J00000000009332a0" thread="42803960" type="rule" name="../config/lib-ld.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288366" completed="1.288378" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J00000000009332f0" thread="42803960" type="rule" name="../config/lib-link.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288380" completed="1.288391" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933340" thread="42803960" type="rule" name="../config/lib-prefix.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288393" completed="1.288404" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933390" thread="42803960" type="rule" name="../config/nls.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288406" completed="1.288417" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J00000000009333e0" thread="42803960" type="rule" name="../config/po.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288419" completed="1.288430" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933430" thread="42803960" type="rule" name="../config/progtest.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288432" completed="1.288444" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933480" thread="42803960" type="rule" name="../acinclude.m4" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288445" completed="1.288456" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J00000000009334d0" thread="42803960" type="rule" name="../configure.in" file="Makefile" line="266" neededby="J0000000000933570">
+<timing invoked="1.288458" completed="1.288468" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933520 J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933520" thread="42803960" type="rule" name="../aclocal.m4" file="Makefile" line="264" neededby="J0000000000933570">
+<timing invoked="1.288470" completed="1.288485" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933570 J00000000009335c0"/>
+</job>
+<job id="J0000000000933570" thread="42803960" type="rule" name="Makefile.in" file="Makefile" line="237" neededby="J0000000000933660">
+<timing invoked="1.288494" completed="1.290384" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933660"/>
+</job>
+<job id="J00000000009335c0" thread="42803960" type="rule" name="../configure" file="Makefile" line="262" neededby="J0000000000933610">
+<timing invoked="1.290393" completed="1.290424" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933610 J0000000000933700"/>
+</job>
+<job id="J0000000000933610" thread="42803960" type="rule" name="../config.status" file="Makefile" line="259" neededby="J0000000000933660">
+<timing invoked="1.290427" completed="1.290433" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933660"/>
+</job>
+<job id="J0000000000933660" thread="42803960" type="rule" name="Makefile" file="Makefile" line="250">
+<timing invoked="1.290435" completed="1.290441" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009336b0 J00000000009337f0"/>
+</job>
+<job id="J00000000009336b0" thread="42803960" type="remake">
+<timing invoked="1.290443" completed="1.290448" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000933700" thread="42803960" type="rule" name="stamp-vti" file="Makefile" line="318" neededby="J0000000000933750">
+<timing invoked="1.290450" completed="1.291150" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933750"/>
+</job>
+<job id="J0000000000933750" thread="42803960" type="rule" name="version.texi" file="Makefile" line="317" neededby="J00000000009337a0">
+<timing invoked="1.291166" completed="1.291175" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009337a0"/>
+</job>
+<job id="J00000000009337a0" thread="42803960" type="rule" name="make.info" file="Makefile" line="269" neededby="J00000000009337f0">
+<timing invoked="1.291177" completed="1.291881" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J00000000009337f0"/>
+</job>
+<job id="J00000000009337f0" thread="42803960" type="rule" name="all-am" file="Makefile" line="474" neededby="J0000000000933840">
+<timing invoked="1.291889" completed="1.291916" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000933840"/>
+</job>
+<job id="J0000000000933840" thread="42803960" type="rule" name="all" file="Makefile" line="233">
+<output>make[2]: Nothing to be done for `all'.
+</output>
+<timing invoked="1.291918" completed="1.291934" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000948a60"/>
+</job>
+<job id="J0000000000948a60" thread="42803960" type="end">
+<output>make[2]: Leaving directory `/ws/gilramir-sjc/prj/make-3.82/doc'
+</output>
+<timing invoked="1.291936" completed="1.291947" node="sjc5-bc-010-9"/>
+</job>
+</make>
+<job id="J000000000095dc30" thread="42803960" type="follow" partof="J00000000008f7a60">
+<timing invoked="1.291949" completed="1.291959" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000090eae0"/>
+</job>
+<make level="2" cmd="/sw/licensed/ecloud/latest/64/bin/emake all-am" cwd="/ws/gilramir-sjc/prj/make-3.82" mode="gmake">
+<job id="J000000000095dfa0" thread="42803960" type="parse">
+<output>make[2]: Entering directory `/ws/gilramir-sjc/prj/make-3.82'
+</output>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/alloca.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getloadavg.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/ar.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/arscan.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/commands.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/default.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/dir.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/expand.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/file.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/function.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt1.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/hash.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/implicit.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/job.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/loadavg-getloadavg.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/main.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/misc.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/read.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remake.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-cstms.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-stub.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/rule.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/signame.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/strcache.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/variable.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/version.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vmsjobs.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vpath.Po"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/Makefile"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/.deps" filetype="dir" isdir="1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config" filetype="dir" isdir="1"/>
+</opList>
+<timing invoked="1.291961" completed="1.351808" node="sjc5-bc-010-9"/>
+</job>
+<job id="J00000000009490e0" thread="42803960" type="exist" name=".deps/vpath.Po">
+<timing invoked="1.351823" completed="1.351830" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949130" thread="42803960" type="exist" name=".deps/vmsjobs.Po">
+<timing invoked="1.351832" completed="1.351837" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949180" thread="42803960" type="exist" name=".deps/version.Po">
+<timing invoked="1.351839" completed="1.351844" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009491d0" thread="42803960" type="exist" name=".deps/variable.Po">
+<timing invoked="1.351845" completed="1.351850" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949220" thread="42803960" type="exist" name=".deps/strcache.Po">
+<timing invoked="1.351852" completed="1.351856" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949270" thread="42803960" type="exist" name=".deps/signame.Po">
+<timing invoked="1.351858" completed="1.351862" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009492c0" thread="42803960" type="exist" name=".deps/rule.Po">
+<timing invoked="1.351864" completed="1.351869" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949310" thread="42803960" type="exist" name=".deps/remote-stub.Po">
+<timing invoked="1.351871" completed="1.351875" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949360" thread="42803960" type="exist" name=".deps/remote-cstms.Po">
+<timing invoked="1.351877" completed="1.351881" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009493b0" thread="42803960" type="exist" name=".deps/remake.Po">
+<timing invoked="1.351883" completed="1.351888" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949400" thread="42803960" type="exist" name=".deps/read.Po">
+<timing invoked="1.351889" completed="1.351896" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949450" thread="42803960" type="exist" name=".deps/misc.Po">
+<timing invoked="1.351898" completed="1.351902" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009494a0" thread="42803960" type="exist" name=".deps/main.Po">
+<timing invoked="1.351903" completed="1.351907" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009494f0" thread="42803960" type="exist" name=".deps/loadavg-getloadavg.Po">
+<timing invoked="1.351909" completed="1.351913" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949540" thread="42803960" type="exist" name=".deps/job.Po">
+<timing invoked="1.351914" completed="1.351919" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949590" thread="42803960" type="exist" name=".deps/implicit.Po">
+<timing invoked="1.351921" completed="1.351925" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009495e0" thread="42803960" type="exist" name=".deps/hash.Po">
+<timing invoked="1.351927" completed="1.351932" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949630" thread="42803960" type="exist" name=".deps/getopt1.Po">
+<timing invoked="1.351933" completed="1.351939" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949680" thread="42803960" type="exist" name=".deps/getopt.Po">
+<timing invoked="1.351941" completed="1.351945" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009496d0" thread="42803960" type="exist" name=".deps/function.Po">
+<timing invoked="1.351947" completed="1.351951" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949720" thread="42803960" type="exist" name=".deps/file.Po">
+<timing invoked="1.351952" completed="1.351956" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949770" thread="42803960" type="exist" name=".deps/expand.Po">
+<timing invoked="1.351958" completed="1.351962" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009497c0" thread="42803960" type="exist" name=".deps/dir.Po">
+<timing invoked="1.351964" completed="1.351969" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949810" thread="42803960" type="exist" name=".deps/default.Po">
+<timing invoked="1.351970" completed="1.351974" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949860" thread="42803960" type="exist" name=".deps/commands.Po">
+<timing invoked="1.351976" completed="1.351982" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009498b0" thread="42803960" type="exist" name=".deps/arscan.Po">
+<timing invoked="1.351984" completed="1.351988" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949900" thread="42803960" type="exist" name=".deps/ar.Po">
+<timing invoked="1.351989" completed="1.351993" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J0000000000949950" thread="42803960" type="exist" name=".deps/getloadavg.Po">
+<timing invoked="1.351995" completed="1.351999" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009499a0" thread="42803960" type="exist" name=".deps/alloca.Po">
+<timing invoked="1.352000" completed="1.352006" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40"/>
+</job>
+<job id="J00000000009499f0" thread="42803960" type="rule" name="config/dospaths.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352007" completed="1.352022" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949a40" thread="42803960" type="rule" name="config/gettext.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352024" completed="1.352035" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949a90" thread="42803960" type="rule" name="config/iconv.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352037" completed="1.352047" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949ae0" thread="42803960" type="rule" name="config/isc-posix.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352048" completed="1.352058" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949b30" thread="42803960" type="rule" name="config/lib-ld.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352060" completed="1.352072" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949b80" thread="42803960" type="rule" name="config/lib-link.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352074" completed="1.352083" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949bd0" thread="42803960" type="rule" name="config/lib-prefix.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352084" completed="1.352094" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949c20" thread="42803960" type="rule" name="config/nls.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352096" completed="1.352105" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949c70" thread="42803960" type="rule" name="config/po.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352107" completed="1.352117" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949cc0" thread="42803960" type="rule" name="config/progtest.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352118" completed="1.352128" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949d10" thread="42803960" type="rule" name="acinclude.m4" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352130" completed="1.352141" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949d60" thread="42803960" type="rule" name="configure.in" file="Makefile" line="419" neededby="J0000000000949e00">
+<timing invoked="1.352142" completed="1.352151" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949db0 J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949db0" thread="42803960" type="rule" name="aclocal.m4" file="Makefile" line="417" neededby="J0000000000949e00">
+<timing invoked="1.352153" completed="1.352163" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949e00 J0000000000949e50 J000000000094a760"/>
+</job>
+<job id="J0000000000949e00" thread="42803960" type="rule" name="Makefile.in" file="Makefile" line="388" neededby="J0000000000949ef0">
+<timing invoked="1.352165" completed="1.352181" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949ef0"/>
+</job>
+<job id="J0000000000949e50" thread="42803960" type="rule" name="configure" file="Makefile" line="415" neededby="J0000000000949ea0">
+<timing invoked="1.352183" completed="1.352198" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949ea0"/>
+</job>
+<job id="J0000000000949ea0" thread="42803960" type="rule" name="config.status" file="Makefile" line="412" neededby="J0000000000949ef0">
+<timing invoked="1.352200" completed="1.352205" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949ef0 J000000000094a7b0"/>
+</job>
+<job id="J0000000000949ef0" thread="42803960" type="rule" name="Makefile" file="Makefile" line="402">
+<timing invoked="1.352207" completed="1.352213" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J0000000000949f40 J000000000094a850"/>
+</job>
+<job id="J0000000000949f40" thread="42803960" type="remake">
+<timing invoked="1.352214" completed="1.352219" node="sjc5-bc-010-9"/>
+</job>
+<job id="J0000000000949f90" thread="42803960" type="rule" name="ar.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT ar.o -MD -MP -MF .deps/ar.Tpo -c -o ar.o ar.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT ar.o -MD -MP -MF .deps/ar.Tpo -c -o ar.o ar.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/ar.Tpo .deps/ar.Po</argv>
+<output>mv -f .deps/ar.Tpo .deps/ar.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/ar.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/ar.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/ar.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/ar.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/ar.Tpo"/>
+</opList>
+<timing invoked="1.352224" completed="1.704910" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J0000000000949fe0" thread="4320c960" type="rule" name="arscan.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT arscan.o -MD -MP -MF .deps/arscan.Tpo -c -o arscan.o arscan.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT arscan.o -MD -MP -MF .deps/arscan.Tpo -c -o arscan.o arscan.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/arscan.Tpo .deps/arscan.Po</argv>
+<output>mv -f .deps/arscan.Tpo .deps/arscan.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/arscan.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/arscan.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/arscan.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/arscan.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/arscan.Tpo"/>
+</opList>
+<timing invoked="1.503468" completed="1.710276" node="sjc5-bc-010-1"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a030" thread="43c0d960" type="rule" name="commands.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT commands.o -MD -MP -MF .deps/commands.Tpo -c -o commands.o commands.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT commands.o -MD -MP -MF .deps/commands.Tpo -c -o commands.o commands.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/commands.Tpo .deps/commands.Po</argv>
+<output>mv -f .deps/commands.Tpo .deps/commands.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/commands.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/commands.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/commands.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/commands.Tpo"/>
+</opList>
+<timing invoked="1.553567" completed="1.839210" node="sjc5-bc-010-6"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a080" thread="42803960" type="rule" name="default.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT default.o -MD -MP -MF .deps/default.Tpo -c -o default.o default.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT default.o -MD -MP -MF .deps/default.Tpo -c -o default.o default.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/default.Tpo .deps/default.Po</argv>
+<output>mv -f .deps/default.Tpo .deps/default.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/default.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/default.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/default.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/default.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/default.Tpo"/>
+</opList>
+<timing invoked="1.704920" completed="1.808415" node="sjc5-bc-010-9"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a0d0" thread="44616960" type="rule" name="dir.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT dir.o -MD -MP -MF .deps/dir.Tpo -c -o dir.o dir.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT dir.o -MD -MP -MF .deps/dir.Tpo -c -o dir.o dir.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/dir.Tpo .deps/dir.Po</argv>
+<output>mv -f .deps/dir.Tpo .deps/dir.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dir.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/dir.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/dir.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/dir.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/dir.Tpo"/>
+</opList>
+<timing invoked="1.797484" completed="2.610664" node="sjc5-bc-010-3"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a120" thread="45017960" type="rule" name="expand.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT expand.o -MD -MP -MF .deps/expand.Tpo -c -o expand.o expand.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT expand.o -MD -MP -MF .deps/expand.Tpo -c -o expand.o expand.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/expand.Tpo .deps/expand.Po</argv>
+<output>mv -f .deps/expand.Tpo .deps/expand.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/expand.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/expand.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/expand.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/expand.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/expand.Tpo"/>
+</opList>
+<timing invoked="2.073423" completed="2.680080" node="sjc5-bc-010-12"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a170" thread="45a18960" type="rule" name="file.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT file.o -MD -MP -MF .deps/file.Tpo -c -o file.o file.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT file.o -MD -MP -MF .deps/file.Tpo -c -o file.o file.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/file.Tpo .deps/file.Po</argv>
+<output>mv -f .deps/file.Tpo .deps/file.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/file.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/file.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/file.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/file.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/file.Tpo"/>
+</opList>
+<timing invoked="2.123005" completed="2.790648" node="sjc5-bc-010-4"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a1c0" thread="46419960" type="rule" name="function.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT function.o -MD -MP -MF .deps/function.Tpo -c -o function.o function.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT function.o -MD -MP -MF .deps/function.Tpo -c -o function.o function.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/function.Tpo .deps/function.Po</argv>
+<output>mv -f .deps/function.Tpo .deps/function.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/function.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/function.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/function.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/function.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/function.Tpo"/>
+</opList>
+<timing invoked="2.183667" completed="2.790275" node="sjc5-bc-010-5"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a210" thread="46e1a960" type="rule" name="getopt.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT getopt.o -MD -MP -MF .deps/getopt.Tpo -c -o getopt.o getopt.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT getopt.o -MD -MP -MF .deps/getopt.Tpo -c -o getopt.o getopt.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/getopt.Tpo .deps/getopt.Po</argv>
+<output>mv -f .deps/getopt.Tpo .deps/getopt.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/getopt.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt.Tpo"/>
+</opList>
+<timing invoked="1.841457" completed="2.062236" node="sjc5-bc-010-2"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a260" thread="4781b960" type="rule" name="getopt1.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT getopt1.o -MD -MP -MF .deps/getopt1.Tpo -c -o getopt1.o getopt1.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT getopt1.o -MD -MP -MF .deps/getopt1.Tpo -c -o getopt1.o getopt1.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/getopt1.Tpo .deps/getopt1.Po</argv>
+<output>mv -f .deps/getopt1.Tpo .deps/getopt1.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt1.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt1.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/getopt1.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt1.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/getopt1.Tpo"/>
+</opList>
+<timing invoked="1.887552" completed="2.380579" node="sjc5-bc-010-8"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a2b0" thread="4821c960" type="rule" name="implicit.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT implicit.o -MD -MP -MF .deps/implicit.Tpo -c -o implicit.o implicit.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT implicit.o -MD -MP -MF .deps/implicit.Tpo -c -o implicit.o implicit.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/implicit.Tpo .deps/implicit.Po</argv>
+<output>mv -f .deps/implicit.Tpo .deps/implicit.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/implicit.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/implicit.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/implicit.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/implicit.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/implicit.Tpo"/>
+</opList>
+<timing invoked="1.978166" completed="2.814388" node="sjc5-bc-010-10"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a300" thread="48c1d960" type="rule" name="job.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT job.o -MD -MP -MF .deps/job.Tpo -c -o job.o job.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT job.o -MD -MP -MF .deps/job.Tpo -c -o job.o job.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/job.Tpo .deps/job.Po</argv>
+<output>mv -f .deps/job.Tpo .deps/job.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/job.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/job.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/job.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/job.Tpo"/>
+</opList>
+<timing invoked="1.929696" completed="2.784276" node="sjc5-bc-010-11"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a350" thread="4961e960" type="rule" name="main.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT main.o -MD -MP -MF .deps/main.Tpo -c -o main.o main.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT main.o -MD -MP -MF .deps/main.Tpo -c -o main.o main.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/main.Tpo .deps/main.Po</argv>
+<output>mv -f .deps/main.Tpo .deps/main.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/main.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/main.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/main.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/main.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/main.Tpo"/>
+</opList>
+<timing invoked="2.027449" completed="2.840639" node="sjc5-bc-010-7"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a3a0" thread="4a01f960" type="rule" name="misc.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT misc.o -MD -MP -MF .deps/misc.Tpo -c -o misc.o misc.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT misc.o -MD -MP -MF .deps/misc.Tpo -c -o misc.o misc.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/misc.Tpo .deps/misc.Po</argv>
+<output>mv -f .deps/misc.Tpo .deps/misc.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/misc.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/misc.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/misc.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/misc.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/misc.Tpo"/>
+</opList>
+<timing invoked="1.882613" completed="2.178681" node="sjc5-bc-016-10"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a3f0" thread="4aa20960" type="rule" name="read.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT read.o -MD -MP -MF .deps/read.Tpo -c -o read.o read.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT read.o -MD -MP -MF .deps/read.Tpo -c -o read.o read.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/read.Tpo .deps/read.Po</argv>
+<output>mv -f .deps/read.Tpo .deps/read.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/read.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/read.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/read.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/read.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/read.Tpo"/>
+</opList>
+<timing invoked="2.077346" completed="2.989967" node="sjc5-bc-014-1"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a440" thread="4b421960" type="rule" name="remake.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT remake.o -MD -MP -MF .deps/remake.Tpo -c -o remake.o remake.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT remake.o -MD -MP -MF .deps/remake.Tpo -c -o remake.o remake.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/remake.Tpo .deps/remake.Po</argv>
+<output>mv -f .deps/remake.Tpo .deps/remake.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/remake.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/debug.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remake.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/remake.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remake.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/remake.Tpo"/>
+</opList>
+<timing invoked="1.859398" completed="2.719157" node="sjc5-bc-014-7"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a490" thread="4be22960" type="rule" name="remote-stub.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT remote-stub.o -MD -MP -MF .deps/remote-stub.Tpo -c -o remote-stub.o remote-stub.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT remote-stub.o -MD -MP -MF .deps/remote-stub.Tpo -c -o remote-stub.o remote-stub.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/remote-stub.Tpo .deps/remote-stub.Po</argv>
+<output>mv -f .deps/remote-stub.Tpo .deps/remote-stub.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/remote-stub.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-stub.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/remote-stub.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-stub.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/remote-stub.Tpo"/>
+</opList>
+<timing invoked="1.998160" completed="2.322442" node="sjc5-bc-014-5"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a4e0" thread="4c823960" type="rule" name="rule.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT rule.o -MD -MP -MF .deps/rule.Tpo -c -o rule.o rule.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT rule.o -MD -MP -MF .deps/rule.Tpo -c -o rule.o rule.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/rule.Tpo .deps/rule.Po</argv>
+<output>mv -f .deps/rule.Tpo .deps/rule.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/rule.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/rule.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/rule.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/rule.Tpo"/>
+</opList>
+<timing invoked="2.193713" completed="2.439389" node="sjc5-bc-014-2"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a530" thread="4d224960" type="rule" name="signame.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT signame.o -MD -MP -MF .deps/signame.Tpo -c -o signame.o signame.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT signame.o -MD -MP -MF .deps/signame.Tpo -c -o signame.o signame.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/signame.Tpo .deps/signame.Po</argv>
+<output>mv -f .deps/signame.Tpo .deps/signame.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/signame.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/signame.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/signame.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/signame.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/signame.Tpo"/>
+</opList>
+<timing invoked="1.897525" completed="2.307344" node="sjc5-bc-014-11"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a580" thread="4dc25960" type="rule" name="strcache.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT strcache.o -MD -MP -MF .deps/strcache.Tpo -c -o strcache.o strcache.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT strcache.o -MD -MP -MF .deps/strcache.Tpo -c -o strcache.o strcache.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/strcache.Tpo .deps/strcache.Po</argv>
+<output>mv -f .deps/strcache.Tpo .deps/strcache.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/strcache.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/strcache.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/strcache.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/strcache.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/strcache.Tpo"/>
+</opList>
+<timing invoked="2.133981" completed="2.363046" node="sjc5-bc-014-6"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a5d0" thread="4e626960" type="rule" name="variable.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT variable.o -MD -MP -MF .deps/variable.Tpo -c -o variable.o variable.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT variable.o -MD -MP -MF .deps/variable.Tpo -c -o variable.o variable.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/variable.Tpo .deps/variable.Po</argv>
+<output>mv -f .deps/variable.Tpo .deps/variable.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dep.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/variable.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/variable.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/variable.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/variable.Tpo"/>
+</opList>
+<timing invoked="2.403294" completed="2.820068" node="sjc5-bc-014-8"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a620" thread="4f027960" type="rule" name="version.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT version.o -MD -MP -MF .deps/version.Tpo -c -o version.o version.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT version.o -MD -MP -MF .deps/version.Tpo -c -o version.o version.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/version.Tpo .deps/version.Po</argv>
+<output>mv -f .deps/version.Tpo .deps/version.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/version.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/version.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/version.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/version.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/version.Tpo"/>
+</opList>
+<timing invoked="1.940011" completed="2.217572" node="sjc5-bc-014-9"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a670" thread="4fa28960" type="rule" name="vpath.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT vpath.o -MD -MP -MF .deps/vpath.Tpo -c -o vpath.o vpath.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT vpath.o -MD -MP -MF .deps/vpath.Tpo -c -o vpath.o vpath.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/vpath.Tpo .deps/vpath.Po</argv>
+<output>mv -f .deps/vpath.Tpo .deps/vpath.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/vpath.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/filedef.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vpath.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/vpath.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/vpath.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/vpath.Tpo"/>
+</opList>
+<timing invoked="2.274284" completed="2.469760" node="sjc5-bc-014-10"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a6c0" thread="50429960" type="rule" name="hash.o" file="Makefile" line="521" neededby="J000000000094a710">
+<command line="521">
+<argv>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT hash.o -MD -MP -MF .deps/hash.Tpo -c -o hash.o hash.c</argv>
+<output>gcc -DLOCALEDIR=\"/usr/local/share/locale\" -DLIBDIR=\"/usr/local/lib\" -DINCLUDEDIR=\"/usr/local/include\" -DHAVE_CONFIG_H -I.      -g -O2 -MT hash.o -MD -MP -MF .deps/hash.Tpo -c -o hash.o hash.c
+</output>
+</command>
+<command line="522">
+<argv>mv -f .deps/hash.Tpo .deps/hash.Po</argv>
+<output>mv -f .deps/hash.Tpo .deps/hash.Po
+</output>
+</command>
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.c"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/make.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/config.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/gettext.h"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.h"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/.deps/hash.Tpo" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/hash.o" found="0"/>
+<op type="rename" file="/ws/gilramir-sjc/prj/make-3.82/.deps/hash.Po" other="/ws/gilramir-sjc/prj/make-3.82/.deps/hash.Tpo"/>
+</opList>
+<timing invoked="2.347396" completed="2.544217" node="sjc5-bc-014-3"/>
+<waitingJobs idList="J000000000094a710"/>
+</job>
+<job id="J000000000094a710" thread="4aa20960" type="rule" name="make" file="Makefile" line="480" neededby="J000000000094a850">
+<command line="481">
+<argv>rm -f make</argv>
+</command>
+<command line="482">
+<argv>gcc  -g -O2   -o make ar.o arscan.o commands.o default.o dir.o expand.o file.o function.o getopt.o getopt1.o implicit.o job.o main.o misc.o read.o remake.o remote-stub.o rule.o signame.o strcache.o variable.o version.o vpath.o hash.o   -lrt </argv>
+<output>gcc  -g -O2   -o make ar.o arscan.o commands.o default.o dir.o expand.o file.o function.o getopt.o getopt1.o implicit.o job.o main.o misc.o read.o remake.o remote-stub.o rule.o signame.o strcache.o variable.o version.o vpath.o hash.o   -lrt 
+</output>
+</command>
+<opList>
+<op type="create" file="/ws/gilramir-sjc/prj/make-3.82/make" found="0"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/ar.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/arscan.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/commands.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/default.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/dir.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/expand.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/file.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/function.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/getopt1.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/implicit.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/job.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/main.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/misc.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/read.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/remake.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/remote-stub.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/rule.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/signame.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/strcache.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/variable.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/version.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/vpath.o"/>
+<op type="read" file="/ws/gilramir-sjc/prj/make-3.82/hash.o"/>
+</opList>
+<timing invoked="2.989978" completed="3.305552" node="sjc5-bc-014-1"/>
+<waitingJobs idList="J000000000094a850"/>
+</job>
+<job id="J000000000094a760" thread="50e2a960" type="rule" name="config.h.in" file="Makefile" line="430" neededby="J000000000094a7b0">
+<timing invoked="2.453383" completed="2.453442" node="sjc5-bc-014-12"/>
+<waitingJobs idList="J000000000094a7b0"/>
+</job>
+<job id="J000000000094a7b0" thread="50e2a960" type="rule" name="stamp-h1" file="Makefile" line="427" neededby="J000000000094a800">
+<timing invoked="2.453451" completed="2.453464" node="sjc5-bc-010-1"/>
+<waitingJobs idList="J000000000094a800"/>
+</job>
+<job id="J000000000094a800" thread="50e2a960" type="rule" name="config.h" file="Makefile" line="421" neededby="J000000000094a850">
+<command line="422-425">
+<argv>if test ! -f config.h; then \
+	  rm -f stamp-h1; \
+	  /sw/licensed/ecloud/latest/64/bin/emake  stamp-h1; \
+	else :; fi</argv>
+</command>
+<timing invoked="2.453467" completed="2.457263" node="sjc5-bc-010-1"/>
+<waitingJobs idList="J000000000094a850"/>
+</job>
+<job id="J000000000094a850" thread="4aa20960" type="rule" name="all-am" file="Makefile" line="922">
+<timing invoked="3.305565" completed="3.305665" node="sjc5-bc-016-10"/>
+<waitingJobs idList="J000000000095de80"/>
+</job>
+<job id="J000000000095de80" thread="4aa20960" type="end">
+<output>make[2]: Leaving directory `/ws/gilramir-sjc/prj/make-3.82'
+</output>
+<timing invoked="3.305682" completed="3.305716" node="sjc5-bc-016-10"/>
+</job>
+</make>
+<job id="J0000000000964d60" thread="4aa20960" type="follow" partof="J00000000008f7a60">
+<timing invoked="3.305721" completed="3.305749" node="sjc5-bc-016-10"/>
+<waitingJobs idList="J000000000090eae0"/>
+</job>
+<job id="J000000000090eae0" thread="4aa20960" type="end">
+<output>make[1]: Leaving directory `/ws/gilramir-sjc/prj/make-3.82'
+</output>
+<timing invoked="3.305753" completed="3.305783" node="sjc5-bc-016-10"/>
+</job>
+</make>
+<job id="J000000000090c2d0" thread="4aa20960" type="follow" partof="J0000000000902f50">
+<timing invoked="3.305787" completed="3.305811" node="sjc5-bc-016-10"/>
+<waitingJobs idList="J00000000008986e0"/>
+</job>
+<job id="J00000000008986e0" thread="4aa20960" type="end">
+<timing invoked="3.305815" completed="3.305835" node="sjc5-bc-016-10"/>
+</job>
+</make>
+<metrics>
+<metric name="terminated">266</metric>
+<metric name="conflicts">0</metric>
+<metric name="runjobs">29</metric>
+<metric name="writeThrottleWaitTime">0.000000</metric>
+<metric name="duration">3.000000</metric>
+<metric name="clusterAvailability">100</metric>
+<metric name="totalAgentCount">32</metric>
+<metric name="noAgentsWaitTime">0</metric>
+<metric name="totalChains">568</metric>
+<metric name="chainLatestReads">8183</metric>
+<metric name="chainSerialReads">10039</metric>
+<metric name="chainWrites">518</metric>
+<metric name="elapsed">3.539654</metric>
+<metric name="nodeReadBytes">0</metric>
+<metric name="nodeWriteBytes">0</metric>
+<metric name="nodeReadTime">0.000000</metric>
+<metric name="nodeWriteTime">0.024130</metric>
+<metric name="nodeReadWaitTime">0.000000</metric>
+<metric name="nodeWriteWaitTime">0.000000</metric>
+<metric name="diskWriteBytes">1673093</metric>
+<metric name="diskReadBytes">1579504</metric>
+<metric name="diskReadTime">0.024130</metric>
+<metric name="diskWriteTime">0.578375</metric>
+<metric name="diskReadWaitTime">0.002168</metric>
+<metric name="diskWriteWaitTime">0.094153</metric>
+<metric name="usageBytes">1673093</metric>
+<metric name="symlinkReads">0</metric>
+<metric name="termDiskCopiedBytes">0</metric>
+<metric name="termDiskMovedBytes">1673093</metric>
+<metric name="termDiskRemovedBytes">0</metric>
+<metric name="termDiskRemovedTmpBytes">0</metric>
+<metric name="termDiskCopiedFiles">0</metric>
+<metric name="termDiskMovedFiles">49</metric>
+<metric name="termDiskRemovedFiles">0</metric>
+<metric name="termDiskRemovedTmpFiles">0</metric>
+<metric name="compressTime">0.000000</metric>
+<metric name="compressBytesIn">0</metric>
+<metric name="compressBytesOut">0</metric>
+<metric name="decompressTime">0.001360</metric>
+<metric name="decompressBytesIn">287102</metric>
+<metric name="decompressBytesOut">562841</metric>
+<metric name="maxMakeCount">0</metric>
+<metric name="maxArenaCount">3</metric>
+<metric name="freezeTime">0.000000</metric>
+<metric name="timerThreadCount">24</metric>
+<metric name="timer:jobqueue">0.005889</metric>
+<metric name="timer:mutex.jobrunstate">0.000003</metric>
+<metric name="timer:mutex.nodeinit">0.910833</metric>
+</metrics>
+</build>

@@ -1,0 +1,176 @@
+Introduction
+============
+PyAnnolib is a Python library for reading Electric Cloud's emake
+(Electric Accelerator) annotation file, an XML log of what happened
+during a build.
+
+It was created by Gilbert Ramirez <gilramir@cisco.com>, and
+Cisco has given permission to release this library to the open
+source community under a BSD-style license (see the LICENSE file).
+
+The source code for PyAnnolib can be found at the Electric Cloud
+github community for Electric Accelerator:
+
+https://github.com/electriccommunity/electricaccelerator
+
+Caveats
+=======
+This is a work in progress. It works for the original author's
+use-cases, which is building with GNU Make on Linux. Certain
+fields that are used on Windows-based builds have not yet
+been implemented, but can definitely be added.
+
+
+Usage
+=====
+Because the annotation file can be huge, and your Python program
+may not want or be able to store all records in memory at once,
+PyAnnolib is designed to pass each Job record to your
+program, one at a time. Your program may throw away the record,
+or it may store it in memory, as you see fit.
+
+If you do wish to have all records in memory at once, there is a
+convenience function to do that for you.
+
+There are sample programs in the top level directory of this
+distribution so you can see how to use PyAnnolib
+
+Importing
+---------
+from pyannolib import annolib
+
+AnnotatedBuild(filename, fh=None)
+----------------------------------
+This class models one entire build. You can pass it a filename,
+or an open filehandle:
+
+    build = AnnotatedBuild(my_filename)
+    or
+    build = AnnotatedBuild(filename=None, fh=my_fh)
+
+The initialize will read the header of the annotation file.
+
+The AnnotatedBuild has data associated with it (metrics), and contains many
+Job records, which can be retreived, one at a time, via parseJobs()
+
+The Metrics can only be accessed after parseJobs() has finished
+reading all the Jobs. This is because the Metrics are stored
+at the very end of the annotation file.
+
+Methods:
+
+getBuildID():
+getCM():
+getStart():
+getProperties():
+getVars():
+    Retrieve these values.
+
+getMetrics():
+    Returns the hash of metrics that were recorded for the build.
+
+
+parseJobs(cb)
+
+    For each Job record in the XML file, runs the callback function
+    (cb), passing it that Job object. If the annotation file has
+    many thousands of Jobs and you do not with to store them all
+    in memory at once, this function lets you handle each Job
+    object one at aa time.
+
+
+getAllJobs()
+
+    Returns a list of all Job objects in the annotation file.
+    This loads all Job objects in memory at once, so if your
+    annotation file is extremely huge, you might have to worry
+    about memory size here.
+
+close()
+    Closes the filehandle. If you had AnnotatedBuild open the
+    filehandle for you, you may want it to close it as well.
+
+*NOTE*
+
+    At some point in the future a generator function might be added
+    to make it easier to retrieve Job records one at a time, without
+    having to use a call-back. But the current implementation of
+    pyannolib uses the XML SAX parser in a way that makes it
+    impossible to use 'yield' to return Job records iteratively.
+    Using xml.sax.xmlreader.IncrementalParser as the XML reader
+    might allow us to create a generator. But, as it is a minor nit,
+    don't expect any work on this soon.
+
+Job
+---
+getID()
+getThread()
+getType()
+getTiming()
+getMakeProcess()
+getWaitingJobs()
+getOutput()
+getOPList()
+getCommand()
+getDepList()
+getConflict()
+    Retrieve these values.
+
+
+MakeProcess
+-----------
+getLevel():
+getCmd():
+getCWD():
+getOWD():
+getMode():
+    Retrieve these values.
+
+Operation
+---------
+getType()
+getFile()
+getFileType()
+getFound()
+    Retrieve these values.
+
+Timing
+------
+getInvoked()
+getCompleted()
+getNode()
+    Retrieve these values.
+
+Command
+-------
+TBD
+
+Dependency
+----------
+TBD
+
+Conflict
+--------
+TBD
+
+Developing
+==========
+
+To run the unit test, run:
+
+$ ./unittest
+
+When it is run under Jenkins, it will save the test results
+to a file named "unittest.xml"
+
+
+Sample Scripts
+==============
+
+sample-jobs - This sample script shows a few details about the Build,
+and then shows some data for each "rule" Job that has Command
+objects associated with it. That is, these are the jobs that would
+normally appear in a Make log.
+
+sample-metrics - shows to how parse the file to get the metrics, and
+report them.
