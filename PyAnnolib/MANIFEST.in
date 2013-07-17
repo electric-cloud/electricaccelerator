@@ -1,0 +1,9 @@
+include LICENSE
+include DEVELOPMENT
+include docs/*
+include sample-jobs
+include sample-metrics
+include unittest
+include utfiles/*
+include utlib/*.py
+include utlib/*.zip
