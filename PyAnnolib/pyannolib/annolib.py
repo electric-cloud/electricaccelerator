@@ -1,3 +1,4 @@
+# Copyright (c) 2013 by Cisco Systems, Inc.
 """
 Handle the emake annotation file.
 """

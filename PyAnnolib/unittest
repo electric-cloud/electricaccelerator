@@ -1,4 +1,4 @@
-#!/router/bin/python-2.7.1
+#!/usr/bin/env python
 # Copyright (c) 2012 by Cisco Systems, Inc.
 
 import os
