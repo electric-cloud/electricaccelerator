@@ -12,7 +12,7 @@ class buildTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Parse the file once, for this entire class"""
-        annofile = os.path.join(util.UTFILES_DIR, "make-3.82.xml")
+        annofile = os.path.join(util.UTFILES_DIR, "make-3.82-emake-5.3.0.xml")
         cls.build = annolib.AnnotatedBuild(annofile)
 
         cls.jobs = []
