@@ -1,2 +1,5 @@
-make-3.82.xml - full build of GNU Make 3.82
+make-3.82-emake-5.3.0.xml - full build of GNU Make 3.82 with emake 5.3.0
+                    annodetail=file,history,waiting
+
+make-3.82-emake-7.0.0.xml - full build of GNU Make 3.82 with emake 7.0.0
                     annodetail=file,history,waiting
