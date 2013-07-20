@@ -111,7 +111,7 @@ getType()
 getTiming()
 getMakeProcess()
 getWaitingJobs()
-getOutput()
+getOutputs()
 getOPList()
 getCommand()
 getDepList()
@@ -155,19 +155,20 @@ Conflict
 --------
 TBD
 
+Output
+------
+getText()
+getSrc()
+
 Developing
 ==========
-
-To run the unit test, run:
-
-$ ./unittest
-
-When it is run under Jenkins, it will save the test results
-to a file named "unittest.xml"
+Read the DEVELOPMENT text file.
 
 
 Sample Scripts
 ==============
+
+sample-errors - This shows the jobs that failed.
 
 sample-jobs - This sample script shows a few details about the Build,
 and then shows some data for each "rule" Job that has Command

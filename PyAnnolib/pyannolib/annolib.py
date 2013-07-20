@@ -377,7 +377,7 @@ class Job:
         self.status = xmlattrs.get(self.STATUS, JOB_STATUS_NORMAL)
         self.thread = xmlattrs[self.THREAD]
         self.type = xmlattrs[self.TYPE]
-        self.output = None
+        self.outputs = []
         self.make = None
         self.timing = None
         self.oplist = []
@@ -393,8 +393,8 @@ class Job:
     def __str__(self):
         return "<Job id=%s>" % (self.job_id,)
 
-    def setOutput(self, output):
-        self.output = output
+    def addOutput(self, output):
+        self.outputs.append(output)
 
     def setOpList(self, op_elements):
         self.oplist = op_elements
@@ -435,8 +435,8 @@ class Job:
     def getType(self):
         return self.type
 
-    def getOutput(self):
-        return self.output
+    def getOutputs(self):
+        return self.outputs
 
     def getOperations(self):
         return self.oplist
@@ -514,17 +514,13 @@ class Command:
         # "line" is optional
         self.line = xmlattrs.get(self.LINE)
         self.argv = ""
-        self.output = ""
-        self.output_src = None
+        self.outputs = []
 
     def setArgv(self, text):
         self.argv = text
 
-    def setOutput(self, text):
-        self.output = text
-
-    def setOutputSrc(self, text):
-        self.output_src = text
+    def addOutput(self, output):
+        self.outputs.append(output)
 
     def getLine(self):
         return self.line
@@ -532,11 +528,20 @@ class Command:
     def getArgv(self):
         return self.argv
 
-    def getOutput(self):
-        return self.output
+    def getOutputs(self):
+        return self.outputs
 
-    def getOutputSrc(self):
-        return self.output_src
+class Output:
+    def __init__(self, text, src):
+        self.text = text
+        self.src = src
+
+    def getText(self):
+        return self.text
+
+    def getSrc(self):
+        return self.src
+
 
 class Dependency:
     WRITE_JOB = "writejob"
@@ -596,7 +601,7 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
         # so this list of make_elem's is a stack.
         self.make_elem = []
         self.job_elem = None
-        self.output_text = None
+        self.output_src = None
         self.op_elements = None
 
         self.metrics = None
@@ -619,9 +624,6 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
         elif name == self.ELEMENT_JOB:
             self.job_elem = Job(xmlattrs)
 #            print self.job_elem
-
-        elif name == self.ELEMENT_OUTPUT:
-            self.output_text = ""
 
         elif name == self.ELEMENT_OPLIST:
             self.op_elements = []
@@ -649,10 +651,9 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
             self.job_elem.addCommand(self.command)
 
         elif name == self.ELEMENT_OUTPUT:
-            assert self.command
-            if xmlattrs.has_key(self.ATTR_OUTPUT_SRC):
-                output_src = xmlattrs.get(self.ATTR_OUTPUT_SRC, OUTPUT_SRC_MAKE)
-                self.command.setOutputSrc(output_src)
+            assert self.command or self.job_elem
+            self.output_src = xmlattrs.get(self.ATTR_OUTPUT_SRC,
+                    OUTPUT_SRC_MAKE)
 
         elif name == self.ELEMENT_CONFLICT:
             conflict = Conflict(xmlattrs)
@@ -692,11 +693,25 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
             self.make_elem.pop()
 
         elif name == self.ELEMENT_OUTPUT:
-            self.output_text = self.chars
+            assert self.command or self.job_elem
+            output_text = self.chars
+            output = Output(output_text, self.output_src)
+
+            # Add to a command
+            if self.command:
+                assert self.job_elem
+                self.command.addOutput(output)
+            else:
+                # Add to a job, which is a parent of a command,
+                # so no current command
+                assert not self.command
+                self.job_elem.addOutput(output)
+
+            # Re-set value
+            self.output_src = None
 
         elif name == self.ELEMENT_JOB:
             assert len(self.make_elem) > 0
-            self.job_elem.setOutput(self.output_text)
 
             # We are somewhat rigrous here. We could initialize
             # op_elements to [] at the beginning of a Job,
@@ -728,10 +743,6 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
         elif name == self.ELEMENT_ARGV:
             assert self.command
             self.command.setArgv(self.chars)
-
-        elif name == self.ELEMENT_OUTPUT:
-            assert self.command
-            self.command.setOutput(self.chars)
 
         elif name == self.ELEMENT_COMMAND:
             assert self.command

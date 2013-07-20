@@ -89,6 +89,7 @@ class Timing:
 class Command:
 class Dependency:
 class Conflict:
+class Output:
 
     These classes are one-to-one mappings to the associated records
     in the annotation file.

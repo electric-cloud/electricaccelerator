@@ -1,6 +1,7 @@
 include LICENSE
 include DEVELOPMENT
 include docs/*
+include sample-errors
 include sample-jobs
 include sample-metrics
 include unittest

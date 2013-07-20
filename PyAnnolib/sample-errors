@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """
-This sample programs shows the rules jobs that have
-commands, with a bit of detail about reads/writes.
+This sample programs shows the jobs that failed in a build.
 """
 
 import argparse
@@ -16,14 +15,15 @@ def run(filename):
     print "Build ID:", build.getBuildID()
     props = build.getProperties()
     print "CWD:", props["CWD"]
-    print "AnnoDetail:", props["AnnoDetail"]
-
 
     def job_cb(job):
         global num_jobs
         num_jobs += 1
 
         if job.getType() not in [annolib.JOB_TYPE_RULE]:
+            return
+
+        if job.getRetval() == 0:
             return
 
         if not job.getCommands():
@@ -80,7 +80,7 @@ def run(filename):
 
 
     build.parseJobs(job_cb)
-    print "Total number of jobs:", num_jobs
+
 
 def main():
     parser = argparse.ArgumentParser()
