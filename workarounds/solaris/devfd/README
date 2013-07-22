@@ -1,0 +1,109 @@
+Copyright (c) 2013, Electric Cloud, Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+(As an historical note, the above license instantiates
+the "BSD 2-Clause License" template that was presented
+by the Open Source Initiative at
+
+  http://opensource.org/licenses/bsd-license.php
+
+on 2013-07-22.)
+
+
+Introduction:
+
+Workaround to access /dev/fd/N inside a chrooted Solaris 10 lofs filesystem.
+
+Build the workaround with the provided makefile or use one of the prebuilt
+shared object libraries:
+
+    libdevfd-sparc.so (Solaris 10 SPARC)
+    libdevfd-x86.so   (Solaris 10 x86)
+
+Use the workaround by preloading the shared object library in the command that
+must access /dev/fd/N inside of a chrooted lofs filesystem.  For example, the
+Solaris 10 "dtrace" command communicates with "ld" using /dev/fd/N.  Replace:
+
+    dtrace ...
+
+with
+
+    LD_PRELOAD_32=$DIR/libdevfd.so dtrace ...
+
+For details on how the workaround works, see "devfd.c".
+
+
+Background:
+
+To demonstrate the regression of the lofs filesystem between
+Solaris 9 and 10, run "regression.sh" as root on each system:
+
+Solaris 9 SPARC:
+
+# /bin/sh regression.sh
++ uname -a 
+SunOS mustang5 5.9 Generic_118558-34 sun4u sparc SUNW,Sun-Fire-V240
++ mkdir /tmp/testmnt 
++ mount -F lofs / /tmp/testmnt 
++ truss -o truss.log cat /tmp/testmnt/dev/fd/4 
++ umount /tmp/testmnt 
++ rmdir /tmp/testmnt 
++ grep /dev/fd/4 truss.log 
+open64("/tmp/testmnt/dev/fd/4", O_RDONLY)	= 3
+
+Solaris 10 SPARC:
+
+# /bin/sh regression.sh
++ uname -a 
+SunOS mustang6 5.10 Generic_142909-17 sun4u sparc SUNW,Sun-Fire-V240
++ mkdir /tmp/testmnt 
++ mount -F lofs / /tmp/testmnt 
++ truss -o truss.log cat /tmp/testmnt/dev/fd/4 
+cat: cannot open /tmp/testmnt/dev/fd/4
++ umount /tmp/testmnt 
++ rmdir /tmp/testmnt 
++ grep /dev/fd/4 truss.log 
+open64("/tmp/testmnt/dev/fd/4", O_RDONLY)	Err#6 ENXIO
+
+Solaris 10 x86:
+
+# /bin/sh regression.sh
++ uname -a 
+SunOS solx1-ea1 5.10 Generic_142910-17 i86pc i386 i86pc
++ mkdir /tmp/testmnt 
++ mount -F lofs / /tmp/testmnt 
++ truss -o truss.log cat /tmp/testmnt/dev/fd/4 
+cat: cannot open /tmp/testmnt/dev/fd/4
++ umount /tmp/testmnt 
++ rmdir /tmp/testmnt 
++ grep /dev/fd/4 truss.log 
+open64("/tmp/testmnt/dev/fd/4", O_RDONLY)	Err#6 ENXIO
+
+This regression can cause trouble when you chroot to
+a Solaris 10 lofs filesystem and then try to access /dev/fd/N.
+
+
