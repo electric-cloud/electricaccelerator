@@ -41,8 +41,10 @@ Workaround to access /dev/fd/N inside a chrooted Solaris 10 lofs filesystem.
 Build the workaround with the provided makefile or use one of the prebuilt
 shared object libraries:
 
-    libdevfd-sparc.so (Solaris 10 SPARC)
-    libdevfd-x86.so   (Solaris 10 x86)
+       libdevfd-sun4u-32.so (Solaris 10 SPARC 32-bit)
+       libdevfd-sun4u-64.so (Solaris 10 SPARC 64-bit)
+       libdevfd-i86pc-32.so (Solaris 10 x86 32-bit)
+       libdevfd-i86pc-64.so (Solaris 10 x86 64-bit)
 
 Use the workaround by preloading the shared object library in the command that
 must access /dev/fd/N inside of a chrooted lofs filesystem.  For example, the
@@ -52,9 +54,19 @@ Solaris 10 "dtrace" command communicates with "ld" using /dev/fd/N.  Replace:
 
 with
 
-    LD_PRELOAD_32=$DIR/libdevfd.so dtrace ...
+    LD_PRELOAD_32=$DIR/libdevfd-sun4u-32.so \
+    LD_PRELOAD_64=$DIR/libdevfd-sun4u-64.so dtrace ...
 
-For details on how the workaround works, see "devfd.c".
+
+    LD_PRELOAD_32=./libdevfd-sun4u-32.so \
+    LD_PRELOAD_64=./libdevfd-sun4u-64.so cat /tmp/testmnt/dev/fd/4
+
+or
+
+    LD_PRELOAD_32=$DIR/libdevfd-i86pc-32.so \
+    LD_PRELOAD_64=$DIR/libdevfd-i86pc-64.so dtrace ...
+
+as appropriate.  For details on how the workaround works, see "devfd.c".
 
 
 Background:

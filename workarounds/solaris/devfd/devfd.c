@@ -66,8 +66,7 @@
  * to do so.  Thus there is no narrowing of the capabilities provided
  * by the program that created the file descriptor being dup()-ed.
  *
- * Currently this shared object library intercepts only the open()
- * function, and not other system functions that may bypass open().
+ * We have no way to properly convert calls to freopen or freopen64.
  *
  * This shared library may interfere with other programs that
  * intercept system calls in user space, such as electrify.
@@ -85,31 +84,84 @@
 #include <strings.h>
 
 
-/* Print the context, then dlerror(), then exit(1).
+/* If the given path is "/dev/fd/N" for some int N >= 0,
+ * then return N; otherwise return -1.
  */
-static void dldie(const char *context)
+static int parse_path(char const *path)
 {
-    char const *err = dlerror();
-    if (! err) {
-        err = "dlerror returned NULL";
+    int saved_ern;
+    int fd;
+    char const *file;
+    char *ep;
+
+    if (strncmp(path, "/dev/fd/", 8) != 0) {
+        return -1;
     }
-    fprintf(stderr, "%s: %s\n", context, err);
-    exit(1);
+    file = path + 8;
+
+    saved_ern = errno;
+    errno = 0;
+    fd = strtol(file, &ep, 10);
+    if (errno || ep == file || *ep || fd < 0) {
+        fd = -1;
+    }
+    errno = saved_ern;
+
+    return fd;
 }
 
 
-/* Print the context, then strerror(errno), then exit(1).
+/* If we have not previously looked up the next definition of the given
+ * symbol after the hook that we define ourselves, then do so and cache
+ * the result in *cached_next.
+ *
+ * Accesses to pointer variables should be atomic, and therefore we
+ * should see either NULL or a valid pointer when reading *cached_next,
+ * meaning that a redundant lookup is the worst effect of a race.
+ *
+ * (You might add memory barrier instructions to speed up the pace at which
+ * a cache update propagates to other processors, but first note how likely
+ * it is that this function will be called by the first thread before it
+ * creates the second thread.  Memory barriers might actually slow things.)
  */
-static void endie(char const *context)
+static void *get_sym(void **cached_next, char const *name)
 {
-    perror(context);
-    exit(1);
+    void *next = *cached_next;
+
+    if (! next) {
+        next = dlsym(RTLD_NEXT, name);
+        if (! next) {
+            char const *err = dlerror();
+            if (! err) {
+                err = "dlerror returned NULL";
+            }
+            fprintf(stderr, "%s\n", err);
+            exit(1);
+        }
+        *cached_next = next;
+    }
+
+    return next;
 }
 
 
-/* The type of the "open" function.
+/* For functions similar to "open", set variable MODE to 0 unless the
+ * variable FLAGS indicate a third argument was passed, in which case
+ * extract that optional third argument.  MODE cannot be "ap".
  */
-typedef int open_t(const char *, int, ...);
+#define GET_OPEN_MODE(MODE, FLAGS)              \
+    MODE = 0;                                   \
+    if (FLAGS & O_CREAT) {                      \
+        va_list ap;                             \
+        va_start(ap, FLAGS);                    \
+        MODE = va_arg(ap, mode_t);              \
+        va_end(ap);                             \
+    }
+
+
+/* The type of the "open" function (both 32-bit and 64-bit).
+ */
+typedef int open_t(char const *, int, ...);
 
 /* Forward declaration to ensure we match the function signature exactly.
  */
@@ -119,51 +171,146 @@ open_t open;
  * the libc open() function, but if the specified path is "/dev/fd/N"
  * then short-circuits to dup().
  */
-int open(const char *path, int flags, ...)
+int open(char const *path, int flags, ...)
 {
-    static open_t *cached_open = 0;
-    open_t *original_open;
-    int original_fd;
+    static void *cached_next = 0;
+    open_t *next;
     mode_t mode;
-    va_list ap;
+    int original_fd;
 
-    /* Do not even attempt to access the mode argument unless
-     * we know that the caller (should have) supplied it.
-     */
-    mode = 0;
-    if (flags & O_CREAT) {
-        va_start(ap, flags);
-        mode = va_arg(ap, mode_t);
-        va_end(ap);
-    }
+    GET_OPEN_MODE(mode, flags)
 
-    /* If we have not previously looked up the next "open" after this one,
-     * then do so and cache the result.  Accesses to pointer variables should
-     * be atomic, and therefore we should see either NULL or a valid pointer,
-     * meaning that a redundant lookup is the worst effect of a race.
-     *
-     * (You might add memory barrier instructions to speed up the pace at which
-     * a cache update propagates to other processors, but first note how likely
-     * it is that this function will be called by the first thread before it
-     * creates the second thread.  Memory barriers might actually slow things.)
-     */
-    original_open = cached_open;
-    if (! original_open) {
-        original_open = dlsym(RTLD_NEXT, "open");
-        cached_open = original_open;
-    }
-
-    if (strncmp(path, "/dev/fd/", 8) != 0) {
-        /* Not opening /dev/fd/N, so pass through to next "open".
-         */
-        return (*original_open)(path, flags, mode);
-    }
-
-    errno = 0;
-    original_fd = atoi(path + 8);
-    if (errno) {
-        endie(path);
+    original_fd = parse_path(path);
+    if (original_fd == -1) {
+        next = get_sym(&cached_next, "open");
+        return (*next)(path, flags, mode);
     }
 
     return dup(original_fd);
 }
+
+#if _FILE_OFFSET_BITS == 32
+
+open_t open64;
+
+int open64(char const *path, int flags, ...)
+{
+    static void *cached_next = 0;
+    open_t *next;
+    mode_t mode;
+    int original_fd;
+
+    GET_OPEN_MODE(mode, flags)
+
+    original_fd = parse_path(path);
+    if (original_fd == -1) {
+        next = get_sym(&cached_next, "open64");
+        return (*next)(path, flags, mode);
+    }
+
+    return dup(original_fd);
+}
+
+#endif
+
+
+/* The type of the "openat" function (both 32-bit and 64-bit).
+ */
+typedef int openat_t(int fd, char const *, int, ...);
+
+openat_t openat;
+
+int openat(int fd, char const *path, int flags, ...)
+{
+    static void *cached_next = 0;
+    openat_t *next;
+    mode_t mode;
+    int original_fd;
+
+    GET_OPEN_MODE(mode, flags)
+
+    original_fd = parse_path(path);
+    if (original_fd == -1) {
+        next = get_sym(&cached_next, "openat");
+        return (*next)(fd, path, flags, mode);
+    }
+
+    return dup(original_fd);
+}
+
+#if _FILE_OFFSET_BITS == 32
+
+openat_t openat64;
+
+int openat64(int fd, char const *path, int flags, ...)
+{
+    static void *cached_next = 0;
+    openat_t *next;
+    mode_t mode;
+    int original_fd;
+
+    GET_OPEN_MODE(mode, flags)
+
+    original_fd = parse_path(path);
+    if (original_fd == -1) {
+        next = get_sym(&cached_next, "openat64");
+        return (*next)(fd, path, flags, mode);
+    }
+
+    return dup(original_fd);
+}
+
+#endif
+
+
+/* The type of the "fopen" function (both 32-bit and 64-bit).
+ */
+typedef FILE *fopen_t(char const *path, char const *mode);
+
+fopen_t fopen;
+
+FILE *fopen(char const *path, char const *mode)
+{
+    static void *cached_next = 0;
+    fopen_t *next;
+    int original_fd;
+    int duped_fd;
+
+    original_fd = parse_path(path);
+    if (original_fd == -1) {
+        next = get_sym(&cached_next, "fopen");
+        return (*next)(path, mode);
+    }
+
+    duped_fd = dup(original_fd);
+    if (duped_fd == -1) {
+        return NULL;
+    }
+    return fdopen(duped_fd, mode);
+}
+
+#if _FILE_OFFSET_BITS == 32
+
+fopen_t fopen;
+
+FILE *fopen64(char const *path, char const *mode)
+{
+    static void *cached_next = 0;
+    fopen_t *next;
+    int original_fd;
+    int duped_fd;
+
+    original_fd = parse_path(path);
+    if (original_fd == -1) {
+        next = get_sym(&cached_next, "fopen64");
+        return (*next)(path, mode);
+    }
+
+    duped_fd = dup(original_fd);
+    if (duped_fd == -1) {
+        return NULL;
+    }
+    return fdopen(duped_fd, mode);
+}
+
+#endif

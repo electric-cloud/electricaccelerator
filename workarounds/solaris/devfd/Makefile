@@ -33,15 +33,27 @@
 # on 2013-07-22.)
 
 CC = gcc
-CFLAGS = -m32 -O2 -Wall -fPIC
+CFLAGS = -O2 -Wall -Wextra -Werror -fPIC
 LD = /usr/ccs/bin/ld
+MACH := $(shell uname -m)
 
 .PHONY : all
 
-all : libdevfd.so
+all : libdevfd-$(MACH)-32.so libdevfd-$(MACH)-64.so
 
-libdevfd.so : devfd.o
+libdevfd-$(MACH)-32.so : devfd-$(MACH)-32.o
 	$(LD) -dy -G -o $@ $^
 
+libdevfd-$(MACH)-64.so : devfd-$(MACH)-64.o
+	$(LD) -dy -G -o $@ $^
+
+devfd-$(MACH)-32.o : CFLAGS += -m32 -D_FILE_OFFSET_BITS=32
+devfd-$(MACH)-32.o : devfd.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+devfd-$(MACH)-64.o : CFLAGS += -m64
+devfd-$(MACH)-64.o : devfd.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
 clean :
-	rm -f devfd.o libdevfd.so
+	rm -f devfd*.o libdevfd*.so
