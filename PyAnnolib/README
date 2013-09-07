@@ -70,7 +70,13 @@ getVars():
 
 getMetrics():
     Returns the hash of metrics that were recorded for the build.
+    These are only available after all the Jobs have been parsed.
 
+getMessages():
+    Returns the list of out-of-band messages that were emitted
+    during the build, if any. These are available during job
+    parsing, or afterwards. The Message records are interspersed
+    with the Job records.
 
 parseJobs(cb)
 
@@ -159,6 +165,16 @@ Output
 ------
 getText()
 getSrc()
+
+
+Message
+-------
+getText()
+getThread()
+getTime()
+getSeverity()
+getCode()
+
 
 Developing
 ==========

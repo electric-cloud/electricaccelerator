@@ -60,6 +60,12 @@ OP_ISDIR_FALSE = "0"
 OUTPUT_SRC_PROG = "prog"
 OUTPUT_SRC_MAKE = "make"
 
+
+# Message severities
+MESSAGE_SEVERITY_WARNING = "warning"
+MESSAGE_SEVERITY_ERROR = "error"
+
+
 class FinishedHeaderException(Exception):
     """This is used internally for AnnoXMLHeaderHandler to
     stop processing the XML file mid-stream and resume executing
@@ -76,9 +82,13 @@ class AnnotatedBuild:
         # Initialize this since it is used in __str
         self.build_id = None
 
-        # This is initialized now, but won't be read until
+        # This is initialized now, but won't be filled in until
         # the very end of the file.
         self.metrics = {}
+
+        # This is initialized now, but won't be filled in until
+        # the message records are seen while processing jobs
+        self.messages = []
 
         if filename:
             assert not fh, "filename and fh both given"
@@ -171,6 +181,9 @@ class AnnotatedBuild:
         come at the very end of the annotation file."""
         self.metrics = metrics
 
+    def addMessage(self, msg):
+        self.messages.append(msg)
+
     def getCM(self):
         return self.cm
 
@@ -188,6 +201,9 @@ class AnnotatedBuild:
 
     def getMetrics(self):
         return self.metrics
+
+    def getMessages(self):
+        return self.messages
 
     def parseJobs(self, cb):
         """Parse jobs and call the callback for each Job object."""
@@ -261,6 +277,7 @@ class AnnoXMLNames:
     ELEMENT_DEP = "dep"
     ELEMENT_FAILED = "failed"
     ELEMENT_CONFLICT = "conflict"
+    ELEMENT_MESSAGE = "message"
 
     # These attributes are handled by the AnnoXMLBodyHandler directly
     ATTR_WAITINGJOBS_IDLIST = "idList"
@@ -370,6 +387,10 @@ class Job:
     STATUS  ="status"
     THREAD = "thread"
     TYPE = "type"
+    NAME = "name"
+    NEEDED_BY = "neededby"
+    LINE = "line"
+    FILE = "file"
     SUCCESS = 0
 
     def __init__(self, xmlattrs):
@@ -377,6 +398,11 @@ class Job:
         self.status = xmlattrs.get(self.STATUS, JOB_STATUS_NORMAL)
         self.thread = xmlattrs[self.THREAD]
         self.type = xmlattrs[self.TYPE]
+        self.name = xmlattrs.get(self.NAME)
+        self.needed_by = xmlattrs.get(self.NEEDED_BY)
+        self.line = xmlattrs.get(self.LINE)
+        self.file = xmlattrs.get(self.FILE)
+
         self.outputs = []
         self.make = None
         self.timing = None
@@ -461,6 +487,19 @@ class Job:
 
     def getConflict(self):
         return self.conflict
+
+    def getName(self):
+        return self.name
+
+    def getNeededBy(self):
+        return self.needed_by
+
+    def getFile(self):
+        return self.file
+
+    def getLine(self):
+        return self.line
+
 
 class Operation:
     TYPE = "type"
@@ -586,6 +625,36 @@ class Conflict:
     def getRerunBy(self):
         return self.rerun_by
 
+class Message:
+    THREAD = "thread"
+    TIME = "time"
+    SEVERITY = "severity"
+    CODE = "code"
+
+    def __init__(self, xmlattrs):
+        self.thread = xmlattrs[self.THREAD]
+        self.time = xmlattrs[self.TIME]
+        self.severity = xmlattrs[self.SEVERITY]
+        self.code = xmlattrs[self.CODE]
+        self.text = None
+
+    def setText(self, text):
+        self.text = text
+
+    def getText(self):
+        return self.text
+
+    def getThread(self):
+        return self.thread
+
+    def getTime(self):
+        return self.time
+
+    def getSeverity(self):
+        return self.severity
+
+    def getCode(self):
+        return self.code
 
 class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
     """This sax parser handles the "body" portion of the annotation
@@ -668,6 +737,8 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
             code_int = int(code_text)
             self.job_elem.setRetval(code_int)
 
+        elif name == self.ELEMENT_MESSAGE:
+            self.msg = Message(xmlattrs)
 
         elif name in [
                 self.ELEMENT_BUILD,
@@ -694,8 +765,7 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
 
         elif name == self.ELEMENT_OUTPUT:
             assert self.command or self.job_elem
-            output_text = self.chars
-            output = Output(output_text, self.output_src)
+            output = Output(self.chars, self.output_src)
 
             # Add to a command
             if self.command:
@@ -727,7 +797,6 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
             self.cb(self.job_elem)
 
             self.job_elem = None
-            self.output_text = None
             self.op_elements = None
 
         elif name == self.ELEMENT_METRIC:
