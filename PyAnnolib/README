@@ -112,26 +112,31 @@ close()
 Job
 ---
 getID()
+getStatus()
 getThread()
 getType()
 getTiming()
 getMakeProcess()
 getWaitingJobs()
 getOutputs()
-getOPList()
-getCommand()
-getDepList()
+getOperations()
+getCommands()
+getDependencies()
 getConflict()
+getName()
+getNeededBy()
+getFile()
+getLine()
     Retrieve these values.
 
 
 MakeProcess
 -----------
-getLevel():
-getCmd():
-getCWD():
-getOWD():
-getMode():
+getLevel()
+getCmd()
+getCWD()
+getOWD()
+getMode()
     Retrieve these values.
 
 Operation
@@ -151,15 +156,22 @@ getNode()
 
 Command
 -------
-TBD
+getLine()
+getArgv()
+getOutputs()
 
 Dependency
 ----------
-TBD
+getWriteJob()
+getFile()
+getType()
 
 Conflict
 --------
-TBD
+getType()
+getWriteJob()
+getFile(0
+getRerunBy()
 
 Output
 ------
