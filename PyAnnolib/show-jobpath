@@ -52,6 +52,7 @@ def show_jobpath(target):
             if job:
                 path.append(job)
             else:
+                print "Could not find job for ID:", job_id
                 break
         else:
             break
@@ -61,7 +62,7 @@ def show_jobpath(target):
         if isinstance(item, annolib.MakeProcess):
             show_make(item)
         elif isinstance(item, annolib.Job):
-            show_job(job)
+            show_job(item)
         else:
             assert 0
 
