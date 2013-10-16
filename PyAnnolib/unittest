@@ -1,0 +1,19 @@
+#!/usr/bin/python
+# Copyright (c) 2013 by Cisco Systems, Inc.
+
+import os
+import unittest
+
+from utlib import jenkins
+
+# From each module, import the TestCase sub-class
+from utlib.build import buildTests
+from utlib.jobpath import jobpathTests
+
+
+if __name__ == "__main__":
+    # If we are running under Hudson/Jenkins, then output in JunitXML format
+    if os.environ.has_key("HUDSON_URL"):
+        jenkins.main(__name__, "unittest.xml")
+    else:
+        unittest.main(verbosity=2)

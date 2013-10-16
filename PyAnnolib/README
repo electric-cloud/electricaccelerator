@@ -127,6 +127,7 @@ getName()
 getNeededBy()
 getFile()
 getLine()
+getPartOf() - Used in FOLLOW-type jobs
     Retrieve these values.
 
 
@@ -138,6 +139,13 @@ getCWD()
 getOWD()
 getMode()
     Retrieve these values.
+
+getID() - This is an artifical ID, as it is not stored in the XML file.
+    The same is used in Electric Insight
+
+getParentJobID() - This is computed by the sequence of jobs in the XML
+    file. This is the job that started this "make process"
+
 
 Operation
 ---------
@@ -205,3 +213,8 @@ normally appear in a Make log.
 
 sample-metrics - shows to how parse the file to get the metrics, and
 report them.
+
+show-conflicts - shows the conflicting jobs in a build
+
+show-jobpath - shows the MakeProcess/Job hierarchy, like the "JobPath"
+    tab in ElectricInsight

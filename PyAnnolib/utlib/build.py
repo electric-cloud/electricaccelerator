@@ -15,12 +15,8 @@ class buildTests(unittest.TestCase):
         annofile = os.path.join(util.UTFILES_DIR, "make-3.82-emake-5.3.0.xml")
         cls.build = annolib.AnnotatedBuild(annofile)
 
-        cls.jobs = []
-        def job_cb(job):
-            cls.jobs.append(job)
-
-        # Collect all the jobs
-        cls.build.parseJobs(job_cb)
+        # Collect all the jobs (so that we have the metrics)
+        cls.jobs = cls.build.getAllJobs()
 
         cls.build.close()
 

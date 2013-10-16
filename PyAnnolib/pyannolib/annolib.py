@@ -356,15 +356,26 @@ class MakeProcess:
     OWD = "owd"
     MODE = "mode"
 
-    def __init__(self, xmlattrs):
+    def __init__(self, xmlattrs, id_num):
         self.level = xmlattrs[self.LEVEL]
         self.cmd = xmlattrs[self.CMD]
         self.cwd = xmlattrs[self.CWD]
         self.owd = xmlattrs.get(self.OWD) # implied, not required
         self.mode = xmlattrs[self.MODE]
 
+        # This is not stored as a field in the XML file; it is
+        # constructed by noting the sequential order of <job>'s
+        # and <make>'s  in the file. The <job> just previous to
+        # a <make> is the <make>'s parent job.
+        self.parent_job_id = None
+
+        self.make_proc_id = "M%08d" % (id_num,)
+
     def __str__(self):
         return "<MakeProcess level=%s cwd=%s>" % (self.level, self.cwd)
+
+    def setParentJobID(self, job_id):
+        self.parent_job_id = job_id
 
     def getLevel(self):
         return self.level
@@ -381,6 +392,12 @@ class MakeProcess:
     def getMode(self):
         return self.mode
 
+    def getParentJobID(self):
+        return self.parent_job_id
+
+    def getID(self):
+        return self.make_proc_id
+
 class Job:
 
     ID = "id"
@@ -392,6 +409,7 @@ class Job:
     LINE = "line"
     FILE = "file"
     SUCCESS = 0
+    PARTOF = "partof"   # for FOLLOW-type jobs
 
     def __init__(self, xmlattrs):
         self.job_id = xmlattrs[self.ID]
@@ -402,6 +420,7 @@ class Job:
         self.needed_by = xmlattrs.get(self.NEEDED_BY)
         self.line = xmlattrs.get(self.LINE)
         self.file = xmlattrs.get(self.FILE)
+        self.partof = xmlattrs.get(self.PARTOF)
 
         self.outputs = []
         self.make = None
@@ -499,6 +518,9 @@ class Job:
 
     def getLine(self):
         return self.line
+
+    def getPartOf(self):
+        return self.partof
 
 
 class Operation:
@@ -673,6 +695,15 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
         self.output_src = None
         self.op_elements = None
 
+        # The previous job element that was completely parsed
+        # This is needed to associate a "parent" job to a MakeProcess
+        self.prev_job_elem = None
+
+        # Make processes don't have ID's in the XML file. We give
+        # them sequential ID's according to the order we discover
+        # them in the XML file. The root <make> is #0.
+        self.make_proc_num = 0
+
         self.metrics = None
         self.metric_name = None
 
@@ -686,9 +717,22 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
         self.chars = ""
 
         if name == self.ELEMENT_MAKE:
-            make_elem = MakeProcess(xmlattrs)
-            self.make_elem.append(make_elem)
+            make_elem = MakeProcess(xmlattrs, self.make_proc_num)
+
+            self.make_proc_num += 1
+
+            # All <make>'s must be preceded by a <job>, except for the
+            # root <make>
+            ZERO = "0"
+            if make_elem.getLevel() != ZERO:
+                assert self.prev_job_elem
+                if self.prev_job_elem.getType() == JOB_TYPE_FOLLOW:
+                    make_elem.setParentJobID(self.prev_job_elem.getPartOf())
+                else:
+                    make_elem.setParentJobID(self.prev_job_elem.getID())
+
 #            print make_elem
+            self.make_elem.append(make_elem)
 
         elif name == self.ELEMENT_JOB:
             self.job_elem = Job(xmlattrs)
@@ -795,6 +839,9 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
             self.job_elem.setMakeProcess(self.make_elem[-1])
 
             self.cb(self.job_elem)
+
+            # Set the "previous job" to this job
+            self.prev_job_elem = self.job_elem
 
             self.job_elem = None
             self.op_elements = None
