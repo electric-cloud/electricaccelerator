@@ -216,5 +216,7 @@ report them.
 
 show-conflicts - shows the conflicting jobs in a build
 
+show-deps - shows the file dependency graph
+
 show-jobpath - shows the MakeProcess/Job hierarchy, like the "JobPath"
     tab in ElectricInsight

@@ -1,0 +1,104 @@
+#!/usr/bin/python
+"""
+Show the dependencies for any given target, or
+for the entire build
+"""
+
+import argparse
+import types
+
+from pyannolib import annolib
+
+class DAG:
+    def __init__(self):
+        # Key = node, Value = [dependencies]
+        self.edges = {}
+
+        # Nodes with no parents
+        self.root_nodes = []
+
+    def addNode(self, node):
+        if not self.edges.has_key(node):
+            self.edges[node] = []
+            self.root_nodes.append(node)
+
+    def addDeps(self, parent, children):
+        assert type(children) == types.ListType
+        if children:
+            self.edges[parent].extend(children)
+            for child in children:
+                if child in self.root_nodes:
+                    self.root_nodes.remove(child)
+
+    def printDAG(self):
+        for node in self.root_nodes:
+            self.printNodeDeps(node, 0)
+
+    def printNodeDeps(self, node, indent=0):
+        spaces = indent * "  "
+        print "%s%s" % (spaces, node)
+
+        # any dependencies?
+        if self.edges.has_key(node):
+            child_indent = indent + 1
+            children = self.edges[node]
+            children.sort()
+            for child in children:
+                self.printNodeDeps(child, child_indent)
+
+
+# All jobs
+jobs = []
+
+def run(filename, targets):
+
+    build = annolib.AnnotatedBuild(filename)
+
+    dag = DAG()
+
+    def add_to_graph(job):
+        """Add the job's file data to the DAG."""
+        if job.getType() != annolib.JOB_TYPE_RULE:
+            return
+
+#        show_job(job)
+        created = []
+        read = []
+        for op in job.getOperations():
+            if op.getType() == annolib.OP_TYPE_CREATE:
+                created.append(op.getFile())
+            elif op.getType() == annolib.OP_TYPE_RENAME:
+                # Not yet sure how to show renames
+#                created.append(op.getFile())
+                pass
+            elif op.getType() == annolib.OP_TYPE_READ:
+                read.append(op.getFile())
+            else:
+#                print op.getType(), op.getFile()
+                pass
+
+        for cfile in created:
+            dag.addNode(cfile)
+            dag.addDeps(cfile, read)
+
+    build.parseJobs(add_to_graph)
+
+    if targets:
+        for target in targets:
+            dag.printNodeDeps(target)
+    else:
+        dag.printDAG()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("annotation_file")
+    parser.add_argument("targets", nargs="*")
+
+    options = parser.parse_args()
+
+    run(options.annotation_file, options.targets)
+
+if __name__ == "__main__":
+    main()
