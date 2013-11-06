@@ -81,7 +81,7 @@ implements 	TaskExecutionListener, BuildListener,
 		void beforeTest(TestDescriptor testDescriptor){
 			long ts = iUniversalTime.timeInMs+1;
 			iTestTimestamps.put(testDescriptor, ts);
-			acquireThread(testDescriptor, ts);
+			acquireThread(testDescriptor.toString(), ts);
 			findParentSuite(testDescriptor, true, true);
 		}
 
@@ -104,7 +104,7 @@ implements 	TaskExecutionListener, BuildListener,
 			if(result.getFailedTestCount() > 0){
 				anno += "<failed code=\"1\"/>\n";
 			}
-			anno += "\t<timing invoked=\""+invokedStr+"\" completed=\""+completedStr+"\" node=\"Gradle-Thread-"+releaseThread(testDescriptor, completed)+"\"/>\n";
+			anno += "\t<timing invoked=\""+invokedStr+"\" completed=\""+completedStr+"\" node=\"Gradle-Thread-"+releaseThread(testDescriptor.toString(), completed)+"\"/>\n";
 			anno += "</job>\n";
 			writeAnno(anno);
 			iTestTimestamps.remove(testDescriptor);		
@@ -118,7 +118,7 @@ implements 	TaskExecutionListener, BuildListener,
 		void afterSuite(TestDescriptor suite, TestResult result){
 			long ts = iUniversalTime.timeInMs;
 			findParentSuite(suite, true, true);
-			//generateParseJob(iSuiteTimestamps.get(suite), ts, iTest.getPath()+": "+suite.getName()+": After Suite", false, releaseThread(suite, ts));
+			//generateParseJob(iSuiteTimestamps.get(suite), ts, iTest.getPath()+": "+suite.getName()+": After Suite", false, releaseThread(suite.toString(), ts));
 			iTaskTimestamps.put(iTest, ts+1);
 		}
 		
@@ -127,8 +127,12 @@ implements 	TaskExecutionListener, BuildListener,
 				TestDescriptor td = aTestDescriptor.getParent();
 				if(iSuiteTimestamps.containsKey(td)){
 					if(aGenerateAnno){
-						long ts = iUniversalTime.timeInMs;
-						generateParseJob(iSuiteTimestamps.get(td), ts, iTest.getPath()+": "+td.getName(), false);
+						if(iIsParallelTest){
+							generateParseJob(iSuiteTimestamps.get(td), iUniversalTime.timeInMs, iTest.getPath()+": "+td.getName(), false);						
+						}
+						else{
+							generateParseJob(iSuiteTimestamps.get(td), iUniversalTime.timeInMs, iTest.getPath()+": "+td.getName(), false, getThread(iTest));
+						}
 					}
 					if(aRemove){
 				        iSuiteTimestamps.remove(td);
@@ -157,7 +161,7 @@ implements 	TaskExecutionListener, BuildListener,
 			return anno;
 		}
 
-		private final void acquireThread(TestDescriptor aTestDescriptor, long aInvoked){
+		private final void acquireThread(String aTestDescriptor, long aInvoked){
 			synchronized(iThreadLock){
 				if(iIsParallelTest){
 					// there seems to be a bug (or odd/unexpected behaviour) in some 
@@ -165,31 +169,18 @@ implements 	TaskExecutionListener, BuildListener,
 					// callback being called without the test actually executing.
 					// Workaround below to only allow for one test being "active" 
 					// (i.e. owning a thread) at any given time
-					for(String s : iTestThreads.keySet()){
-						if(s.equals(aTestDescriptor.toString())){
-							int t = releaseThread(td, aInvoked-1);
-							println "*** WARNING: ${aTestDescriptor} already owned thread ${t}, thread released";
-						}
+					if(iTestThreads.containsKey(aTestDescriptor)){
+						releaseThread(aTestDescriptor, aInvoked-1);
 					}
-					int t = acquireThread(aInvoked);
-					iTestThreads.put(aTestDescriptor.toString(), t);
-					long ts = iUniversalTime.timeInMs;
-					println "*** ${ts}: Acquiring thread ${t} for ${aTestDescriptor}";
+					iTestThreads.put(aTestDescriptor, acquireThread(aInvoked));
 				}
 			}
 		}
-		private final int releaseThread(TestDescriptor aTestDescriptor, long aCompleted){
+		private final int releaseThread(String aTestDescriptor, long aCompleted){
 			synchronized(iThreadLock){
-				int t = iTestThreads.remove(aTestDescriptor.toString());
-				long ts = iUniversalTime.timeInMs;
-				println "***  ${ts}: Releasing thread ${t} for ${aTestDescriptor}";
-				return (iIsParallelTest) ? releaseThread(t, aCompleted) : getThread(iTest);
+				return (iIsParallelTest) ? releaseThread(iTestThreads.remove(aTestDescriptor), aCompleted) : getThread(iTest);
 			}
 		}
-//		private final int getThread(TestDescriptor aTestDescriptor){
-//			return iTestThreads.get(aTestDescriptor);
-//		}
-
 	}
 	
 	private class OutputListener implements StandardOutputListener {
@@ -245,9 +236,9 @@ implements 	TaskExecutionListener, BuildListener,
 		// if this is a test task we have already generated individual jobs for each test/suite
         String name = task.getPath();
 		if(task instanceof Test){
-			// TODO: 	what should be done with all the opList/waitingJobs 
-			//			information from the actual test task?
-			acquireThread(task, invoked);
+			if(((Test)task).getMaxParallelForks()>1){
+				acquireThread(task, invoked);
+			}
 			generateParseJob(invoked, completed, name+": After Test", false, getThread(task), generateOpList(task));
     		return;
 		}
@@ -439,42 +430,14 @@ implements 	TaskExecutionListener, BuildListener,
 		int i=0;
 		long lowestCompletionTime=Long.MAX_VALUE;
 		synchronized(iThreadLock){
-			println "********";
-			println "*** acquire for ${aInvoked}";
 			for(long l : iGradleThreads){	
-				String owner = "";
-				if(iTaskThreads.containsValue(i)){
-					for(Task t : iTaskThreads.keySet()){
-						if(iTaskThreads.get(t)==i){
-							owner = t.toString();
-							break;
-						}
-					}
-				}
-				if(owner.equals("") && iTestThreads.containsValue(i)){
-					for(String s : iTestThreads.keySet()){
-						if(iTestThreads.get(s)==i){
-							owner = s;
-							break;
-						}
-					}				
-				}
-				println "*** ${i}: ${l} - ${owner}";
 				if(l!=BUSY_THREAD && l<aInvoked){
-					println "**** ${l}<${aInvoked}";
 					if(l<lowestCompletionTime){
 						// this is now our lowest completion index
 						index = i;
 						lowestCompletionTime = l;					
-						println "***** index=${index}, lowestCompletionTime=${lowestCompletionTime}";
 						break;
 					}
-/*
-					else{
-						// remove all completed but redundant threads
-						iGradleThreads.remove(i);	
-					}
-*/
 				}
 				i++;
 			}
@@ -487,23 +450,15 @@ implements 	TaskExecutionListener, BuildListener,
 			else{
 				iGradleThreads.add(BUSY_THREAD);
 			}
-			println "*** acquired "+index+" for "+aInvoked;
-			println "********";
-			System.out.flush();
 		}
 		return index;
 	}
 	private final int releaseThread(int aThreadIndex, long aCompleted){
 		synchronized(iThreadLock){
-			println "********";
-			println "*** release ${aThreadIndex} with ${aCompleted}";
 			if(iGradleThreads.get(aThreadIndex) != BUSY_THREAD){
 				throw new Exception("Thread "+aThreadIndex+" is not busy");
 			}
 			iGradleThreads.set(aThreadIndex, aCompleted);
-			println "*** released "+aThreadIndex+" for "+aCompleted;
-			println "********";
-			System.out.flush();
 		}
 		return aThreadIndex;
 	}
