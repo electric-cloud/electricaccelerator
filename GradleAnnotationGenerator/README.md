@@ -12,10 +12,22 @@ The GradleAnnotationGenerator is a build visulization utility for Gradle-based b
 ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering build managers to pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each job on each parallel worker of the build infrastructure, for at-a-glance diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
 
 http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei
-http://www.electric-cloud.com/downloads/software.php?tab=eade&promo=Github_Gradle
+
+### Prerequisites
+1. ElectricInsight, which comes bundled with the freely available [ElectricAccelerator Developer Edition](http://www.electric-cloud.com/downloads/software.php?tab=eade&promo=Github_Gradle). (Gated behind a simple registration form)
+2. A gradle build
 
 ### Usage
-Download the init-generateanno.gradle script from this GitHub repository
+1. Download ElectricInsight which comes bundled with the freely available [ElectricAccelerator Developer Edition](http://www.electric-cloud.com/downloads/software.php?tab=eade&promo=Github_Gradle). (Gated behind a simple registration form)
+2. Retrieve the Gradle init-script available at this GitHub repository
+3. Add the --init-scipt/-I flag to load the [initialization script](http://www.gradle.org/docs/current/userguide/init_scripts.html) when running your gradle build:
+```
+<command-to-run-your-regular-gradle-build> --init-script <path-to-GradleAnnotationGenerator-init-script>
+```
+4. Open gradle.anno (the generated Gradle annotation file) with ElectricInsight:
+```
+einsight gradle.anno
+```
 
 ### Example Build Visualizations
 
