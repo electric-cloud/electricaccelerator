@@ -29,7 +29,7 @@ implements 	TaskExecutionListener, BuildListener,
     private HashMap<Task, Long> iTaskTimestamps;
     private HashMap<Task, OutputListener> iTaskLogs;
     private HashMap<Task, Integer> iTaskThreads;
-    private HashMap<TestDescriptor, Integer> iTestThreads;
+    private HashMap<String, Integer> iTestThreads;
     private HashMap<Project, Long> iProjectTimestamps;
     private ArrayList<Long> iGradleThreads;
    	private Object iThreadLock = new Object();
@@ -45,7 +45,7 @@ implements 	TaskExecutionListener, BuildListener,
 		iTaskTimestamps = new HashMap<Task, Long>();
 		iTaskLogs = new HashMap<Task, OutputListener>();
 		iTaskThreads = new HashMap<Task, Integer>();
-		iTestThreads = new HashMap<TestDescriptor, Integer>();
+		iTestThreads = new HashMap<String, Integer>();
 		iProjectTimestamps = new HashMap<Project, Long>();  
 		iGradleThreads = new ArrayList<Long>();
 		iGradleThreads.add(-1);
@@ -160,19 +160,29 @@ implements 	TaskExecutionListener, BuildListener,
 		private final void acquireThread(TestDescriptor aTestDescriptor, long aInvoked){
 			synchronized(iThreadLock){
 				if(iIsParallelTest){
-					if(iTestThreads.containsKey(aTestDescriptor)){
-						throw new Exception("Trying to acquire thread for TestDescriptor that already exists: ${aTestDescriptor}");
+					// there seems to be a bug (or odd/unexpected behaviour) in some 
+					// test scenarios where skipped/repeated tests leads to the beforeTest 
+					// callback being called without the test actually executing.
+					// Workaround below to only allow for one test being "active" 
+					// (i.e. owning a thread) at any given time
+					for(String s : iTestThreads.keySet()){
+						if(s.equals(aTestDescriptor.toString())){
+							int t = releaseThread(td, aInvoked-1);
+							println "*** WARNING: ${aTestDescriptor} already owned thread ${t}, thread released";
+						}
 					}
 					int t = acquireThread(aInvoked);
-					iTestThreads.put(aTestDescriptor, t);
-					println "*** Acquiring thread ${t} for ${aTestDescriptor}";
+					iTestThreads.put(aTestDescriptor.toString(), t);
+					long ts = iUniversalTime.timeInMs;
+					println "*** ${ts}: Acquiring thread ${t} for ${aTestDescriptor}";
 				}
 			}
 		}
 		private final int releaseThread(TestDescriptor aTestDescriptor, long aCompleted){
 			synchronized(iThreadLock){
-				int t = iTestThreads.remove(aTestDescriptor);
-				println "*** Releasing thread ${t} for ${aTestDescriptor}";
+				int t = iTestThreads.remove(aTestDescriptor.toString());
+				long ts = iUniversalTime.timeInMs;
+				println "***  ${ts}: Releasing thread ${t} for ${aTestDescriptor}";
 				return (iIsParallelTest) ? releaseThread(t, aCompleted) : getThread(iTest);
 			}
 		}
@@ -442,9 +452,9 @@ implements 	TaskExecutionListener, BuildListener,
 					}
 				}
 				if(owner.equals("") && iTestThreads.containsValue(i)){
-					for(TestDescriptor t : iTestThreads.keySet()){
-						if(iTestThreads.get(t)==i){
-							owner = t.toString();
+					for(String s : iTestThreads.keySet()){
+						if(iTestThreads.get(s)==i){
+							owner = s;
 							break;
 						}
 					}				
