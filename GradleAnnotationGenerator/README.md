@@ -1,5 +1,3 @@
-# WORK IN PROGRESS - contact drosen@electric-cloud.com for any questions
-
 # Gradle Build Visualization
 * Do you want to have better insight into what your Gradle build is doing, and when? 
 * Are you exploring the incubating parallel feature of Gradle and want to understand how well it is performing? 
@@ -8,7 +6,7 @@
 This GradleAnnotationGenerator project is the data generation part of an interactive build visulization utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei) from [Electric Cloud](http://www.electric-cloud.com). This functionality extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - allowing for more detailed understanding and  
 
 The below screenshot is from the gradle build of Gradle itself, more details [below](#examples):
-![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_Gradle_Anno_screenshot.png?raw=true "Visualization of the gradle Gradle build")
+![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
 
 ### ElectricInsight
 ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering build managers to pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each job on each parallel worker of the build infrastructure, for at-a-glance diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
@@ -29,23 +27,59 @@ ElectricInsight is a powerful tool to visually depict the structure of a softwar
 ###  <a name="examples"></a>Example Build Visualizations
 While working on this project I have used four gradle builds as my testbed and benchmark - [gradle](#example_gradle), [hibernate-orm](#example_hibernate), [spring-framework](#example_spring) and [griffon](#example_griffon). Interestingly, they all exhibit different behaviours and constraints with different workload dominating the total time by type - test execution (gradle), code analysis (hibernate-orm), Javadoc generation (spring-framework) and Java compiles (griffon).
 
-Below are further details and screenshots from my explorations:
+Below are further details and screenshots from my explorations. The following command-line were used for all projects:
 
-##### <a name="example_gradle"></a>Gradle
-The [Gradle](https://github.com/gradle/gradle) build is interesting because the workload is heavily dominated by testing, which is forked and hence triggers a large amount of parallelization. Interestingly though, it is the :docs:dslHtml task which is contributing to the longest serial chain during the test phase of the build. Question is if that task can be moved up earlier in execution graph, or perhaps even broken up in smaller parallelizable pieces.
-During my testing I have built the [Gradle 1.9-rc-2 codebase](http://services.gradle.org/distributions/gradle-1.9-rc-2-src.zip) which was failing in my environment due to some gcc test problems.
+```
+./gradlew --parallel --init-script <path-to-GradleAnnotationGenerator-init-script> clean build
+```
 
-##### <a name="example_hibernate"></a>Hibernate-ORM
-[Hibernate-ORM](https://github.com/hibernate/hibernate-orm)
+##### <a name="example_gradle"></a>gradle
+The [gradle](https://github.com/gradle/gradle) build is interesting because the workload is heavily dominated by testing, which is forked and hence triggers a large amount of parallelization. Interestingly though, it is the :docs:dslHtml task which is contributing to the longest serial chain during the test phase of the build. Question is if that task can be moved up earlier in execution graph, or perhaps even broken up in smaller parallelizable pieces.
 
-##### <a name="example_spring"></a>Spring Framework
-[Spring Framework](https://github.com/spring-projects/spring-framework)
+Workload Distribution:
+![Visualization of the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle gradle build")
+
+Job Time By type:
+![Job-time-by-type for the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_JobTimeByType.png?raw=true "Job-time-by-type for the gradle gradle build")
+
+During my testing I have built the [Gradle 1.9-rc-2 codebase](http://services.gradle.org/distributions/gradle-1.9-rc-2-src.zip) which was failing in my environment due to some gcc test problems. Clicking on the binoculars with a red cross gives a quick listing of all the failed tests:
+![Failed jobs in the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_FailedJobs.png?raw=true "Failed jobs in the gradle gradle build")
+
+##### <a name="example_hibernate"></a>hibernate-orm
+The first half of the [hibernate-orm](https://github.com/hibernate/hibernate-orm) build is dominated by parallel FindBugs workload, while the later half flattens out into a string of serial test workload.
+
+Workload Distribution:
+![Visualization of the gradle hibernate-orm build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_hibernate-orm_anno.png?raw=true "Visualization of the gradle hibernate-orm build")
+
+Job Time By type:
+![Job-time-by-type for the gradle hibernate-orm build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_hibernate-orm_JobTimeByType.png?raw=true "Job-time-by-type for the gradle hibernate-orm build")
+
+##### <a name="example_spring"></a>spring-framework
+The [spring-framework](https://github.com/spring-projects/spring-framework) build is dominated by parallel javadocs workload, where one of those jobs happens to fail in my environment.
+
+Workload Distribution:
+![Visualization of the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_anno.png?raw=true "Visualization of the gradle spring-framework build")
+
+Job Time By type:
+![Job-time-by-type for the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_JobTimeByType.png?raw=true "Job-time-by-type for the gradle spring-framework build")
+
+Let's use ElectricInsight to find out more about the failing javadoc-job. Clicking on the binoculars with a red cross gives a quick listing of all the failed tests, then clicking on that top job brings up a view with further details where I can see e.g. start/end-time, thread and also the exception that triggered the failure. 
+![Failed job details](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_FailedJobException.png?raw=true "Failed job details")
+
+Moving on to the Annotation tab gives even more details such as e.g. the job output and also all the read/written files.
+![Failed job output and read/written files](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_FailedJobOutputOpList.png?raw=true "Failed job output and read/written files")
 
 ##### <a name="example_griffon"></a>Griffon
-[Griffon](https://github.com/griffon/griffon)
+The [griffon](https://github.com/griffon/griffon) build is dominated by Java/Groovy compile time and codenarc analysis workload. It's a short build but still has quite a bit of serialization, so it seems could still be further shortened by more aggressive parallelization.
+
+Workload Distribution:
+![Visualization of the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_griffon_anno.png?raw=true "Visualization of the gradle griffon build")
+
+Job Time By type:
+![Job-time-by-type for the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_griffon_JobTimeByType.png?raw=true "Job-time-by-type for the gradle griffon build")
 
 ### Next Steps
-I think this project may be pretty useful as-is, but there are obviously a number of interesting extensions/improvements that could be considered. Off the top of my head, here are some:
+I think this project may be pretty useful as-is (it was certainly useful for me as a Gradle learning experience! :-)), but there are obviously a number of interesting extensions/improvements that could be considered fur the future. Off the top of my head, here are some:
 
 1. Thread Allocation
 
@@ -55,7 +89,9 @@ I think this project may be pretty useful as-is, but there are obviously a numbe
 
    Extend the generated annotation with all the dependency information available from the Gradle engine (e.g. [Task.getDependencies](http://www.gradle.org/docs/current/javadoc/org/gradle/api/Task.html#getTaskDependencies()) - there are some commented code in the init-script already touching on this). This additional information combined with more sophisticated structuring of e.g. the project-lifecycle and test-suites could allow for more sophisticated and interesting reporting (e.g. ElectricSimulator, Longest Chain). My thinking here would be to use the submake concept to represent such structural information.
 
-3. 
+3. Custom job categorization
+
+   It would be a nice feature to have ability to customize ElectricInsight job categorization.
 
 4. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
 
