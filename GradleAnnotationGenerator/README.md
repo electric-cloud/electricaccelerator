@@ -9,7 +9,7 @@ This screenshot is from the gradle build of Gradle itself, more details in the e
 ![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
 
 ## ElectricInsight
-ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering software and build engineers to easily pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each parallel worker of the build infrastructure, for at-a-glance visualization, analytics and diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
+ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering software and build engineers to easily pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each parallel worker of the build infrastructure - for at-a-glance visualization, analytics and diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
 
 ## <a name="prerequisites"></a>Prerequisites
 1. ElectricInsight, which comes bundled with the freely available [ElectricAccelerator Developer Edition](http://www.electric-cloud.com/downloads/software.php?tab=eade&promo=Github_Gradle). (Gated behind a simple registration form)
@@ -23,6 +23,8 @@ ElectricInsight is a powerful tool to visually depict the structure of a softwar
 4. Open gradle.anno (the generated Gradle annotation file) with ElectricInsight:
    ```einsight gradle.anno```
 5. From here you can interactively explore the ElectricInsight reporting and analysis engine for your gradle build, see some example findings and use-cases [below](#examples).
+
+If you lack a Gradle build environment but want to give this a try, go ahead and download some pre-existing annotation files [here](https://github.com/electriccommunity/electricaccelerator/tree/master/GradleAnnotationGenerator/annotations). 
 
 ##  <a name="examples"></a>Example Build Visualizations
 While working on this project I have used four gradle builds as my testbed and benchmark - [gradle](#example_gradle), [hibernate-orm](#example_hibernate), [spring-framework](#example_spring) and [griffon](#example_griffon). Interestingly, they all exhibit different behaviours and constraints with different workload dominating the total time by type - test execution (gradle), code analysis (hibernate-orm), Javadoc generation (spring-framework) and Java compiles (griffon).
