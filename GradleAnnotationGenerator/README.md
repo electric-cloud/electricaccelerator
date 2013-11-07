@@ -5,7 +5,7 @@
 
 This GradleAnnotationGenerator project is the data generation part of an interactive build visualization and analytics utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - enabling engineers to quickly get a visual understanding of the build performance while allowing build-masters to zoom and drill into all the gory details of how the build works, at millisecond resolution!   
 
-This screenshot is from the gradle build of Gradle itself, more details in the example section [below](#examples):
+This screenshot is from the gradle build of Gradle itself - where the Y-axis represents concurrent threads, the X-axis represents time and each box represents the workload as individual jobs (part of a task or a test). ElectricInsight categorizes jobs by type which is visualized by the colour-coding. More details in the example section [below](#examples):
 ![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
 
 ## ElectricInsight
