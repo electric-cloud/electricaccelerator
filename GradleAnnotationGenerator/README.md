@@ -3,7 +3,7 @@
 * Are you exploring the incubating parallel feature of Gradle and want to understand how well it is performing? 
 * Are you a Gradle plugin developer and want a better understanding on how your plugin performs when integrated into your Gradle builds? 
 
-This GradleAnnotationGenerator project is the data generation part of an interactive build visualization and analytics utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - enabling engineers to quickly get a visual understanding of the build performance while allowing build-masters to zoom and drill into all the gory details of how the build works, at millisecond resolution!   
+This GradleAnnotationGenerator project is the data generation part of an interactive build visualization and analytics utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - enabling engineers to quickly get a visual understanding of the build performance while allowing build-masters to zoom and drill into all the gory details of how the build works, at millisecond resolution!
 
 This screenshot is from the gradle build of Gradle itself - where the Y-axis represents concurrent threads, the X-axis represents time and each box represents the workload as individual jobs (part of a task or a test). ElectricInsight categorizes jobs by type which is visualized by the colour-coding. More details in the example section [below](#examples):
 ![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
@@ -102,11 +102,15 @@ I think this project may be pretty useful as-is (it was certainly useful for me 
 
    It seems Gradle has no current ability to capture stdout/stderr per task/test, at least not that I've been able to figure out. If you register an outputlistener of some kind, *all* output at the specified loglevel will be captured regardless of origin. It would obviously be very beneficial to have capability to separate and identify source of the output.
 
-4. Custom job categorization
+4. Live monitoring
+
+   ElectricInsight supports live monitoring of builds. Rather than write data to file it would not be too complex to write it to a socket connected to ElectricInsight. This would allow one to look at this project as a real time build monitor as well as a post-build analysis utility.
+
+5. Custom job categorization
 
    It would be a nice feature to have ability to customize ElectricInsight job categorization.
 
-5. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
+6. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
 
 ## Problems? / Issues? / Feedback?
 Please take note this proejct is not commercially supported by Electric Cloud. Any issues or problems are best discussed at http://ask.electric-cloud.com.
