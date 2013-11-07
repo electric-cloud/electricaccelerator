@@ -96,11 +96,15 @@ I think this project may be pretty useful as-is (it was certainly useful for me 
 
    Extend the generated annotation with all the dependency information available from the Gradle engine (e.g. [Task.getDependencies](http://www.gradle.org/docs/current/javadoc/org/gradle/api/Task.html#getTaskDependencies()) - there are some commented code in the init-script already touching on this). This additional information combined with more sophisticated structuring of e.g. the project-lifecycle and test-suites could allow for more sophisticated and interesting reporting (e.g. ElectricSimulator, Longest Chain). My thinking here would be to use the submake concept to represent such structural information.
 
-3. Custom job categorization
+3. Capturing stdout/stderr per job
+
+   It seems Gradle has no current ability to capture stdout/stderr per task/test, at least not that I've been able to figure out. If you register an outputlistener of some kind, *all* output at the specified loglevel will be captured regardless of origin. It would obviously be very beneficial to have capability to separate and identify source of the output.
+
+4. Custom job categorization
 
    It would be a nice feature to have ability to customize ElectricInsight job categorization.
 
-4. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
+5. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
 
 ## Problems? / Issues? / Feedback?
 Please take note this proejct is not commercially supported by Electric Cloud. Any issues or problems are best discussed at http://ask.electric-cloud.com.
