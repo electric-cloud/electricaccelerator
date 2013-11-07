@@ -1,15 +1,15 @@
-# Gradle Build Visualization
-* Do you want to have better insight into what your Gradle build is doing, and when? 
+# Gradle Build Visualization and Analytics
+* Do you want to have better insight into what your Gradle build is doing, and when?
 * Are you exploring the incubating parallel feature of Gradle and want to understand how well it is performing? 
 * Are you a Gradle plugin developer and want a better understanding on how your plugin performs when integrated into your Gradle builds? 
 
-This GradleAnnotationGenerator project is the data generation part of an interactive build visulization utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei) from [Electric Cloud](http://www.electric-cloud.com). This functionality extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - enabling engineers to get a detailed very quick visual understanding of the build performance while allowing build-masters to zoom and drill into all the gory details of how the build works, at millisecond resolution!   
+This GradleAnnotationGenerator project is the data generation part of an interactive build visulization and analytics utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This functionality extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - enabling engineers to quickly get a visual understanding of the build performance while allowing build-masters to zoom and drill into all the gory details of how the build works, at millisecond resolution!   
 
 The below screenshot is from the gradle build of Gradle itself, more details [below](#examples):
 ![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
 
 ## ElectricInsight
-ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering build managers to pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each job on each parallel worker of the build infrastructure, for at-a-glance diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
+ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering build managers to pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each parallel worker of the build infrastructure, for at-a-glance visualization, analytics and diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
 
 ## <a name="prerequisites"></a>Prerequisites
 1. ElectricInsight, which comes bundled with the freely available [ElectricAccelerator Developer Edition](http://www.electric-cloud.com/downloads/software.php?tab=eade&promo=Github_Gradle). (Gated behind a simple registration form)
@@ -101,5 +101,13 @@ I think this project may be pretty useful as-is (it was certainly useful for me 
    It would be a nice feature to have ability to customize ElectricInsight job categorization.
 
 4. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
+
+## Problems? / Issues? / Feedback?
+Please take note this proejct is not commercially supported by Electric Cloud. Any issues or problems are best discussed at http://ask.electric-cloud.com.
+Contributions are very welcome - please let me know if you have an interest to help.
+
+Lastly, I'm very interested in hearing your feedback!
+Email: drosen@electric-cloud.com
+Twitter: [@adr0sen](https://twitter.com/adr0sen)
 
 
