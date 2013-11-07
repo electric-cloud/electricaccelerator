@@ -40,8 +40,8 @@ The [gradle](https://github.com/gradle/gradle) build is interesting because the 
 ![Visualization of the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle gradle build")
 
 ##### Job Time By type:
-![Job-time-by-type for the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_JobTimeByType.png?raw=true "Job-time-by-type for the gradle gradle build")
 _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Miscellaneous", "Parse"=>"Gradle Overhead", "Java Compile", "Compile"=>"Codenarc/Checkstyle/Findbugs", "Code gen"=>"Javadoc"_
+![Job-time-by-type for the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_JobTimeByType.png?raw=true "Job-time-by-type for the gradle gradle build")
 
 ##### Quickly finding failed tasks/tests
 During my testing I have built the [Gradle 1.9-rc-2 codebase](http://services.gradle.org/distributions/gradle-1.9-rc-2-src.zip) which was failing in my environment due to some gcc test problems. Clicking on the binoculars with a red cross gives a quick listing of all the failed tests:
@@ -54,8 +54,8 @@ The first half of the [hibernate-orm](https://github.com/hibernate/hibernate-orm
 ![Visualization of the gradle hibernate-orm build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_hibernate-orm_anno.png?raw=true "Visualization of the gradle hibernate-orm build")
 
 ##### Job Time By type:
-![Job-time-by-type for the gradle hibernate-orm build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_hibernate-orm_JobTimeByType.png?raw=true "Job-time-by-type for the gradle hibernate-orm build")
 _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Miscellaneous", "Parse"=>"Gradle Overhead", "Java Compile", "Compile"=>"Codenarc/Checkstyle/Findbugs", "Code gen"=>"Javadoc"_
+![Job-time-by-type for the gradle hibernate-orm build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_hibernate-orm_JobTimeByType.png?raw=true "Job-time-by-type for the gradle hibernate-orm build")
 
 ### <a name="example_spring"></a>spring-framework
 The [spring-framework](https://github.com/spring-projects/spring-framework) build is dominated by parallel javadocs workload, where one of those jobs happens to fail in my environment.
@@ -64,8 +64,8 @@ The [spring-framework](https://github.com/spring-projects/spring-framework) buil
 ![Visualization of the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_anno.png?raw=true "Visualization of the gradle spring-framework build")
 
 ##### Job Time By type:
-![Job-time-by-type for the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_JobTimeByType.png?raw=true "Job-time-by-type for the gradle spring-framework build")
 _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Miscellaneous", "Parse"=>"Gradle Overhead", "Java Compile", "Compile"=>"Codenarc/Checkstyle/Findbugs", "Code gen"=>"Javadoc"_
+![Job-time-by-type for the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_JobTimeByType.png?raw=true "Job-time-by-type for the gradle spring-framework build")
 
 ##### Quickly finding reasons for failed tasks/tests
 Let's use ElectricInsight to find out more about the failing javadoc-job. Clicking on the binoculars with a red cross gives a quick listing of all the failed tests, then clicking on that top job brings up a view with further details where I can see e.g. start/end-time, thread and also the exception that triggered the failure. 
@@ -82,8 +82,8 @@ The [griffon](https://github.com/griffon/griffon) build is dominated by Java/Gro
 ![Visualization of the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_griffon_anno.png?raw=true "Visualization of the gradle griffon build")
 
 ##### Job Time By type:
-![Job-time-by-type for the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_griffon_JobTimeByType.png?raw=true "Job-time-by-type for the gradle griffon build")
 _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Miscellaneous", "Parse"=>"Gradle Overhead", "Java Compile", "Compile"=>"Codenarc/Checkstyle/Findbugs", "Code gen"=>"Javadoc"_
+![Job-time-by-type for the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_griffon_JobTimeByType.png?raw=true "Job-time-by-type for the gradle griffon build")
 
 ## Next Steps
 I think this project may be pretty useful as-is (it was certainly useful for me as a project to learn more about Gradle! :-)), but there are obviously a number of interesting extensions/improvements that could be considered fur the future. Off the top of my head, here are some:
