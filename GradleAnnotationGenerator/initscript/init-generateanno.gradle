@@ -276,7 +276,7 @@ implements 	TaskExecutionListener, BuildListener,
 		anno += "\t<output src=\"prog\">"+task.toString()+"\n"+generateTaskOutputAnno(task)+"</output>\n";
 		anno += "</command>\n";
 		anno += generateOpList(task);
-/*
+
 		// check if task has dependencies,
 		// if so iterate over all dependencies and get their id's
 		if(!task.getTaskDependencies().getDependencies(task).isEmpty()){
@@ -296,7 +296,7 @@ implements 	TaskExecutionListener, BuildListener,
 			}
 			anno += "\"/>\n";
 		}
-*/		
+		
 		if(task.getState().getFailure()){
 			anno += "<failed code=\"1\"/>\n";
 		}
