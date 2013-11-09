@@ -1,11 +1,7 @@
 # Gradle Build Visualization and Analytics
-* Do you want to have better insight into what your Gradle build is doing, and when?
-* Are you exploring the incubating parallel feature of Gradle and want to understand how well it is performing? 
-* Are you a Gradle plugin developer and want a better understanding on how your plugin performs when integrated into your Gradle builds? 
+The GradleAnnotationGenerator project is the data generation part of an interactive build visualization and analytics utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - enabling quick visual overview of build performance as well as ability for an engineer to really zoom in and dig deep in order to interactively understand behaviour, troubleshoot and optimize at millisecond resolution.
 
-This GradleAnnotationGenerator project is the data generation part of an interactive build visualization and analytics utility for [Gradle](http://www.gradle.org), based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) feature - enabling engineers to quickly get a visual understanding of the build performance while allowing build-masters to zoom and drill into all the gory details of how the build works, at millisecond resolution!
-
-This screenshot is from the gradle build of Gradle itself - where the Y-axis represents concurrent threads, the X-axis represents time and each box represents the workload as individual jobs (part of a task or a test). ElectricInsight categorizes jobs by type which is visualized by the colour-coding. More details in the example section [below](#examples):
+This is a sample screenshot of the parallel gradle-build of Gradle itself, where the Y-axis represents concurrent threads, the X-axis represents time and each box represents the workload (sections of a task or a test) as individual jobs. Jobs are categorized by type which is visualized by the colour-coding. More details in the example section [below](#examples):
 ![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
 
 ## ElectricInsight
@@ -16,7 +12,7 @@ ElectricInsight is a powerful tool to visually depict the structure of a softwar
 2. A gradle build running in your environment
 
 ## Usage
-1. Make sure you comply to the [prerequisites](#prerequisites)
+1. Make sure you meet the [prerequisites](#prerequisites)
 2. Retrieve the [Gradle init-script](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/initscript/init-generateanno.gradle) from this project
 3. Add the --init-scipt/-I flag to load the [initialization script](http://www.gradle.org/docs/current/userguide/init_scripts.html) when running your gradle build:
    ```<command-to-run-your-regular-gradle-build> --init-script <path-to-GradleAnnotationGenerator-init-script> <gradle-tasks>```
