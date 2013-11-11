@@ -268,7 +268,7 @@ implements 	TaskExecutionListener, BuildListener,
         else if(lcTaskPath.contains("javadoc")){
         	cmd += "bison";
         }
-		anno += "<job id=\"J"+getNextJobId()+"\" thread=\"\" type=\"rule\" name=\""+name+"\">\n";
+		anno += "<job id=\"J"+getJobId(task)+"\" thread=\"\" type=\"rule\" name=\""+name+"\">\n";
 
 		anno += "<command line=\"1\">\n";
 		anno += "\t<argv>"+cmd+"</argv>\n";
@@ -279,19 +279,19 @@ implements 	TaskExecutionListener, BuildListener,
 		// check if task has dependencies,
 		// if so iterate over all dependencies and get their id's
 		if(!task.getTaskDependencies().getDependencies(task).isEmpty()){
+//<depList>
+//<dep writejob="Jf2101390" file="/home/david/ElectricCloud/BD/20131025_Gradle/maketest/h2"/>
+//</depList>
 			anno += "\t<waitingJobs idList=\"";
 			boolean isFirst = true;
 			for(Task t : task.getTaskDependencies().getDependencies(task)){
-				if(!iTaskIds.containsKey(t)){
-					iTaskIds.put(t, getNextJobId());
-				}
 				if(isFirst){
 					isFirst = false;
 				}
 				else{
 					anno += " ";				
 				}
-				anno += "J"+iTaskIds.get(t);
+				anno += "J"+getJobId(t);
 			}
 			anno += "\"/>\n";
 		}
@@ -347,9 +347,10 @@ implements 	TaskExecutionListener, BuildListener,
     @Override
     void afterEvaluate(Project project, ProjectState state) {
     	long completed = iUniversalTime.timeInMs;
-		generateParseJob(iProjectTimestamps.get(project), completed, project.getPath()+": Project Evaluated", false);
+		generateParseJob(iProjectTimestamps.get(project), completed, project.getPath()+": Project Evaluated", false, getJobId(project));
         iProjectTimestamps.remove(project);
 		iLastEventCompletion = completed+1;
+		//project.getAllTasks(...)
     }
 
     @Override
@@ -400,13 +401,13 @@ implements 	TaskExecutionListener, BuildListener,
 		return anno;
 	}
 
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion){
-		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, getThread(aInvoked, aCompleted));
+	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId){
+		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, getThread(aInvoked, aCompleted));
 	}
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aThread){
-		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aThread, "");
+	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread){
+		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, aThread, "");
 	}	
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aThread, String aOpList){
+	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aOpList){
 		String anno = new String();
 	    // a job can not have a 0 ms runtime
 	    if(aCompleted <= aInvoked){
@@ -414,7 +415,7 @@ implements 	TaskExecutionListener, BuildListener,
 	    }
         String invokedStr = String.format("%4f", aInvoked/1000.0);
         String completedStr = String.format("%4f", aCompleted/1000.0);
-		anno += "<job id=\"J"+getNextJobId()+"\" thread=\"\" type=\"parse\" name=\""+aName+"\">\n";
+		anno += "<job id=\"J"+aJobId+"\" thread=\"\" type=\"parse\" name=\""+aName+"\">\n";
 		anno += aOpList;
 		anno += "\t<timing invoked=\""+invokedStr+"\" completed=\""+completedStr+"\" node=\"Gradle-Thread-"+aThread+"\"/>\n";
 		anno += "</job>\n";
@@ -489,7 +490,35 @@ implements 	TaskExecutionListener, BuildListener,
 
 	private final int getNextJobId(){
 		return iIdAtomicCounter.getAndIncrement();
-	}    
+	}
+	private final int setJobId(Task aTask){
+		synchronized(iIdLock){
+			return iTaskIds.put(aTask, getNextJobId());
+		}
+	}
+	private final int getJobId(Task aTask){
+		synchronized(iIdLock){
+			if(!iTaskIds.containsKey(aTask)){
+				setJobId(aTask);
+			}
+			return iTaskIds.get(aTask);
+		}
+	}
+	private final int getAndSetJobId(Task aTask){
+		synchronized(iIdLock){
+			int id = getJobId(aTask);
+			setJobId(aTask);
+			return id;
+		}
+	}
+	private final int getJobId(TestDescriptor aTestDescriptor){
+		synchronized(iIdLock){
+			if(!iTestIds.containsKey(aTestDescriptor)){
+				iTestIds.put(aTestDescriptor, getNextJobId());
+			}
+			return iTestIds.get(aTestDescriptor);
+		}
+	}	
 }
 
 gradle.addListener new ExecutionListener(gUniversalTime, gWriter);
