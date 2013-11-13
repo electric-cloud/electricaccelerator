@@ -65,6 +65,10 @@ OUTPUT_SRC_MAKE = "make"
 MESSAGE_SEVERITY_WARNING = "warning"
 MESSAGE_SEVERITY_ERROR = "error"
 
+class PyAnnolibError(Exception):
+    """Generic exception for any error this library wants
+    to pass back to the client"""
+    pass
 
 class FinishedHeaderException(Exception):
     """This is used internally for AnnoXMLHeaderHandler to
@@ -223,7 +227,10 @@ class AnnotatedBuild:
         parser.setFeature(xml.sax.handler.feature_external_ges, False)
 
         # Parse the file
-        parser.parse(self.fh)
+        try:
+            parser.parse(self.fh)
+        except xml.sax._exceptions.SAXParseException, e:
+            raise PyAnnolibError(e)
 
         # I thought I needed to close the parser here
         # with parser.close(), but it's throwing an exception.
@@ -532,7 +539,7 @@ class Operation:
 
     def __init__(self, xmlattrs):
         self.type = xmlattrs[self.TYPE]
-        self.file = xmlattrs[self.FILE]
+        self.file = xmlattrs.get(self.FILE)
         self.filetype = xmlattrs.get(self.FILETYPE, OP_FILETYPE_FILE)
         self.found = xmlattrs.get(self.FOUND, OP_FOUND_TRUE)
         self.isdir = xmlattrs.get(self.ISDIR, OP_ISDIR_TRUE)
