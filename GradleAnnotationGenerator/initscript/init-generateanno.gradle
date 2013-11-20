@@ -35,6 +35,7 @@ implements 	TaskExecutionListener, BuildListener,
     private HashMap<Project, Long> iProjectTimestamps;
 	private HashMap<Task, ArrayList<Integer>> iTaskDependencyLists;
     private ArrayList<Long> iGradleThreads;
+    private ArrayList<Integer> iProjectEvalIds;
    	private Object iThreadLock = new Object();
     private Object iWriteLock = new Object();
     private Object iIdLock = new Object();
@@ -53,9 +54,10 @@ implements 	TaskExecutionListener, BuildListener,
 		iTaskIds = Collections.synchronizedMap(new HashMap<Task, Integer>());
 		iTaskDependencyLists = Collections.synchronizedMap(new HashMap<Task, ArrayList<Integer>>());
 		iProjectTimestamps = Collections.synchronizedMap(new HashMap<Project, Long>());
+		iProjectEvalIds = new ArrayList<Integer>();
 		iGradleThreads = new ArrayList<Long>();
 		iGradleThreads.add(-1);
-		generateParseJob(0, iLastEventCompletion, "Annotation Listener Instantiated", true, getNextJobId());
+		generateJob(0, iLastEventCompletion, "parse", "Annotation Listener Instantiated", true);
 	}
 
 	private class AnnoTestListener implements TestListener {
@@ -99,27 +101,19 @@ implements 	TaskExecutionListener, BuildListener,
 
 		@Override
 		void afterTest(TestDescriptor testDescriptor, TestResult result){
-			String anno = new String();
 			long invoked = iTestDescriptorTimestamps.get(testDescriptor);
 		    long completed = iUniversalTime.timeInMs;
-		    // a job can not have a 0 ms runtime
-			if(completed <= invoked){
-		    	completed = invoked+1;
-		    }
-		    String invokedStr = String.format("%4f", invoked/1000.0);
-		    String completedStr = String.format("%4f", completed/1000.0);
-			anno += "<job id=\"J"+iTestDescriptorJobIds.get(testDescriptor)+"\" thread=\"\" type=\"rule\" name=\""+iTest.getPath()+": "+testDescriptor.getName()+".so\">\n";
-			anno += printTestCommandOutputFailedAnno(testDescriptor, result);
+		    int currentJobId = iTestDescriptorJobIds.get(testDescriptor);
+		    String name = iTest.getPath()+": "+testDescriptor.getName()+".so";
+		    String depList = "";
 			TestDescriptor parent = findParentSuite(testDescriptor, false);
 			if(parent){
-				anno += generateDepList(iTestDescriptorJobIds.get(parent));
+				depList += generateDepList(iTestDescriptorJobIds.get(parent));
 				iTestDescriptorTimestamps.put(parent, completed+1);
 				iTestDescriptorDependencyLists.get(parent).add(iTestDescriptorJobIds.get(testDescriptor));
 			}
-			anno += "\t<timing invoked=\""+invokedStr+"\" completed=\""+completedStr+"\" node=\"Gradle-Thread-"+releaseThread(testDescriptor.toString(), completed)+"\"/>\n";
-			anno += "</job>\n";
-			writeAnno(anno);
-			iTestDescriptorTimestamps.remove(testDescriptor);		
+			generateJob(invoked, completed, "rule", name, false, currentJobId, releaseThread(testDescriptor.toString(), completed), depList, "", "", generateTestCommandFailedAnno(testDescriptor, result));
+			iTestDescriptorTimestamps.remove(testDescriptor);	
 		}
 
 		@Override
@@ -129,7 +123,7 @@ implements 	TaskExecutionListener, BuildListener,
 			String name = iTest.getPath()+": "+suite.getName()+": After Suite";
 			int currentJobId = getNextJobId();
 			int thread = (iIsParallelTest)?(getThread(invoked, completed)):(getThread(iTest));
-			generateParseJob(invoked, completed, name, false, currentJobId, thread, generateDepList(iTestDescriptorDependencyLists.get(suite)), "", "", printTestCommandOutputFailedAnno(suite, result));
+			generateMiscJob(invoked, completed, name, false, currentJobId, thread, generateDepList(iTestDescriptorDependencyLists.get(suite)), "", "", generateTestCommandFailedAnno(suite, result));
 			TestDescriptor parent = findParentSuite(suite, false);
 			if(parent){
 				iTestDescriptorTimestamps.put(parent, completed+1);
@@ -152,7 +146,7 @@ implements 	TaskExecutionListener, BuildListener,
 						int thread = (iIsParallelTest)?(getThread(invoked, completed)):(getThread(iTest));
 						TestDescriptor parent = findParentSuite(td, false);
 						int parentId = (parent) ? iTestDescriptorJobIds.get(parent) : iTaskDependencyLists.get(iTest).get(0);
-						generateParseJob(invoked, completed, name, false, iTestDescriptorJobIds.get(td), thread, generateDepList(parentId));
+						generateMiscJob(invoked, completed, name, false, iTestDescriptorJobIds.get(td), thread, generateDepList(parentId));
 				        iBeforeSuiteJobNotExists.remove(td);
 					}
 			        return td;
@@ -162,7 +156,7 @@ implements 	TaskExecutionListener, BuildListener,
 			return null;
 		}
 		
-		private String printTestCommandOutputFailedAnno(TestDescriptor aTestDescriptor, TestResult aTestResult){
+		private String generateTestCommandFailedAnno(TestDescriptor aTestDescriptor, TestResult aTestResult){
 			String anno = "<command line=\"1\">\n";
 			anno += "<argv>echo</argv>\n";
 			anno += "<output src=\"prog\">"+iTest.toString()+": "+aTestDescriptor.toString()+"\n";
@@ -189,7 +183,7 @@ implements 	TaskExecutionListener, BuildListener,
 			String anno = "";
 			anno += "<depList>\n";
 			for(int id : aDepArrayList){
-				anno += "\t<dep writejob=\"J${id}\" file=\"J${id}\"/>\n";
+				anno += "<dep writejob=\"J${id}\" file=\"J${id}\"/>\n";
 			}
 			anno += "</depList>\n";
 			return anno;
@@ -248,7 +242,7 @@ implements 	TaskExecutionListener, BuildListener,
     void beforeActions(Task task) {
     	long ts = iUniversalTime.timeInMs;
     	int id = getAndSetJobId(task);
-		generateParseJob(iTaskTimestamps.get(task), ts, task.getPath()+": Before Actions", false, id, getThread(task), generateDepList(task));
+		generateMiscJob(iTaskTimestamps.get(task), ts, task.getPath()+": Before Actions", false, id, getThread(task), generateDepList(task));
 		// we no longer need previous registered dependencies for this task, but want to keep current id
 		iTaskDependencyLists.get(task).clear();
 		iTaskDependencyLists.get(task).add(id);
@@ -279,13 +273,10 @@ implements 	TaskExecutionListener, BuildListener,
 			if(((Test)task).getMaxParallelForks()>1){
 				acquireThread(task, invoked);
 			}
-			generateParseJob(invoked, completed, name+": After Test", false, currentJobId, getThread(task), generateDepList(previousJobId), generateOpList(task));
+			generateMiscJob(invoked, completed, name+": After Test", false, currentJobId, getThread(task), generateDepList(previousJobId), generateOpList(task));
     		return;
 		}
 
-		String anno = new String();
-        String invokedStr = String.format("%4f", invoked/1000.0);
-        String completedStr = String.format("%4f", completed/1000.0);
         String cmd = "";
         String lcTaskPath = task.getPath().toLowerCase();
         if(lcTaskPath.contains("compile")){
@@ -309,21 +300,7 @@ implements 	TaskExecutionListener, BuildListener,
         else if(lcTaskPath.contains("javadoc")){
         	cmd += "bison";
         }
-		anno += "<job id=\"J${currentJobId}\" thread=\"\" type=\"rule\" name=\"${name}\">\n";
-
-		anno += "<command line=\"1\">\n";
-		anno += "\t<argv>${cmd}</argv>\n";
-		anno += "\t<output src=\"prog\">"+task.toString()+"\n"+generateTaskOutputAnno(task)+"</output>\n";
-		anno += "</command>\n";
-		anno += generateDepList(previousJobId);
-		anno += generateOpList(task);
-		
-		if(task.getState().getFailure()){
-			anno += "<failed code=\"1\"/>\n";
-		}
-		anno += "\t<timing invoked=\""+invokedStr+"\" completed=\""+completedStr+"\" node=\"Gradle-Thread-"+getThread(task)+"\"/>\n";
-		anno += "</job>\n";
-		writeAnno(anno);
+		generateJob(invoked, completed, "rule", name, false, currentJobId, getThread(task), generateDepList(previousJobId), generateOpList(task), "", generateTaskCommandFailedAnno(task, cmd));
     }
 
     @Override
@@ -331,23 +308,20 @@ implements 	TaskExecutionListener, BuildListener,
     	long ts = iUniversalTime.timeInMs;
 		int currentJobId = getJobId(task);
 		if(taskState.getSkipped() || !taskState.getDidWork()){
-			String output = "<command line=\"1\">\n";
-			output += "\t<argv></argv>\n";
-			output += "\t<output src=\"prog\">"+task.toString()+"\n"+generateTaskOutputAnno(task)+"</output>\n";
-			output += "</command>\n";
 			String name = task.getPath()+((taskState.getSkipped())?(": Skipped"):(": Did no work"));
-			generateParseJob(iTaskTimestamps.get(task), ts, name, false, currentJobId, releaseThread(task, ts), generateDepList(task), "", "", output);
+			generateMiscJob(iTaskTimestamps.get(task), ts, name, false, currentJobId, releaseThread(task, ts), generateDepList(task), "", "", generateTaskCommandFailedAnno(task, ""));
 		}
 		else{
-			int previousJobId = iTaskDependencyLists.get(task).get(0);
-			generateParseJob(iTaskTimestamps.get(task), ts, task.getPath()+": After Actions", false, currentJobId, releaseThread(task, ts), generateDepList(previousJobId));
+			generateMiscJob(iTaskTimestamps.get(task), ts, task.getPath()+": After Actions", false, currentJobId, releaseThread(task, ts), generateDepList(iTaskDependencyLists.get(task).get(0)));
 		}
+		iLastEventCompletion = ts+1;
         iTaskTimestamps.remove(task);
         iTaskLogs.remove(task);
     }
 
     @Override
     void buildFinished(BuildResult result) {
+    	generateJob(iLastEventCompletion, iUniversalTime.timeInMs, "end", "Build Finished", false);
     	writeAnno("</make>\n</build>\n");
 		iWriter.close();
     }
@@ -360,7 +334,14 @@ implements 	TaskExecutionListener, BuildListener,
 
     @Override
     void projectsEvaluated(Gradle gradle) {
-    	initalJobsHelper("Projects Evaluated");
+    	long ts = iUniversalTime.timeInMs;
+		String depList = "<depList>\n";
+		for(int id : iProjectEvalIds){
+			depList += "\t<dep writejob=\"J${id}\" file=\"J${id}\"/>\n";
+		}
+		depList += "</depList>\n";
+		iProjectEvalIds.clear();
+		generateMiscJob(iLastEventCompletion, ts, "Projects Evaluated", true, getNextJobId(), getThread(iLastEventCompletion, ts), depList);
     }
 
     @Override
@@ -380,8 +361,9 @@ implements 	TaskExecutionListener, BuildListener,
     
     private final int initalJobsHelper(String aName){
     	int id = getNextJobId();
+    	long ts = iUniversalTime.timeInMs;
     	// we can inject dependency on previous job because we know all these jobs are serial
-		generateParseJob(iLastEventCompletion, iUniversalTime.timeInMs, aName, true, id, getThread(iLastEventCompletion, iUniversalTime.timeInMs), generateDepList(id-1));
+		generateMiscJob(iLastEventCompletion, ts, aName, true, id, getThread(iLastEventCompletion, ts), generateDepList(id-1));
 		return id;
     }
 
@@ -390,14 +372,15 @@ implements 	TaskExecutionListener, BuildListener,
     	long invoked = iProjectTimestamps.get(project);
     	long completed = iUniversalTime.timeInMs;
     	int id = getNextJobId();
-		generateParseJob(invoked, completed, project.getPath()+": Project Evaluated", false, id, getThread(invoked, completed), generateDepList(iProjectsLoadedJobId));
+		generateMiscJob(invoked, completed, project.getPath()+": Project Evaluated", false, id, getThread(invoked, completed), generateDepList(iProjectsLoadedJobId));
     	// register dependencies to this parse job
     	Map<Project, Set<Task>> m = project.getAllTasks(true);
     	for(Project p : m.keySet()){
     		for(Task t : m.get(p)){
     			registerDependency(t, id);
     		}
-    	}		
+    	}
+    	iProjectEvalIds.add(id);
         iProjectTimestamps.remove(project);
 		iLastEventCompletion = completed+1;
     }
@@ -429,15 +412,13 @@ implements 	TaskExecutionListener, BuildListener,
 		return anno;
 	}
 	private final String generateDepList(int aJobId){
-		String anno = "";
-		anno += "<depList>\n";
+		String anno = "<depList>\n";
 		anno += "\t<dep writejob=\"J"+aJobId+"\" file=\"J${aJobId}\"/>\n";
 		anno += "</depList>\n";
 		return anno;
 	}
 	private final String generateDepList(Task aTask){
-		String anno = "";
-		anno += "<depList>\n";
+		String anno = "<depList>\n";
 		// we know all tasks that call this function depends on the graph-populated job-id
 		anno += "\t<dep writejob=\"J${iGraphPopulatedJobId}\" file=\"J${iGraphPopulatedJobId}\"/>\n";
 		if(iTaskDependencyLists.get(aTask)){
@@ -483,10 +464,14 @@ implements 	TaskExecutionListener, BuildListener,
 		return anno;
 	}
 
-	private final String generateTaskOutputAnno(Task aTask){
+	private final String generateTaskCommandFailedAnno(Task aTask, String aCmd){
 		TaskState taskState = aTask.getState();
 		Throwable exception = taskState.getFailure();
-		String anno = "Result: ";
+
+		String anno = "<command line=\"1\">\n";
+		anno += "\t<argv>${aCmd}</argv>\n";
+		anno += "\t<output src=\"prog\">"+aTask.toString()+"\n";
+		anno += "Result: ";
 		anno += ((exception)?("FAILURE"):((taskState.getSkipped())?("SKIPPED"):((taskState.getDidWork()?("SUCCESS"):("DID NO WORK")))))+"\n\n";
 		if(taskState.getSkipped()){
 			anno += "Skip Message:\n  "+taskState.getSkipMessage()+"\n";		
@@ -495,25 +480,36 @@ implements 	TaskExecutionListener, BuildListener,
 			anno += "Exception:\n  "+exception.toString()+"\n";
 		}
 		OutputListener outputListener = iTaskLogs.get(aTask);
-		if(outputListener){
+		if(outputListener && outputListener.getLog().length()>0){
 			anno += "\nLog:\n"+outputListener.getLog().replaceAll("<", "{{").replaceAll(">", "}}")+"\n";
+		}
+		anno += "</output>\n</command>\n";
+		if(taskState.getFailure()){
+			anno += "<failed code=\"1\"/>\n";
 		}
 		return anno;
 	}
 
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId){
-		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, getThread(aInvoked, aCompleted));
+	private final void generateMiscJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId){
+		generateMiscJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, getThread(aInvoked, aCompleted));
 	}
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread){
-		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, aThread, "");
+	private final void generateMiscJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread){
+		generateMiscJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, aThread, "");
 	}
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aDepList){
-		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, aThread, aDepList, "");	
+	private final void generateMiscJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aDepList){
+		generateMiscJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, aThread, aDepList, "");	
 	}
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aDepList, String aOpList){
-		generateParseJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, aThread, aDepList, aOpList, "", "<command line=\"1\">\n<argv>echo</argv>\n</command>");
+	private final void generateMiscJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aDepList, String aOpList){
+		generateMiscJob(aInvoked, aCompleted, aName, aUpdateLastEventCompletion, aJobId, aThread, aDepList, aOpList, "", "<command line=\"1\">\n<argv>echo</argv>\n</command>\n");
 	}
-	private final void generateParseJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aDepList, String aOpList, String aWaitingJobs, String aOutput){
+	private final void generateMiscJob(long aInvoked, long aCompleted, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aDepList, String aOpList, String aWaitingJobs, String aOutput){
+		generateJob(aInvoked, aCompleted, "rule", aName, aUpdateLastEventCompletion, aJobId, aThread, aDepList, aOpList, aWaitingJobs, aOutput);
+	}
+
+	private final void generateJob(long aInvoked, long aCompleted, String aType, String aName, Boolean aUpdateLastEventCompletion){
+		generateJob(aInvoked, aCompleted, aType, aName, aUpdateLastEventCompletion, getNextJobId(), getThread(aInvoked, aCompleted), "", "", "", "");
+	}
+	private final void generateJob(long aInvoked, long aCompleted, String aType, String aName, Boolean aUpdateLastEventCompletion, int aJobId, int aThread, String aDepList, String aOpList, String aWaitingJobs, String aOutput){
 		String anno = new String();
 	    // a job can not have a 0 ms runtime
 	    if(aCompleted <= aInvoked){
@@ -521,11 +517,11 @@ implements 	TaskExecutionListener, BuildListener,
 	    }
         String invokedStr = String.format("%4f", aInvoked/1000.0);
         String completedStr = String.format("%4f", aCompleted/1000.0);
-		anno += "<job id=\"J"+aJobId+"\" thread=\"\" type=\"rule\" name=\""+aName+"\">\n";
+		anno += "<job id=\"J${aJobId}\" thread=\"\" type=\"${aType}\" name=\"${aName}\">\n";
 		anno += aOutput
 		anno += aDepList;
 		anno += aOpList;
-		anno += "<timing invoked=\""+invokedStr+"\" completed=\""+completedStr+"\" node=\"Gradle-Thread-"+aThread+"\"/>\n";
+		anno += "<timing invoked=\"${invokedStr}\" completed=\"${completedStr}\" node=\"Gradle-Thread-${aThread}\"/>\n";
 		anno += aWaitingJobs;
 		anno += "</job>\n";
 		writeAnno(anno);
