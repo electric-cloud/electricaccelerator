@@ -196,6 +196,9 @@ getSeverity()
 getCode()
 
 
+PyAnnolibError - this is the exception that the library will raise
+if something is amiss.
+
 Developing
 ==========
 Read the DEVELOPMENT text file.
