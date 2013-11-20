@@ -77,11 +77,11 @@ _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Non-classified", "Miscellaneo
 The [spring-framework](https://github.com/spring-projects/spring-framework) build is dominated by parallel javadocs workload, where one of those jobs happens to fail in my environment.
 
 ##### Workload Distribution:
-![Visualization of the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_anno.png?raw=true "Visualization of the gradle spring-framework build")
+![Visualization of the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_spring-framework_anno.png?raw=true "Visualization of the gradle spring-framework build")
 
 ##### Job Time By type:
 _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Non-classified", "Miscellaneous"=>"Gradle Overhead", "Java Compile", "Compile"=>"Codenarc/Checkstyle/Findbugs", "Code gen"=>"Javadoc"_
-![Job-time-by-type for the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_spring-framework_JobTimeByType.png?raw=true "Job-time-by-type for the gradle spring-framework build")
+![Job-time-by-type for the gradle spring-framework build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_spring-framework_JobTimeByType.png?raw=true "Job-time-by-type for the gradle spring-framework build")
 
 ##### Quickly finding reasons for failed tasks/tests
 Let's use ElectricInsight to find out more about the failing javadoc-job. Clicking on the binoculars with a red cross gives a quick listing of all the failed tests, then clicking on that top job brings up a view with further details where I can see e.g. start/end-time, thread and also the exception that triggered the failure. 
@@ -95,11 +95,11 @@ Moving on to the Annotation tab gives even more details such as e.g. the job out
 The [griffon](https://github.com/griffon/griffon) build is dominated by Java/Groovy compile time and codenarc analysis workload. It's a short build but still has quite a bit of serialization, so it seems could still be further shortened by more aggressive parallelization.
 
 ##### Workload Distribution:
-![Visualization of the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_griffon_anno.png?raw=true "Visualization of the gradle griffon build")
+![Visualization of the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_griffon_anno.png?raw=true "Visualization of the gradle griffon build")
 
 ##### Job Time By type:
 _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Non-classified", "Miscellaneous"=>"Gradle Overhead", "Java Compile", "Compile"=>"Codenarc/Checkstyle/Findbugs", "Code gen"=>"Javadoc"_
-![Job-time-by-type for the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_griffon_JobTimeByType.png?raw=true "Job-time-by-type for the gradle griffon build")
+![Job-time-by-type for the gradle griffon build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_griffon_JobTimeByType.png?raw=true "Job-time-by-type for the gradle griffon build")
 
 ## Next Steps
 I think this project may be pretty useful as-is (it was certainly useful for me as a project to learn more about Gradle! :-)), but there are obviously a number of interesting extensions/improvements that could be considered fur the future. Off the top of my head, here are some:
@@ -108,26 +108,22 @@ I think this project may be pretty useful as-is (it was certainly useful for me 
 
    Rather than relying on a custom algorithm for determining which thread a particular job is running on (which turned out to be fairly complex, and by no means is perfect), explore extending the Gradle [Task](http://www.gradle.org/docs/current/javadoc/org/gradle/api/Task.html)/[Test](http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/testing/TestDescriptor.html) API's with information about which worker/thread is currently in use. This would yield a _true_ representation of how the workload is scheduled and allocated on the build infrastructure. 
 
-2. Dependency Visualization
-
-   Extend the generated annotation with all the dependency information available from the Gradle engine (e.g. [Task.getDependencies](http://www.gradle.org/docs/current/javadoc/org/gradle/api/Task.html#getTaskDependencies()) - there are some commented code in the init-script already touching on this). This additional information combined with more sophisticated structuring of e.g. the project-lifecycle and test-suites could allow for more sophisticated and interesting reporting (e.g. ElectricSimulator, Longest Chain). My thinking here would be to use the submake concept to represent such structural information.
-
-3. Capturing stdout/stderr per job
+2. Capturing stdout/stderr per job
 
    It seems Gradle has no current ability to capture stdout/stderr per task/test, at least not that I've been able to figure out. If you register an outputlistener of some kind, *all* output at the specified loglevel will be captured regardless of origin. It would obviously be very beneficial to have capability to separate and identify source of the output.
 
-4. Live monitoring
+3. Live monitoring
 
    ElectricInsight supports live monitoring of builds. Rather than write data to file it would not be too complex to write it to a socket connected to ElectricInsight. This would allow one to look at this project as a real time build monitor as well as a post-build analysis utility.
 
-5. Custom job categorization
+4. Custom job categorization
 
    It would be a nice feature to have ability to customize ElectricInsight job categorization.
 
-6. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
+5. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
 
 ## Problems? / Issues? / Feedback?
-Please take note this proejct is not commercially supported by Electric Cloud. Any issues or problems are best discussed at http://ask.electric-cloud.com.
+Please take note this proejct is not commercially supported by Electric Cloud. Any issues or problems are best discussed at http://ask.electric-cloud.com or by contacting me directly on email/twitter below.
 Contributions are very welcome - please let me know if you have an interest to help.
 
 Lastly, I'm very interested in hearing your feedback!
