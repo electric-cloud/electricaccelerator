@@ -123,7 +123,7 @@ I think this project may be pretty useful as-is (it was certainly useful for me 
 5. Improve flexibility of usage, e.g. by allowing for custom generated annotation-files and for varying amount of annotation detail.
 
 ## Problems? / Issues? / Feedback?
-Please take note this proejct is not commercially supported by Electric Cloud. Any issues or problems are best discussed at http://ask.electric-cloud.com or by contacting me directly on email/twitter below.
+Please take note this proejct is not commercially supported by Electric Cloud. Any issues or problems are best discussed at http://ask.electric-cloud.com or by contacting me directly on [email](drosen@electric-cloud.com)/[twitter](https://twitter.com/adr0sen).
 Contributions are very welcome - please let me know if you have an interest to help.
 
 Lastly, I'm very interested in hearing your feedback!
