@@ -9,7 +9,7 @@ ElectricInsight is a powerful tool to visually depict the structure of a softwar
 
 ## <a name="prerequisites"></a>Prerequisites
 1. ElectricInsight, which comes bundled with the freely available [ElectricAccelerator Developer Edition](http://www.electric-cloud.com/downloads/software.php?tab=eade&promo=Github_Gradle).
-2. A gradle build running in your environment, or [annotations from this repository](https://github.com/electriccommunity/electricaccelerator/tree/master/GradleAnnotationGenerator/annotations)
+2. A gradle build running in your environment, or any of the [annotations from this repository](https://github.com/electriccommunity/electricaccelerator/tree/master/GradleAnnotationGenerator/annotations)
 
 ## Usage
 1. Make sure you meet the [prerequisites](#prerequisites)
@@ -32,7 +32,7 @@ Below are further details and screenshots from my explorations. The following co
 ```
 
 ### <a name="example_gradle"></a>gradle
-The [gradle](https://github.com/gradle/gradle) build is interesting because the workload is heavily dominated by testing, which is forked and hence triggers a large amount of parallelization. Interestingly though, it is the :docs:dslHtml task which is contributing to the longest serial chain during the test phase of the build. Question is if that task can be moved up earlier in execution graph, or perhaps even broken up in smaller parallelizable pieces.
+The [gradle](https://github.com/gradle/gradle) build is interesting because the workload is heavily dominated by testing, which is forked and hence triggers a large amount of parallelization. Interestingly though, build time is not bounded by the test workload and we can easily spot the :docs:dslHtml as being the likely long pole. Using the Longest Serial Chain report we can also confirm that being the case, informing us it would be worthwhile to try and move the :docs project up earlier in the execution graph.
 
 ##### Workload Distribution:
 ![Visualization of the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_gradle_anno.png?raw=true "Visualization of the gradle gradle build")
@@ -46,7 +46,7 @@ ElectricInsight can visually highlight all dependent and waiting jobs from any g
 ![Job dependency visualization for the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_gradle_JobDependencyVisualization.png?raw=true "Job dependency visualization for the gradle gradle build")
 
 ##### Longest Serial Chain:
-The Longest Serial Chain report is using dependency and runtime information to determine and visualize the chain of jobs included in the longest serial chain. Note that in this current implementation where there are no available dependency information between [Gradle TestDescriptor](http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/testing/TestDescriptor.html) objects, all test suites and test cases within the suites are regarded as parallelizable.
+The Longest Serial Chain report is using dependency and runtime information to determine and visualize the chain of jobs included in the longest serial chain. Note that in this current implementation where there are no available dependency information between [Gradle TestDescriptor](http://www.gradle.org/docs/current/javadoc/org/gradle/api/tasks/testing/TestDescriptor.html) objects, all test suites and test cases within the suites are treated as non-dependent, hence parallelizable.
 ![Longest Serial Chain for the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_gradle_LongestSerialChain.png?raw=true "Longest Serial Chain for the gradle gradle build")
 
 ##### ElectricSimulator:
