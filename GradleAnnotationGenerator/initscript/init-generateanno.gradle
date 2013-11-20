@@ -42,6 +42,7 @@ implements 	TaskExecutionListener, BuildListener,
     private long iLastEventCompletion = 0;
     private int iGraphPopulatedJobId;
     private int iProjectsLoadedJobId;
+    private boolean iBuildHasFailure
 
 	public ExecutionListener(Clock aUniversalTime, BufferedWriter aWriter){
 		iUniversalTime = aUniversalTime;
@@ -321,7 +322,8 @@ implements 	TaskExecutionListener, BuildListener,
 
     @Override
     void buildFinished(BuildResult result) {
-    	generateJob(iLastEventCompletion, iUniversalTime.timeInMs, "end", "Build Finished", false);
+    	long ts = iUniversalTime.timeInMs;
+    	generateJob(iLastEventCompletion, ts, "end", "Build Finished", false, getNextJobId(), getThread(iLastEventCompletion, ts), "", "", "", (result.getFailure())?("<failed code=\"2\"/>"):(""));
     	writeAnno("</make>\n</build>\n");
 		iWriter.close();
     }
