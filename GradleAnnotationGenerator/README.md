@@ -2,7 +2,7 @@
 The GradleAnnotationGenerator project is the data generation part of an interactive build and dependency visualization and analytics utility for [Gradle](http://www.gradle.org)-builds, based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) and [HTML dependency report](http://forums.gradle.org/gradle/topics/add_an_html_dependency_report) features - enabling quick visual overview of build performance as well as ability for an engineer to really zoom in and dig deep in order to interactively understand structural behaviour and dependency relationships, allowing for troubleshooting and performance optimization at millisecond resolution.
 
 Below is a sample screenshot of the parallel Gradle-build of Gradle itself, where the Y-axis represents concurrent threads, the X-axis represents time and each box represents the workload (sections of a task or a test) as individual jobs. Jobs are categorized by type which is visualized by the colour-coding. More details in the example section [below](#examples):
-![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
+![Visualization of the gradle Gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_gradle_anno.png?raw=true "Visualization of the gradle Gradle build")
 
 ## ElectricInsight
 ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering software and build engineers to easily pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each parallel worker of the build infrastructure - for at-a-glance visualization, analytics and diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
@@ -42,7 +42,7 @@ _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Non-classified", "Miscellaneo
 ![Job-time-by-type for the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_gradle_JobTimeByType.png?raw=true "Job-time-by-type for the gradle gradle build")
 
 ##### Job Dependency Visualization:
-ElectricInsight can visually highlight all dependent and waiting jobs from any given job, as well as interactive traversal through the dependency tree. Red emphasis in below screenshot indicates all waiting jobs from the "Graph Populated" job.
+ElectricInsight can visually highlight all dependent and waiting jobs from any given job, and allow for interactive traversal through the dependency/execution graph. Red emphasis in below screenshot indicates all waiting jobs from the "Graph Populated" job.
 ![Job dependency visualization for the gradle gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_gradle_JobDependencyVisualization.png?raw=true "Job dependency visualization for the gradle gradle build")
 
 ##### Longest Serial Chain:
@@ -66,6 +66,12 @@ The first half of the [hibernate-orm](https://github.com/hibernate/hibernate-orm
 ##### Job Time By type:
 _Legend: "Library Link"=>"JUnit/TestNG",  "Noop"=>"Non-classified", "Miscellaneous"=>"Gradle Overhead", "Java Compile", "Compile"=>"Codenarc/Checkstyle/Findbugs", "Code gen"=>"Javadoc"_
 ![Job-time-by-type for the gradle hibernate-orm build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131106_hibernate-orm_JobTimeByType.png?raw=true "Job-time-by-type for the gradle hibernate-orm build")
+
+##### Longest Serial Chain:
+![Longest Serial Chain for the hibernate-orm gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_hibernate-orm_LongestSerialChain.png?raw=true "Longest Serial Chain for the hibernate-orm gradle build")
+
+##### ElectricSimulator:
+![ElectricSimulator report for the hibernate-orm gradle build](https://github.com/electriccommunity/electricaccelerator/blob/master/GradleAnnotationGenerator/screenshots/20131120_hibernate-orm_ElectricSimulator.png?raw=true "ElectricSimulator report for the hibernate-orm gradle build")
 
 ### <a name="example_spring"></a>spring-framework
 The [spring-framework](https://github.com/spring-projects/spring-framework) build is dominated by parallel javadocs workload, where one of those jobs happens to fail in my environment.
