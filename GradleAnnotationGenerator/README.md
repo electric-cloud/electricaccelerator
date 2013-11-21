@@ -1,4 +1,4 @@
-# Gradle Build Visualization and Analytics
+# Gradle Build Analytics and Dependency Visualization 
 The GradleAnnotationGenerator project is the data generation part of an interactive build and dependency visualization and analytics utility for [Gradle](http://www.gradle.org)-builds, based on [ElectricInsight](http://www.electric-cloud.com/products/electricaccelerator.php?tab=ei). This extends or complements the functionality provided by the existing Gradle [--profile](http://www.gradle.org/docs/current/userguide/tutorial_gradle_command_line.html#sec:profiling_build) and [HTML dependency report](http://forums.gradle.org/gradle/topics/add_an_html_dependency_report) features - enabling quick visual overview of build performance as well as ability for an engineer to really zoom in and dig deep in order to interactively understand structural behaviour and dependency relationships, allowing for troubleshooting and performance optimization at millisecond resolution.
 
 Below is a sample screenshot of the parallel Gradle-build of Gradle itself, where the Y-axis represents concurrent threads, the X-axis represents time and each box represents the workload (sections of a task or a test) as individual jobs. Jobs are categorized by type which is visualized by the colour-coding. More details in the example section [below](#examples):
@@ -8,7 +8,7 @@ Below is a sample screenshot of the parallel Gradle-build of Gradle itself, wher
 ElectricInsight is a powerful tool to visually depict the structure of a software build, down to the file level - empowering software and build engineers to easily pinpoint performance problems and conflicts in a build. The default usage of ElectricInsight is as an add-on to [ElectricAccelerator](http://www.electric-cloud.com/products/electricaccelerator.php), mining the information produced by ElectricAccelerator to provide an easy-to-understand, graphical representation of the build structure for performance analysis. It provides detailed information and reports on each parallel worker of the build infrastructure - for at-a-glance visualization, analytics and diagnostics. It can also predict and model how build times would be impacted by adding additional build infrastructure, to help guide hardware investment decisions.
 
 ## <a name="prerequisites"></a>Prerequisites
-1. ElectricInsight, which comes bundled with the freely available [ElectricAccelerator Developer Edition](http://www.electric-cloud.com/downloads/software.php?tab=eade&promo=Github_Gradle).
+1. ElectricInsight, which comes bundled with the freely available [ElectricAccelerator Developer Edition](http://bit.ly/I4turK).
 2. A gradle build running in your environment, or any of the [annotations from this repository](https://github.com/electriccommunity/electricaccelerator/tree/master/GradleAnnotationGenerator/annotations)
 
 ## Usage
