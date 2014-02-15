@@ -7,8 +7,9 @@ import unittest
 from utlib import jenkins
 
 # From each module, import the TestCase sub-class
-from utlib.build import buildTests
-from utlib.jobpath import jobpathTests
+from utlib.build import BuildTests
+from utlib.jobpath import JobPathTests
+from utlib.concat import ConcatTests
 
 
 if __name__ == "__main__":

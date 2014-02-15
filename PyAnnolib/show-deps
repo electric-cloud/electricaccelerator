@@ -31,12 +31,15 @@ class DAG:
                     self.root_nodes.remove(child)
 
     def printDAG(self):
+        seen = {}
         for node in self.root_nodes:
-            self.printNodeDeps(node, 0)
+            self.printNodeDeps(node, seen, 0)
 
-    def printNodeDeps(self, node, indent=0):
+    def printNodeDeps(self, node, seen, indent=0):
         spaces = indent * "  "
         print "%s%s" % (spaces, node)
+
+        seen[node] = None
 
         # any dependencies?
         if self.edges.has_key(node):
@@ -44,7 +47,16 @@ class DAG:
             children = self.edges[node]
             children.sort()
             for child in children:
-                self.printNodeDeps(child, child_indent)
+                if seen.has_key(child):
+                    # If we have already seen it,
+                    # don't recurse. If there is a sub-dag,
+                    # denote it
+                    if self.edges.has_key(child):
+                        print "%s  * %s" % (spaces, child)
+                    else:
+                        print "%s  %s" % (spaces, child)
+                else:
+                    self.printNodeDeps(child, seen, child_indent)
 
 
 # All jobs
@@ -61,21 +73,37 @@ def run(filename, targets):
         if job.getType() != annolib.JOB_TYPE_RULE:
             return
 
+        make_proc = job.getMakeProcess()
+        job_cwd = make_proc.getCWD()
+        len_job_cwd = len(job_cwd)
+
 #        show_job(job)
         created = []
         read = []
         for op in job.getOperations():
+
+            # XXX convert filename
+            fname = op.getFile()
+            if not fname:
+                continue
+
+            if fname[:len_job_cwd] == job_cwd:
+                fname = fname[len_job_cwd+1:]
+
             if op.getType() == annolib.OP_TYPE_CREATE:
-                created.append(op.getFile())
+                created.append(fname)
+
             elif op.getType() == annolib.OP_TYPE_RENAME:
                 # Not yet sure how to show renames
+                print "rename", fname
 #                created.append(op.getFile())
                 pass
             elif op.getType() == annolib.OP_TYPE_READ:
-                read.append(op.getFile())
+                read.append(fname)
             else:
 #                print op.getType(), op.getFile()
                 pass
+
 
         for cfile in created:
             dag.addNode(cfile)

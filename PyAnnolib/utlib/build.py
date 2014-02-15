@@ -6,7 +6,7 @@ import unittest
 from pyannolib import annolib
 from utlib import util
 
-class buildTests(unittest.TestCase):
+class BuildTests(unittest.TestCase):
     """Check attributes of the Build class."""
 
     @classmethod

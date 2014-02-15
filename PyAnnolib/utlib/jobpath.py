@@ -6,7 +6,7 @@ import unittest
 from pyannolib import annolib
 from utlib import util
 
-class jobpathTests(unittest.TestCase):
+class JobPathTests(unittest.TestCase):
     """Check the funcationaliby of jobpath"""
 
     @classmethod

@@ -2,9 +2,10 @@
 """
 Handle the emake annotation file.
 """
-
+from pyannolib import concatfile
 import xml.sax
 import types
+import os
 
 # Job status values
 JOB_STATUS_NORMAL = "normal"
@@ -65,6 +66,10 @@ OUTPUT_SRC_MAKE = "make"
 MESSAGE_SEVERITY_WARNING = "warning"
 MESSAGE_SEVERITY_ERROR = "error"
 
+
+# Show debug statements for parsing XML?
+DEBUG_XML = False
+
 class PyAnnolibError(Exception):
     """Generic exception for any error this library wants
     to pass back to the client"""
@@ -98,7 +103,7 @@ class AnnotatedBuild:
             assert not fh, "filename and fh both given"
 
             # Allow the exception to go back to the caller of AnnoFileParser
-            self.fh = open(filename)
+            self.fh = anno_open(filename)
 
         elif fh:
             self.fh = fh
@@ -717,9 +722,10 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
         self.command = None
 
     def startElement(self, name, xmlattrs):
-#        spaces = self.indent * " "
-#        print "%s<%s>" % (spaces, name)
-#        self.indent += 1
+        if DEBUG_XML:
+            spaces = self.indent * " "
+            print "%s<%s>" % (spaces, name)
+            self.indent += 1
 
         self.chars = ""
 
@@ -729,9 +735,13 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
             self.make_proc_num += 1
 
             # All <make>'s must be preceded by a <job>, except for the
-            # root <make>
-            ZERO = "0"
-            if make_elem.getLevel() != ZERO:
+            # first make. If emake was run from the command-line, it's 0,
+            # but if emake was run from inside a parent GNU Make,
+            # then it's > 0. In order to see if this is the "root"
+            # emake process, we cannot rely on getLevel(), as it could
+            # be _anything_, so we simply check if it is the first
+            # "<make>" element we found in the annotation file.
+            if self.make_proc_num > 1:
                 assert self.prev_job_elem
                 if self.prev_job_elem.getType() == JOB_TYPE_FOLLOW:
                     make_elem.setParentJobID(self.prev_job_elem.getPartOf())
@@ -806,9 +816,10 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
             assert 0, "Unhandled element: " + name
 
     def endElement(self, name):
-#        spaces = self.indent * " "
-#        print "%s</%s>" % (spaces, name)
-#        self.indent -= 1
+        if DEBUG_XML:
+            spaces = self.indent * " "
+            print "%s</%s>" % (spaces, name)
+            self.indent -= 1
 
         if name == self.ELEMENT_MAKE:
             assert len(self.make_elem) > 0
@@ -877,3 +888,30 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
     def characters(self, chars):
         self.chars += chars
 
+
+def anno_open(filename, mode="rb"):
+    """Return either a Python file object, if there is only one
+    annotation file, or a ConcatenatedFile object, which acts
+    like a single file object, but magically combines multiple files."""
+    # Fill in the array of file names
+    filenames = [filename]
+
+    READ = "r"
+    READ_BINARY = "rb"
+
+    N = 1
+    while True:
+        looking_for = filename + "_" + str(N)
+        if os.path.exists(looking_for):
+            filenames.append(looking_for)
+            N += 1
+        else:
+            # No more files
+            break
+
+    if len(filenames) == 1:
+        return open(filename, mode)
+    else:
+        if not mode in [READ, READ_BINARY]:
+            raise ValueError("Only read-only mode is supported.")
+        return concatfile.ConcatenatedFile(filenames, mode)

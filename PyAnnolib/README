@@ -50,6 +50,18 @@ or an open filehandle:
     or
     build = AnnotatedBuild(filename=None, fh=my_fh)
 
+If you pass in a filename (as opposed to an open file handle),
+AnnotatedBuild will automatically look for additional filenames with
+"_1", "_2", etc., suffixes. When the annotation log file is approaching
+2GB in size, emake will automatically close the first annotation file,
+and create a new file, named with the same name, but with a suffix of "_1".
+These files could be concatenated together to create a new XML file, like
+so:
+    $ cat file.xml file.xml_1 > new_file.xml
+
+But Electric Insight automatically knows to look for the "_1" file. So,
+PyAnnolib does the same.
+
 The initialize will read the header of the annotation file.
 
 The AnnotatedBuild has data associated with it (metrics), and contains many
@@ -198,6 +210,14 @@ getCode()
 
 PyAnnolibError - this is the exception that the library will raise
 if something is amiss.
+
+anno_open() - this routine opens an annotation file and returns
+a filehandle. However, if it finds a "_1", etc., continuation file,
+it creates a ConcatendatedFile object (see pyannolib/concatfile.py),
+which acts like a filehandle, but automatically and seamlessly
+makes multiple files look like one larger file.
+
+
 
 Developing
 ==========
