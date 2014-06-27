@@ -90,13 +90,23 @@ getMessages():
     parsing, or afterwards. The Message records are interspersed
     with the Job records.
 
-parseJobs(cb)
+parseJobs(cb, user_data=None)
 
-    For each Job record in the XML file, runs the callback function
-    (cb), passing it that Job object. If the annotation file has
+    If the annotation file has
     many thousands of Jobs and you do not with to store them all
     in memory at once, this function lets you handle each Job
     object one at aa time.
+
+    For each Job record in the XML file, runs the callback function
+    (cb), passing it that Job object and user_data. The user_data
+    is any additional data that your code wishes for the callback
+    function to see; it is a handy way of passing in other objects
+    that the callback might need.
+
+    The callback function will look like:
+
+    def my_callback(job, user_data):
+        # process the job objet here.
 
 
 getAllJobs()

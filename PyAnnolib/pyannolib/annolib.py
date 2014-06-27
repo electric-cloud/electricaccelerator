@@ -214,7 +214,7 @@ class AnnotatedBuild:
     def getMessages(self):
         return self.messages
 
-    def parseJobs(self, cb):
+    def parseJobs(self, cb, user_data=None):
         """Parse jobs and call the callback for each Job object."""
         if not self.fh:
             raise ValueError("filehandle was not set in Build object")
@@ -223,7 +223,7 @@ class AnnotatedBuild:
         parser = xml.sax.make_parser()
 
         # Create the handler
-        handler = AnnoXMLBodyHandler(self, cb)
+        handler = AnnoXMLBodyHandler(self, cb, user_data)
 
         # Tell the parser to use our handler
         parser.setContentHandler(handler)
@@ -248,10 +248,10 @@ class AnnotatedBuild:
         and the appropriate callback."""
         jobs = []
 
-        def job_cb(job):
+        def job_cb(job, junk):
             jobs.append(job)
 
-        self.parseJobs(job_cb)
+        self.parseJobs(job_cb, None)
 
         return jobs
 
@@ -694,9 +694,10 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
     """This sax parser handles the "body" portion of the annotation
     XML file, where the build jobs start."""
 
-    def __init__(self, build, cb):
+    def __init__(self, build, cb, user_data):
         self.build = build
         self.cb = cb
+        self.user_data = user_data
         self.chars = ""
         self.indent = 0
 
@@ -856,7 +857,7 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
 
             self.job_elem.setMakeProcess(self.make_elem[-1])
 
-            self.cb(self.job_elem)
+            self.cb(self.job_elem, self.user_data)
 
             # Set the "previous job" to this job
             self.prev_job_elem = self.job_elem
