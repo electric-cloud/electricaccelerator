@@ -68,7 +68,7 @@ def run(filename, targets):
 
     dag = DAG()
 
-    def add_to_graph(job):
+    def add_to_graph(job, user_data):
         """Add the job's file data to the DAG."""
         if job.getType() != annolib.JOB_TYPE_RULE:
             return

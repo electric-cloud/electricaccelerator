@@ -17,7 +17,7 @@ def run(filename):
     build = annolib.AnnotatedBuild(filename)
 
     # Collect all the jobs in a hash, and look for conflict jobs
-    def job_cb(job):
+    def job_cb(job, user_data):
         jobs[job.getID()] = job
 
         if job.getStatus() == annolib.JOB_STATUS_CONFLICT:
@@ -46,15 +46,21 @@ def run(filename):
         show_job(conflict_job)
         print
 
-        write_job = jobs[conflict.getWriteJob()]
-        print "Written by:", write_job.getID()
-        print "------------" + "-" * len(write_job.getID())
-        show_job(write_job)
+        write_job = jobs.get(conflict.getWriteJob())
+        if write_job:
+            print "Written by:", write_job.getID()
+            print "------------" + "-" * len(write_job.getID())
+            show_job(write_job)
+        else:
+            print "Written by: UNKNOWN"
 
-        rerun_job = jobs[conflict.getRerunBy()]
-        print "Rerun by:", rerun_job.getID()
-        print "----------" + "-" * len(rerun_job.getID())
-        show_job(rerun_job)
+        rerun_job = jobs.get(conflict.getRerunBy())
+        if rerun_job:
+            print "Rerun by:", rerun_job.getID()
+            print "----------" + "-" * len(rerun_job.getID())
+            show_job(rerun_job)
+        else:
+            print "Rerun by: UNKNOWN"
 
     print "=" * 80
 
@@ -63,8 +69,9 @@ def show_job(job):
     if job.getType() == annolib.JOB_TYPE_RULE:
         print "Target:", job.getName()
         timing = job.getTiming()
-        print "Invoked:", timing.getInvoked(),
-        print "Completed:", timing.getCompleted()
+        if timing:
+            print "Invoked:", timing.getInvoked(),
+            print "Completed:", timing.getCompleted()
         print "Makefile:", job.getFile(), "line:", job.getLine()
         commands = job.getCommands()
         if commands:
