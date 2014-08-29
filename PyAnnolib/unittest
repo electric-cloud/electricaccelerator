@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# Copyright (c) 2013 by Cisco Systems, Inc.
+#!/usr/bin/env python
+# Copyright (c) 2013-2014 by Cisco Systems, Inc.
 
 import os
 import unittest

@@ -4,6 +4,10 @@ Handle the emake annotation file.
 """
 from pyannolib import concatfile
 import xml.sax
+
+#from xml.etree import ElementTree as ET
+from xml.etree import cElementTree as ET
+
 import types
 import os
 
@@ -69,6 +73,9 @@ MESSAGE_SEVERITY_ERROR = "error"
 
 # Show debug statements for parsing XML?
 DEBUG_XML = False
+
+# Some error strings
+MSG_UNEXPECTED_XML_ELEM = "Unexpected xml element: "
 
 class PyAnnolibError(Exception):
     """Generic exception for any error this library wants
@@ -156,7 +163,7 @@ class AnnotatedBuild:
             self._init_from_hdr_data(hdr_data)
 
             # Set the filehandle back to the beginning; when parseJobs()
-            # is run, it uses AnnoXMLBodyHandler, which skips over all the XML
+            # is run, it uses AnnoXMLBodyParser, which skips over all the XML
             # fields that are part of the header. It's not the most efficient
             # way to handle the separation of body and header; it would be
             # much nicer to skip over the header and start parsing where
@@ -220,27 +227,10 @@ class AnnotatedBuild:
             raise ValueError("filehandle was not set in Build object")
 
         # Create the parser
-        parser = xml.sax.make_parser()
-
-        # Create the handler
-        handler = AnnoXMLBodyHandler(self, cb, user_data)
-
-        # Tell the parser to use our handler
-        parser.setContentHandler(handler)
-
-        # Don't fetch the DTD
-        parser.setFeature(xml.sax.handler.feature_external_ges, False)
+        parser = AnnoXMLBodyParser(self, cb, user_data)
 
         # Parse the file
-        try:
-            parser.parse(self.fh)
-        except xml.sax._exceptions.SAXParseException, e:
-            raise PyAnnolibError(e)
-
-        # I thought I needed to close the parser here
-        # with parser.close(), but it's throwing an exception.
-        # I'm starting to think I don't need to call this.
-        #parser.close()
+        parser.parse(self.fh)
 
     def getAllJobs(self):
         """Gather all Job records in a list and return that list.
@@ -259,7 +249,7 @@ class AnnotatedBuild:
 
 class AnnoXMLNames:
     """These constants are used by both AnnoXMLHeaderHandler,
-    and AnnoXMLBodyHandler, but don't need to be global. So, they
+    and AnnoXMLBodyParser, but don't need to be global. So, they
     are in this base class, inherited by the two using classes."""
     # Found in the "header"
     ELEMENT_BUILD = "build"
@@ -291,7 +281,7 @@ class AnnoXMLNames:
     ELEMENT_CONFLICT = "conflict"
     ELEMENT_MESSAGE = "message"
 
-    # These attributes are handled by the AnnoXMLBodyHandler directly
+    # These attributes are handled by the AnnoXMLBodyParser directly
     ATTR_WAITINGJOBS_IDLIST = "idList"
     ATTR_METRIC_NAME = "name"
     ATTR_OUTPUT_SRC = "src"
@@ -368,12 +358,12 @@ class MakeProcess:
     OWD = "owd"
     MODE = "mode"
 
-    def __init__(self, xmlattrs, id_num):
-        self.level = xmlattrs[self.LEVEL]
-        self.cmd = xmlattrs[self.CMD]
-        self.cwd = xmlattrs[self.CWD]
-        self.owd = xmlattrs.get(self.OWD) # implied, not required
-        self.mode = xmlattrs[self.MODE]
+    def __init__(self, elem, make_proc_num, parser):
+        self.level = elem.get(self.LEVEL)
+        self.cmd = elem.get(self.CMD)
+        self.cwd = elem.get(self.CWD)
+        self.owd = elem.get(self.OWD) # implied, not required
+        self.mode = elem.get(self.MODE)
 
         # This is not stored as a field in the XML file; it is
         # constructed by noting the sequential order of <job>'s
@@ -381,7 +371,8 @@ class MakeProcess:
         # a <make> is the <make>'s parent job.
         self.parent_job_id = None
 
-        self.make_proc_id = "M%08d" % (id_num,)
+        self.make_proc_id = "M%08d" % (make_proc_num,)
+
 
     def __str__(self):
         return "<MakeProcess level=%s cwd=%s>" % (self.level, self.cwd)
@@ -410,7 +401,7 @@ class MakeProcess:
     def getID(self):
         return self.make_proc_id
 
-class Job:
+class Job(AnnoXMLNames):
 
     ID = "id"
     STATUS  ="status"
@@ -423,20 +414,20 @@ class Job:
     SUCCESS = 0
     PARTOF = "partof"   # for FOLLOW-type jobs
 
-    def __init__(self, xmlattrs):
-        self.job_id = xmlattrs[self.ID]
-        self.status = xmlattrs.get(self.STATUS, JOB_STATUS_NORMAL)
-        self.thread = xmlattrs[self.THREAD]
-        self.type = xmlattrs[self.TYPE]
-        self.name = xmlattrs.get(self.NAME)
-        self.needed_by = xmlattrs.get(self.NEEDED_BY)
-        self.line = xmlattrs.get(self.LINE)
-        self.file = xmlattrs.get(self.FILE)
-        self.partof = xmlattrs.get(self.PARTOF)
+    def __init__(self, elem):
+        self.job_id = elem.get(self.ID)
+        self.status = elem.get(self.STATUS, JOB_STATUS_NORMAL)
+        self.thread = elem.get(self.THREAD)
+        self.type = elem.get(self.TYPE)
+        self.name = elem.get(self.NAME)
+        self.needed_by = elem.get(self.NEEDED_BY)
+        self.line = elem.get(self.LINE)
+        self.file = elem.get(self.FILE)
+        self.partof = elem.get(self.PARTOF)
 
         self.outputs = []
         self.make = None
-        self.timing = None
+        self.timings = []
         self.oplist = []
         self.waiting_jobs = []
         self.commands = []
@@ -447,38 +438,72 @@ class Job:
         # we assume success, but a <failed> record overrides that.
         self.retval = self.SUCCESS
 
+        for child_elem in list(elem):
+            if child_elem.tag == self.ELEMENT_TIMING:
+                timing = Timing(child_elem)
+                self.timings.append(timing)
+
+            elif child_elem.tag == self.ELEMENT_OPLIST:
+                self.parseOpList(child_elem)
+
+            elif child_elem.tag == self.ELEMENT_WAITING_JOBS:
+                self.parseWaitingJobs(child_elem)
+
+            elif child_elem.tag == self.ELEMENT_COMMAND:
+                command = Command(child_elem)
+                self.commands.append(command)
+
+            elif child_elem.tag == self.ELEMENT_OUTPUT:
+                # This is the job output, not the command output
+                output_src = child_elem.get(self.ATTR_OUTPUT_SRC,
+                        OUTPUT_SRC_MAKE)
+                output = Output(child_elem.text, output_src)
+                self.outputs.append(output)
+
+            elif child_elem.tag == self.ELEMENT_FAILED:
+                code_text = child_elem.get(self.ATTR_FAILED_CODE)
+                self.retval = int(code_text)
+
+            elif child_elem.tag == self.ELEMENT_CONFLICT:
+                self.conflict = Conflict(child_elem)
+
+            elif child_elem.tag == self.ELEMENT_DEPLIST:
+                self.parseDepList(child_elem)
+
+
+            else:
+                assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
+
     def __str__(self):
         return "<Job id=%s>" % (self.job_id,)
 
-    def addOutput(self, output):
-        self.outputs.append(output)
+    def parseOpList(self, elem):
+        for child_elem in list(elem):
+            if child_elem.tag == self.ELEMENT_OP:
+                op = Operation(child_elem)
+                self.oplist.append(op)
 
-    def setOpList(self, op_elements):
-        self.oplist = op_elements
+            else:
+                assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
 
-    def setMakeProcess(self, make_elem):
-        self.make = make_elem
+    def parseDepList(self, elem):
+        for child_elem in list(elem):
+            if child_elem.tag == self.ELEMENT_DEP:
+                dep = Dependency(child_elem)
+                self.deplist.append(dep)
 
-    def setTiming(self, timing):
-        self.timing = timing
+            else:
+                assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
 
-    def setWaitingJobs(self, ids_string):
+    def parseWaitingJobs(self, elem):
+        ids_string = elem.get(self.ATTR_WAITINGJOBS_IDLIST)
+
         # The job IDs are space-delimited in the string;
         # use split() to create a list
         self.waiting_jobs = ids_string.split()
 
-    def addCommand(self, cmd):
-        assert isinstance(cmd, Command)
-        self.commands.append(cmd)
-
-    def addDep(self, dep):
-        self.deplist.append(dep)
-
-    def setRetval(self, new_value):
-        self.retval = new_value
-
-    def setConflict(self, conflict):
-        self.conflict = conflict
+    def setMakeProcess(self, make_elem):
+        self.make = make_elem
 
     def getID(self):
         return self.job_id
@@ -501,8 +526,8 @@ class Job:
     def getMakeProcess(self):
         return self.make
 
-    def getTiming(self):
-        return self.timing
+    def getTimings(self):
+        return self.timings
 
     def getWaitingJobs(self):
         return self.waiting_jobs
@@ -542,12 +567,12 @@ class Operation:
     FOUND = "found"
     ISDIR = "isdir"
 
-    def __init__(self, xmlattrs):
-        self.type = xmlattrs[self.TYPE]
-        self.file = xmlattrs.get(self.FILE)
-        self.filetype = xmlattrs.get(self.FILETYPE, OP_FILETYPE_FILE)
-        self.found = xmlattrs.get(self.FOUND, OP_FOUND_TRUE)
-        self.isdir = xmlattrs.get(self.ISDIR, OP_ISDIR_TRUE)
+    def __init__(self, elem):
+        self.type = elem.get(self.TYPE)
+        self.file = elem.get(self.FILE)
+        self.filetype = elem.get(self.FILETYPE, OP_FILETYPE_FILE)
+        self.found = elem.get(self.FOUND, OP_FOUND_TRUE)
+        self.isdir = elem.get(self.ISDIR, OP_ISDIR_TRUE)
 
     def getType(self):
         return self.type
@@ -566,10 +591,10 @@ class Timing:
     COMPLETED = "completed"
     NODE = "node"
 
-    def __init__(self, xmlattrs):
-        self.invoked = xmlattrs[self.INVOKED]
-        self.completed = xmlattrs[self.COMPLETED]
-        self.node = xmlattrs[self.NODE]
+    def __init__(self, elem):
+        self.invoked = elem.get(self.INVOKED)
+        self.completed = elem.get(self.COMPLETED)
+        self.node = elem.get(self.NODE)
 
     def getInvoked(self):
         return self.invoked
@@ -580,20 +605,29 @@ class Timing:
     def getNode(self):
         return self.node
 
-class Command:
+class Command(AnnoXMLNames):
     LINE = "line"
 
-    def __init__(self, xmlattrs):
+    def __init__(self, elem):
         # "line" is optional
-        self.line = xmlattrs.get(self.LINE)
+        self.line = elem.get(self.LINE)
         self.argv = ""
         self.outputs = []
 
-    def setArgv(self, text):
-        self.argv = text
+        for child_elem in list(elem):
+            if child_elem.tag == self.ELEMENT_ARGV:
+                assert not self.argv
+                self.argv = child_elem.text
 
-    def addOutput(self, output):
-        self.outputs.append(output)
+            elif child_elem.tag == self.ELEMENT_OUTPUT:
+                # This is the command output, not the job output
+                output_src = child_elem.get(self.ATTR_OUTPUT_SRC,
+                        OUTPUT_SRC_MAKE)
+                output = Output(child_elem.text, output_src)
+                self.outputs.append(output)
+
+            else:
+                assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
 
     def getLine(self):
         return self.line
@@ -621,10 +655,10 @@ class Dependency:
     FILE = "file"
     TYPE = "type"
 
-    def __init__(self, xmlattrs):
-        self.write_job = xmlattrs[self.WRITE_JOB]
-        self.file = xmlattrs[self.FILE]
-        self.type = xmlattrs.get(self.TYPE, DEP_TYPE_FILE)
+    def __init__(self, elem):
+        self.write_job = elem.get(self.WRITE_JOB)
+        self.file = elem.get(self.FILE)
+        self.type = elem.get(self.TYPE, DEP_TYPE_FILE)
 
     def getWriteJob(self):
         return self.write_job
@@ -641,11 +675,11 @@ class Conflict:
     FILE = "file"
     RERUN_BY = "rerunby"
 
-    def __init__(self, xmlattrs):
-        self.type = xmlattrs[self.TYPE]
-        self.write_job = xmlattrs.get(self.WRITE_JOB)
-        self.file = xmlattrs.get(self.FILE)
-        self.rerun_by = xmlattrs[self.RERUN_BY]
+    def __init__(self, elem):
+        self.type = elem.get(self.TYPE)
+        self.write_job = elem.get(self.WRITE_JOB)
+        self.file = elem.get(self.FILE)
+        self.rerun_by = elem.get(self.RERUN_BY)
 
     def getType(self):
         return self.type
@@ -665,11 +699,11 @@ class Message:
     SEVERITY = "severity"
     CODE = "code"
 
-    def __init__(self, xmlattrs):
-        self.thread = xmlattrs[self.THREAD]
-        self.time = xmlattrs[self.TIME]
-        self.severity = xmlattrs[self.SEVERITY]
-        self.code = xmlattrs[self.CODE]
+    def __init__(self, elem):
+        self.thread = elem.get(self.THREAD)
+        self.time = elem.get(self.TIME)
+        self.severity = elem.get(self.SEVERITY)
+        self.code = elem.get(self.CODE)
         self.text = None
 
     def setText(self, text):
@@ -690,9 +724,8 @@ class Message:
     def getCode(self):
         return self.code
 
-class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
-    """This sax parser handles the "body" portion of the annotation
-    XML file, where the build jobs start."""
+
+class AnnoXMLBodyParser(AnnoXMLNames):
 
     def __init__(self, build, cb, user_data):
         self.build = build
@@ -703,10 +736,7 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
 
         # In local mode builds, make elements can nest,
         # so this list of make_elem's is a stack.
-        self.make_elem = []
-        self.job_elem = None
-        self.output_src = None
-        self.op_elements = None
+        self.make_elems = []
 
         # The previous job element that was completely parsed
         # This is needed to associate a "parent" job to a MakeProcess
@@ -717,177 +747,160 @@ class AnnoXMLBodyHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
         # them in the XML file. The root <make> is #0.
         self.make_proc_num = 0
 
-        self.metrics = None
-        self.metric_name = None
+        self.metrics = {}
 
-        self.command = None
 
-    def startElement(self, name, xmlattrs):
-        if DEBUG_XML:
-            spaces = self.indent * " "
-            print "%s<%s>" % (spaces, name)
-            self.indent += 1
+    def parse(self, fh):
+    
+        # The XML looks like this:
+        # <make>
+        #   <job></job>
+        #   <job></job>
+        #   <make>
+        #       <job></job>
+        #       <job></job>
+        #       <make>
+        #           <job></job>
+        #           <job></job>
+        #       </make>
+        #       <job></job>
+        #   </make>
+        #   <job></job>
+        # <make>
+        #
+        # We want to grab the end of a <job> element, so we
+        # can parse it fully and send it back to the user.
+        # But we want to grab the start and end of a <make> element,
+        # so that we know which MakeProcess a Job belongs to.
+        # The last thing we want is to read the entire <make> tree
+        # into memory, which will read in all the jobs!
 
-        self.chars = ""
+        # http://effbot.org/zone/element-iterparse.htm#incremental-parsing
+        START_EVENT = "start"
+        END_EVENT = "end"
+        icontext = ET.iterparse(fh, events=(START_EVENT, END_EVENT))
 
-        if name == self.ELEMENT_MAKE:
-            make_elem = MakeProcess(xmlattrs, self.make_proc_num)
+        # Turn the context into an iterator
+        context = iter(icontext)
 
-            self.make_proc_num += 1
+        # Get the root element
+        event, root = context.next()
 
-            # All <make>'s must be preceded by a <job>, except for the
-            # first make. If emake was run from the command-line, it's 0,
-            # but if emake was run from inside a parent GNU Make,
-            # then it's > 0. In order to see if this is the "root"
-            # emake process, we cannot rely on getLevel(), as it could
-            # be _anything_, so we simply check if it is the first
-            # "<make>" element we found in the annotation file.
-            if self.make_proc_num > 1:
-                assert self.prev_job_elem
-                if self.prev_job_elem.getType() == JOB_TYPE_FOLLOW:
-                    make_elem.setParentJobID(self.prev_job_elem.getPartOf())
+        #for action, elem in ET.iterparse(fh):
+        for event, elem in context:
+            if event == START_EVENT:
+                if elem.tag == self.ELEMENT_MAKE:
+                    self.startMake(elem)
+                    continue
                 else:
-                    make_elem.setParentJobID(self.prev_job_elem.getID())
+                    # Skip all other START events
+                    continue
 
-#            print make_elem
-            self.make_elem.append(make_elem)
+            # Everything else is an END event
 
-        elif name == self.ELEMENT_JOB:
-            self.job_elem = Job(xmlattrs)
-#            print self.job_elem
+            if elem.tag == self.ELEMENT_JOB:
+                assert len(self.make_elems) > 0
+                job = Job(elem)
 
-        elif name == self.ELEMENT_OPLIST:
-            self.op_elements = []
+                job.setMakeProcess(self.make_elems[-1])
+                self.cb(job, self.user_data)
 
-        elif name == self.ELEMENT_OP:
-            op_elem = Operation(xmlattrs)
-            self.op_elements.append(op_elem)
+                # Set the "previous job" to this job, so that
+                # we know which job begins a Make process.
+                self.prev_job_elem = job
 
-        elif name == self.ELEMENT_METRICS:
-            self.metrics = {}
+            elif elem.tag == self.ELEMENT_METRICS:
+                self.parseMetrics(elem)
 
-        elif name == self.ELEMENT_METRIC:
-            self.metric_name = xmlattrs[self.ATTR_METRIC_NAME]
+            elif elem.tag == self.ELEMENT_MESSAGE:
+                msg = Message(elem)
+                self.build.addMessage(msg)
 
-        elif name == self.ELEMENT_WAITING_JOBS:
-            ids_string = xmlattrs[self.ATTR_WAITINGJOBS_IDLIST]
-            self.job_elem.setWaitingJobs(ids_string)
+            elif elem.tag == self.ELEMENT_MAKE:
+                assert len(self.make_elems) > 0
+                self.make_elems.pop()
 
-        elif name == self.ELEMENT_TIMING:
-            timing = Timing(xmlattrs)
-            self.job_elem.setTiming(timing)
+            # Explicitly skip elements that are sub-elements
+            # of Job
+            elif elem.tag == self.ELEMENT_TIMING:
+                continue
+            elif elem.tag == self.ELEMENT_OPLIST:
+                continue
+            elif elem.tag == self.ELEMENT_OP:
+                continue
+            elif elem.tag == self.ELEMENT_ARGV:
+                continue
+            elif elem.tag == self.ELEMENT_OUTPUT:
+                continue
+            elif elem.tag == self.ELEMENT_COMMAND:
+                continue
+            elif elem.tag == self.ELEMENT_WAITING_JOBS:
+                continue
+            elif elem.tag == self.ELEMENT_FAILED:
+                continue
+            elif elem.tag == self.ELEMENT_CONFLICT:
+                continue
+            elif elem.tag == self.ELEMENT_DEPLIST:
+                continue
+            elif elem.tag == self.ELEMENT_DEP:
+                continue
 
-        elif name == self.ELEMENT_COMMAND:
-            self.command = Command(xmlattrs)
-            self.job_elem.addCommand(self.command)
+            # Explicitly skip the elements found only in the metrics
+            elif elem.tag == self.ELEMENT_METRIC:
+                continue
 
-        elif name == self.ELEMENT_OUTPUT:
-            assert self.command or self.job_elem
-            self.output_src = xmlattrs.get(self.ATTR_OUTPUT_SRC,
-                    OUTPUT_SRC_MAKE)
+            # Explicitly skip the elements found only in the header
+            elif elem.tag == self.ELEMENT_PROPERTIES:
+                continue
+            elif elem.tag == self.ELEMENT_PROPERTY:
+                continue
+            elif elem.tag == self.ELEMENT_ENVIRONMENT:
+                continue
+            elif elem.tag == self.ELEMENT_VAR:
+                continue
 
-        elif name == self.ELEMENT_CONFLICT:
-            conflict = Conflict(xmlattrs)
-            self.job_elem.setConflict(conflict)
+            # Expcliity skip ourself!
+            elif elem.tag == self.ELEMENT_BUILD:
+                continue
 
-        elif name == self.ELEMENT_DEP:
-            dep = Dependency(xmlattrs)
-            self.job_elem.addDep(dep)
-
-        elif name == self.ELEMENT_FAILED:
-            code_text = xmlattrs[self.ATTR_FAILED_CODE]
-            code_int = int(code_text)
-            self.job_elem.setRetval(code_int)
-
-        elif name == self.ELEMENT_MESSAGE:
-            self.msg = Message(xmlattrs)
-
-        elif name in [
-                self.ELEMENT_BUILD,
-                self.ELEMENT_PROPERTIES,
-                self.ELEMENT_PROPERTY,
-                self.ELEMENT_ENVIRONMENT,
-                self.ELEMENT_VAR,
-                self.ELEMENT_ARGV,
-                self.ELEMENT_DEPLIST,
-                ]:
-            pass
-
-        else:
-            assert 0, "Unhandled element: " + name
-
-    def endElement(self, name):
-        if DEBUG_XML:
-            spaces = self.indent * " "
-            print "%s</%s>" % (spaces, name)
-            self.indent -= 1
-
-        if name == self.ELEMENT_MAKE:
-            assert len(self.make_elem) > 0
-            self.make_elem.pop()
-
-        elif name == self.ELEMENT_OUTPUT:
-            assert self.command or self.job_elem
-            output = Output(self.chars, self.output_src)
-
-            # Add to a command
-            if self.command:
-                assert self.job_elem
-                self.command.addOutput(output)
             else:
-                # Add to a job, which is a parent of a command,
-                # so no current command
-                assert not self.command
-                self.job_elem.addOutput(output)
-
-            # Re-set value
-            self.output_src = None
-
-        elif name == self.ELEMENT_JOB:
-            assert len(self.make_elem) > 0
-
-            # We are somewhat rigrous here. We could initialize
-            # op_elements to [] at the beginning of a Job,
-            # but instead, we only initialize it when we see an OpList.
-            # So, only add that list to the Job object if it is a list.
-            # If it was never initialized (op_elements == None),
-            # then don't add it to the Job object.
-            if type(self.op_elements) == types.ListType:
-                self.job_elem.setOpList(self.op_elements)
-
-            self.job_elem.setMakeProcess(self.make_elem[-1])
-
-            self.cb(self.job_elem, self.user_data)
-
-            # Set the "previous job" to this job
-            self.prev_job_elem = self.job_elem
-
-            self.job_elem = None
-            self.op_elements = None
-
-        elif name == self.ELEMENT_METRIC:
-            self.metrics[self.metric_name] = self.chars
-            self.metric_name = None
-
-        elif name == self.ELEMENT_METRICS:
-            self.build.setMetrics(self.metrics)
-
-        elif name == self.ELEMENT_TIMING:
-            pass
-
-        elif name == self.ELEMENT_ARGV:
-            assert self.command
-            self.command.setArgv(self.chars)
-
-        elif name == self.ELEMENT_COMMAND:
-            assert self.command
-            self.command = None
-
-        self.chars = ""
+                assert False, MSG_UNEXPECTED_XML_ELEM + elem.tag
 
 
-    def characters(self, chars):
-        self.chars += chars
+    def parseMetrics(self, elem):
+        for child_elem in list(elem):
+            if child_elem.tag == self.ELEMENT_METRIC:
+                metric_name = child_elem.get(self.ATTR_METRIC_NAME)
+                self.metrics[metric_name] = child_elem.text
+
+            else:
+                assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
+
+        # Put the metrics into the Build object
+        self.build.setMetrics(self.metrics)
+
+    def startMake(self, elem):
+        make_elem = MakeProcess(elem, self.make_proc_num, self)
+
+        self.make_proc_num += 1
+
+        # All <make>'s must be preceded by a <job>, except for the
+        # first make. If emake was run from the command-line, it's 0,
+        # but if emake was run from inside a parent GNU Make,
+        # then it's > 0. In order to see if this is the "root"
+        # emake process, we cannot rely on getLevel(), as it could
+        # be _anything_, so we simply check if it is the first
+        # "<make>" element we found in the annotation file.
+        if self.make_proc_num > 1:
+            assert self.prev_job_elem
+            if self.prev_job_elem.getType() == JOB_TYPE_FOLLOW:
+                make_elem.setParentJobID(self.prev_job_elem.getPartOf())
+            else:
+                make_elem.setParentJobID(self.prev_job_elem.getID())
+
+        self.make_elems.append(make_elem)
+
+
 
 
 def anno_open(filename, mode="rb"):

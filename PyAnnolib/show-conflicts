@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 Show the conflicts in a build.
 """
@@ -68,8 +68,8 @@ def show_job(job):
     # Print a rule job
     if job.getType() == annolib.JOB_TYPE_RULE:
         print "Target:", job.getName()
-        timing = job.getTiming()
-        if timing:
+        timings = job.getTimings()
+        for timing in timings:
             print "Invoked:", timing.getInvoked(),
             print "Completed:", timing.getCompleted()
         print "Makefile:", job.getFile(), "line:", job.getLine()

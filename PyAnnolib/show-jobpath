@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 Show the jobpath for any given target.
 """
@@ -40,6 +40,7 @@ def show_jobpath(target):
     job = find_job_for_target(target)
     if not job:
         print "Could not find job for:", target
+        return
     path.append(job)
 
     while 1:
@@ -79,9 +80,10 @@ def show_job(job):
     # Print a rule job
     if job.getType() == annolib.JOB_TYPE_RULE:
         print "Target:", job.getName()
-        timing = job.getTiming()
-        print "Invoked:", timing.getInvoked(),
-        print "Completed:", timing.getCompleted()
+        timings = job.getTimings()
+        for timing in timings:
+            print "Invoked:", timing.getInvoked(),
+            print "Completed:", timing.getCompleted()
         print "Makefile:", job.getFile(), "line:", job.getLine()
         commands = job.getCommands()
         if commands:
