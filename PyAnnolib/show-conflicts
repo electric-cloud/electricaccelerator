@@ -3,102 +3,187 @@
 Show the conflicts in a build.
 """
 
+import sys
 import argparse
 from pyannolib import annolib
 
-# Key = job id, Value = Job record
-jobs = {}
 
-# The jobs that created a conflict
-conflict_jobs = []
+class Analyzer:
+    def __init__(self, filename):
+        self.filename = filename
+
+        # Simple counters
+        self.num_jobs = 0
+        self.num_conflicts = 0
+
+        # The jobs that created a conflict, or
+        # The jobs that were run to fix those conflicts, or
+        # The jobs that wrote (what does that mean???)
+        self.interesting_job_ids = set()
+
+        # Conflicts
+        # Key = filename, Value = [ Conflict job IDs ]
+        self.conflict_filenames = {}
+
+        # Job ID / Job map, filled during the 2nd pass
+        self.jobs = {}
+
+    def Dump(self):
+        print "Interesting job ids:", self.interesting_job_ids
+        print
+        print "Conflict filenames:", self.conflict_filenames.keys()
+
+    def gather_job_ids(self):
+        print >> sys.stderr, "Pass 1... Looking for conflicts"
+        sys.stderr.flush()
+
+        build = annolib.AnnotatedBuild(self.filename)
+        
+
+        # Collect all the jobs in a hash, and look for conflict jobs
+        def job_cb(job, analyzer):
+            
+            analyzer.num_jobs += 1
+
+            # Did this job cause a conflict?
+            if job.getStatus() == annolib.JOB_STATUS_CONFLICT:
+
+                conflict_job_id = job.getID()
+
+                # Make sure this conflict job has a filename
+                # (why wouldn't it? I don't know)
+                conflict = job.getConflict()
+                filename = conflict.getFile()
+                if filename == None:
+                    return
+                analyzer.num_conflicts +=1 
+
+                # The conflict job record contains the conflict record,
+                # so we need it
+                self.interesting_job_ids.add(conflict_job_id)
+
+                # Add our conflict job id to the record for this
+                # filename
+                conjobs = self.conflict_filenames.setdefault(filename, [])
+                conjobs.append(conflict_job_id)
+
+                # Other jobs to read in the 2nd pass
+                write_job_id = conflict.getWriteJob()
+                if write_job_id:
+                    self.interesting_job_ids.add(write_job_id)
+
+                rerun_job_id = conflict.getRerunBy()
+                if rerun_job_id:
+                    self.interesting_job_ids.add(rerun_job_id)
+
+        build.parseJobs(job_cb, self)
+
+        print >> sys.stderr, "\tRead %d records, with %d conflict jobs" % \
+                (self.num_jobs, self.num_conflicts)
+        sys.stderr.flush()
+
+    def read_interesting_jobs(self):
+        print >> sys.stderr, "Pass 2... Gathering the interesting jobs"
+        sys.stderr.flush()
+
+        build = annolib.AnnotatedBuild(self.filename)
+        
+        def job_cb(job, analyzer):
+            job_id = job.getID()
+            if job_id in self.interesting_job_ids:
+                self.jobs[job_id] = job
+                self.interesting_job_ids.remove(job_id)
+
+        build.parseJobs(job_cb, self)
+
+        if len(self.interesting_job_ids) > 0:
+            print "Could not find jobs:", self.interesting_job_ids
+
+    def report(self):
+        print >> sys.stderr, "Writing report..."
+        sys.stderr.flush()
+
+        num_reported = 0
+        num_skipped = 0
+
+        filenames = self.conflict_filenames.keys()
+        filenames.sort()
+        for filename in filenames:
+
+            # Go through the jobs that dealt with the conflict,
+            # and store only the Rule jobs
+            rule_jobs = []
+
+            conflict_job_ids = self.conflict_filenames[filename]
+
+            for conflict_job_id in conflict_job_ids:
+
+                conflict_job = self.jobs[conflict_job_id]
+                conflict = conflict_job.getConflict()
+
+                write_job = self.jobs.get(conflict.getWriteJob())
+                if write_job:
+                    if write_job.getType() == annolib.JOB_TYPE_RULE:
+                        if write_job not in rule_jobs:
+                            rule_jobs.append(write_job)
+
+                rerun_job = self.jobs.get(conflict.getRerunBy())
+                if rerun_job:
+                    if rerun_job.getType() == annolib.JOB_TYPE_RULE:
+                        if rerun_job not in rule_jobs:
+                            rule_jobs.append(rerun_job)
+
+            # Are there > 1 rule jobs dealing with this conflict?
+            if len(rule_jobs) > 1:
+                print "=" * 80
+                print
+                print "Conflict #" + str(num_reported + 1)
+                print
+                print "File:", filename
+                print
+
+                for rule_job in rule_jobs:
+                    show_job(rule_job)
+
+                print
+                num_reported += 1
+
+        print "=" * 80
+
+        print >> sys.stderr, "Reported on %d file conflicts" % (num_reported,)
+        sys.stderr.flush()
 
 def run(filename):
 
-    build = annolib.AnnotatedBuild(filename)
+    analyzer = Analyzer(filename)
 
-    # Collect all the jobs in a hash, and look for conflict jobs
-    def job_cb(job, user_data):
-        jobs[job.getID()] = job
+    # First pass
+    analyzer.gather_job_ids()
+    print
 
-        if job.getStatus() == annolib.JOB_STATUS_CONFLICT:
-            conflict_jobs.append(job)
+    # Second pass
+    analyzer.read_interesting_jobs()
+    print
 
-    build.parseJobs(job_cb)
+    # Report
+    analyzer.report()
 
-    # Simple summary
-    print "Total number of jobs:", len(jobs.keys())
-    print "Total number of conflicts:", len(conflict_jobs)
-
-
-    # Report each conflict
-    for i, conflict_job in enumerate(conflict_jobs):
-        print "=" * 80
-        print
-        print "Conflict #%d" % (i+1,)
-        print
-        conflict = conflict_job.getConflict()
-        filename = conflict.getFile()
-        print "Conflict file:", filename
-
-        print
-        print "Conflicting job:", conflict_job.getID()
-        print "-----------------" + "-" * len(conflict_job.getID())
-        show_job(conflict_job)
-        print
-
-        write_job = jobs.get(conflict.getWriteJob())
-        if write_job:
-            print "Written by:", write_job.getID()
-            print "------------" + "-" * len(write_job.getID())
-            show_job(write_job)
-        else:
-            print "Written by: UNKNOWN"
-
-        rerun_job = jobs.get(conflict.getRerunBy())
-        if rerun_job:
-            print "Rerun by:", rerun_job.getID()
-            print "----------" + "-" * len(rerun_job.getID())
-            show_job(rerun_job)
-        else:
-            print "Rerun by: UNKNOWN"
-
-    print "=" * 80
 
 def show_job(job):
     # Print a rule job
-    if job.getType() == annolib.JOB_TYPE_RULE:
-        print "Target:", job.getName()
-        timings = job.getTimings()
-        for timing in timings:
-            print "Invoked:", timing.getInvoked(),
-            print "Completed:", timing.getCompleted()
-        print "Makefile:", job.getFile(), "line:", job.getLine()
-        commands = job.getCommands()
-        if commands:
-            print "ARGV:"
-            for command in commands:
-                print command.getArgv()
-
-    # Print a parse job
-    elif job.getType() == annolib.JOB_TYPE_PARSE:
-        outputs = job.getOutputs()
-        if outputs:
-            print "Parse job output:"
-            for output in outputs:
-                print output.getText()
-        else:
-            print "Parse job (no output)"
-
-        # Key = optype, value = file
-        operations = {}
-        for op in job.getOperations():
-            oplist = operations.setdefault(op.getType(), [])
-            oplist.append( op.getFile() )
-
-        if operations:
-            print "File operations:"
-            for optype, files in operations.items():
-                print "\t", optype, ":", len(files)
+    print "Job ID:", job.getID()
+    print
+    print "Target:", job.getName()
+    timings = job.getTimings()
+    for timing in timings:
+        print "Invoked:", timing.getInvoked(),
+        print "Completed:", timing.getCompleted()
+    print "Makefile:", job.getFile(), "line:", job.getLine()
+    commands = job.getCommands()
+    if commands:
+        print "Commands:"
+        for command in commands:
+            print command.getArgv()
 
     print
 
