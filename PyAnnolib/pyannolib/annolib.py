@@ -803,6 +803,8 @@ class AnnoXMLBodyParser(AnnoXMLNames):
                 job = Job(elem)
 
                 job.setMakeProcess(self.make_elems[-1])
+
+                # Send the Job back to the user
                 self.cb(job, self.user_data)
 
                 # Set the "previous job" to this job, so that
@@ -859,12 +861,18 @@ class AnnoXMLBodyParser(AnnoXMLNames):
             elif elem.tag == self.ELEMENT_VAR:
                 continue
 
-            # Expcliity skip ourself!
+            # Explicitly skip ourself!
             elif elem.tag == self.ELEMENT_BUILD:
                 continue
 
+            # Catch my mistakes
             else:
                 assert False, MSG_UNEXPECTED_XML_ELEM + elem.tag
+
+            # If we reached here, we processed an END event for an element.
+            # Free the memory for this element
+            elem.clear()
+
 
 
     def parseMetrics(self, elem):

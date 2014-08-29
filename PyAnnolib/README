@@ -237,15 +237,15 @@ Read the DEVELOPMENT text file.
 Sample Scripts
 ==============
 
-sample-errors - This shows the jobs that failed.
-
 sample-jobs - This sample script shows a few details about the Build,
-and then shows some data for each "rule" Job that has Command
-objects associated with it. That is, these are the jobs that would
-normally appear in a Make log.
+    and then shows some data for each "rule" Job that has Command
+    objects associated with it. That is, these are the jobs that would
+    normally appear in a Make log.
 
 sample-metrics - shows to how parse the file to get the metrics, and
-report them.
+    report them.
+
+show-errors - This shows the jobs that failed.
 
 show-conflicts - shows the conflicting jobs in a build
 
