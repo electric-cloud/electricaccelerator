@@ -19,7 +19,7 @@ def run(filename):
     print "AnnoDetail:", props["AnnoDetail"]
 
 
-    def job_cb(job):
+    def job_cb(job, junk):
         global num_jobs
         num_jobs += 1
 

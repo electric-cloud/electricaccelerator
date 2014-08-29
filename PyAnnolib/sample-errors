@@ -16,7 +16,7 @@ def run(filename):
     props = build.getProperties()
     print "CWD:", props["CWD"]
 
-    def job_cb(job):
+    def job_cb(job, junk):
         global num_jobs
         num_jobs += 1
 

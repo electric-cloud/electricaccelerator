@@ -12,7 +12,7 @@ def run(filename):
 
     build = annolib.AnnotatedBuild(filename)
 
-    def job_cb(job):
+    def job_cb(job, junk):
         # Do nothing
         pass
 
