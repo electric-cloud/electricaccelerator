@@ -17,8 +17,8 @@ def run(is_dir, list1, list2, metric_names):
         print
 
     for i in range(len(list1)):
-        file1 = list1[0]
-        file2 = list2[0]
+        file1 = list1[i]
+        file2 = list2[i]
 
         build1 = annolib.AnnotatedBuild(file1)
         build2 = annolib.AnnotatedBuild(file2)
