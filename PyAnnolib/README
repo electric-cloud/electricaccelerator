@@ -239,6 +239,9 @@ Read the DEVELOPMENT text file.
 Sample Scripts
 ==============
 
+compare-metrics - Show specified metrics between 2 anno files,
+    or between the same-named anno files in 2 directories.
+
 sample-jobs - This sample script shows a few details about the Build,
     and then shows some data for each "rule" Job that has Command
     objects associated with it. That is, these are the jobs that would

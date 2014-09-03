@@ -203,8 +203,8 @@ class AnnotatedBuild():
         try:
             root = ET.fromstring(metrics_text)
         except ET.ParseError, e:
-            msg = "Error reading <metrics>: %s" % (e,))
-            riase PyAnnolibError(msg)
+            msg = "Error reading <metrics>: %s" % (e,)
+            raise PyAnnolibError(msg)
 
         # Store the data in our dictionary
         for elem in list(root):

@@ -6,8 +6,6 @@ This sample shows the metrics of a build, and nothing else.
 import argparse
 from pyannolib import annolib
 
-num_jobs = 0
-
 def run(filename):
 
     build = annolib.AnnotatedBuild(filename)

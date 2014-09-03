@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+"""
+Compare metrics between 2 anno files, or between 2 directories
+of anno files.
+"""
+
+import sys
+import os
+import argparse
+from pyannolib import annolib
+
+def run(is_dir, list1, list2, metric_names):
+
+    if is_dir:
+        print "Directory 1:", os.path.dirname(list1[0])
+        print "Directory 2:", os.path.dirname(list2[0])
+        print
+
+    for i in range(len(list1)):
+        file1 = list1[0]
+        file2 = list2[0]
+
+        build1 = annolib.AnnotatedBuild(file1)
+        build2 = annolib.AnnotatedBuild(file2)
+
+        metrics1 = build1.getMetrics()
+        metrics2 = build2.getMetrics()
+
+        if is_dir:
+            name = os.path.basename(file1)
+            print "File:", name
+        else:
+            print "File 1:", file1
+            print "File 2:", file2
+
+        for metric in metric_names:
+            print "%-20s %15s %15s" % (metric,
+                    metrics1[metric], metrics2[metric])
+        print
+
+def find_common_files(dir1, dir2):
+    set1 = set()
+    for file in os.listdir(dir1):
+        set1.add(file)
+
+    set2 = set()
+    for file in os.listdir(dir2):
+        set2.add(file)
+
+    common_list = list(set1.intersection(set2))
+
+    list1 = [ os.path.join(dir1, file) for file in common_list ]
+    list2 = [ os.path.join(dir2, file) for file in common_list ]
+
+    list1.sort()
+    list2.sort()
+
+    return list1, list2
+
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("file_or_dir1")
+    parser.add_argument("file_or_dir2")
+    parser.add_argument("metric_names", nargs="+")
+
+    args = parser.parse_args()
+
+    if os.path.isdir(args.file_or_dir1):
+        if not os.path.isdir(args.file_or_dir2):
+            msg = "%s is a directory but %s is not" % \
+                    (args.file_or_dir1, args.file_or_dir2)
+            sys.exit(msg)
+        is_dir = True
+        list1, list2 = find_common_files(args.file_or_dir1, args.file_or_dir2)
+    else:
+        if os.path.isdir(args.file2):
+            msg = "%s is a file but %s is a directory" % \
+                    (args.file_or_dir1, args.file_or_dir2)
+            sys.exit(msg)
+        is_dir = False
+        list1 = [args.file_or_dir1]
+        list2 = [args.file_or_dir2]
+
+    if len(list1) == 0:
+        sys.exit("No common files found.")
+
+    run(is_dir, list1, list2, args.metric_names)  
+
+
+
+if __name__ == "__main__":
+    main()
