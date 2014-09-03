@@ -11,17 +11,6 @@ num_jobs = 0
 def run(filename):
 
     build = annolib.AnnotatedBuild(filename)
-
-    def job_cb(job, junk):
-        # Do nothing
-        pass
-
-    # Skip all the jobs (parse them and throw them away)
-    build.parseJobs(job_cb)
-
-    # Now we have the metrics, which appear at the end of
-    # the annotation file (that's why we had to parse all the jobs
-    # first)
     metrics = build.getMetrics()
 
     keys = metrics.keys()

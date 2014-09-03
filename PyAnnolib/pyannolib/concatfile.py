@@ -64,6 +64,9 @@ class ConcatenatedFile:
         # Beyond the end?
         return self.IMPOSSIBLE
 
+    def tell(self):
+        return self.super_pos
+
     def close(self):
         if self.currently_open:
             self.fh.close()

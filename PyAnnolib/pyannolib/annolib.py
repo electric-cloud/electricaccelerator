@@ -88,10 +88,12 @@ class FinishedHeaderException(Exception):
     back where it was called (in parseFH)."""
     pass
 
-class AnnotatedBuild:
+class AnnotatedBuild():
     ID = "id"
     CM = "cm"
     START = "start"
+    ELEMENT_METRIC = "metric"
+    ATTR_METRIC_NAME = "name"
 
     def __init__(self, filename, fh=None):
         """Can raise IOError"""
@@ -162,6 +164,9 @@ class AnnotatedBuild:
             hdr_data = exc.args[0]
             self._init_from_hdr_data(hdr_data)
 
+            # Now, skip to the end of the file and look for metrics.
+            self.parseMetrics()
+
             # Set the filehandle back to the beginning; when parseJobs()
             # is run, it uses AnnoXMLBodyParser, which skips over all the XML
             # fields that are part of the header. It's not the most efficient
@@ -170,8 +175,7 @@ class AnnotatedBuild:
             # the body starts, but the innards of xml.sax are complicated,
             # and the header itself is rather small when compared to the
             # body, so it's not a horrible solution.
-            SEEK_BEGINNING = 0
-            self.fh.seek(SEEK_BEGINNING)
+            self.fh.seek(0, os.SEEK_SET)
 
             # Done with processing the header, so return now.
             return
@@ -192,10 +196,79 @@ class AnnotatedBuild:
         self.properties = properties
         self.vars = vars
 
-    def setMetrics(self, metrics):
-        """This is called by the body parser because metrics
-        come at the very end of the annotation file."""
-        self.metrics = metrics
+    def parseMetrics(self):
+        metrics_text = self._read_metrics_footer()
+
+        # Parse the XML string
+        try:
+            root = ET.fromstring(metrics_text)
+        except ET.ParseError, e:
+            msg = "Error reading <metrics>: %s" % (e,))
+            riase PyAnnolibError(msg)
+
+        # Store the data in our dictionary
+        for elem in list(root):
+            if elem.tag == self.ELEMENT_METRIC:
+                metric_name = elem.get(self.ATTR_METRIC_NAME)
+                self.metrics[metric_name] = elem.text
+            else:
+                msg = UNEXPECTED_XML_ELEM + elem.tag
+                raise PyAnnolibError(msg)
+
+    def _read_metrics_footer(self):
+        # Number of bytes to skip backwards at a time.
+        # In my tests, the metrics section is ~3000 bytes.
+        SKIP_NUM_BYTES = 500
+        ELEM_STRING_START_METRICS = "<metrics>"
+        ELEM_STRING_END_METRICS = "</metrics>"
+        ELEM_STRING_END_JOB = "</job>"
+        
+        # When reading, we want to read more than what we just
+        # skipped, so that if half the string is in one chunk, and
+        # half the string is in the next chunk, we are sure to find
+        # the string.
+        READ_CHUNK_NUM_BYTES = SKIP_NUM_BYTES + len(ELEM_STRING_START_METRICS)
+
+        # Go to EOF
+        self.fh.seek(0, os.SEEK_END)
+
+        pos = self.fh.tell()
+
+        # Go back in chunks, until we find "<metrics>"
+        pos -= SKIP_NUM_BYTES
+        self.fh.seek(pos, os.SEEK_SET)
+        while pos >= 0:
+            data = self.fh.read(READ_CHUNK_NUM_BYTES)
+            i = data.find(ELEM_STRING_START_METRICS)
+            if i == -1:
+                # Didn't find it. Are there any other indications
+                # that we have gone too far? If we see a job, then yes.
+                if data.find(ELEM_STRING_END_JOB) != -1:
+                    return
+                else:
+                    pos -= SKIP_NUM_BYTES
+                    self.fh.seek(pos, os.SEEK_SET)
+            else:
+                # We found it; stop looping
+                break
+
+        # We found "<metrics>". Let's read the whole "<metrics>"
+        # section into memory. First, position the filehandle
+        # to the place where "<metrics>" starts, then read to EOF.
+        self.fh.seek(pos + i, os.SEEK_SET)
+        metrics_text = self.fh.read()
+
+        # We need to trim the stuff after "</metrics>",
+        # which should be "</build>"
+        i = metrics_text.find(ELEM_STRING_END_METRICS)
+        if i == -1:
+            msg = "Found %s but not %s" % (ELEM_STRING_START_METRICS,
+                    ELEM_STRING_END_METRICS)
+            raise PyAnnolibError(msg)
+
+        metrics_text = metrics_text[:i + len(ELEM_STRING_END_METRICS)]
+        return metrics_text
+
 
     def addMessage(self, msg):
         self.messages.append(msg)
@@ -811,9 +884,6 @@ class AnnoXMLBodyParser(AnnoXMLNames):
                 # we know which job begins a Make process.
                 self.prev_job_elem = job
 
-            elif elem.tag == self.ELEMENT_METRICS:
-                self.parseMetrics(elem)
-
             elif elem.tag == self.ELEMENT_MESSAGE:
                 msg = Message(elem)
                 self.build.addMessage(msg)
@@ -861,6 +931,11 @@ class AnnoXMLBodyParser(AnnoXMLNames):
             elif elem.tag == self.ELEMENT_VAR:
                 continue
 
+            # We handled metrics at the beginning of
+            # the parse
+            elif elem.tag == self.ELEMENT_METRICS:
+                continue
+
             # Explicitly skip ourself!
             elif elem.tag == self.ELEMENT_BUILD:
                 continue
@@ -873,19 +948,6 @@ class AnnoXMLBodyParser(AnnoXMLNames):
             # Free the memory for this element
             elem.clear()
 
-
-
-    def parseMetrics(self, elem):
-        for child_elem in list(elem):
-            if child_elem.tag == self.ELEMENT_METRIC:
-                metric_name = child_elem.get(self.ATTR_METRIC_NAME)
-                self.metrics[metric_name] = child_elem.text
-
-            else:
-                assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
-
-        # Put the metrics into the Build object
-        self.build.setMetrics(self.metrics)
 
     def startMake(self, elem):
         make_elem = MakeProcess(elem, self.make_proc_num, self)

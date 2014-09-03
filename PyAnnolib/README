@@ -67,9 +67,12 @@ The initialize will read the header of the annotation file.
 The AnnotatedBuild has data associated with it (metrics), and contains many
 Job records, which can be retreived, one at a time, via parseJobs()
 
-The Metrics can only be accessed after parseJobs() has finished
-reading all the Jobs. This is because the Metrics are stored
-at the very end of the annotation file.
+In previous versions of PyAnnolib, the Metrics could only be accessed
+after reading all the jobs with parseJobs(), because the Metrics are
+stored at the end of the annotation file. Now, when an AnnotatedBuild
+object is first instantiated, PyAnnolib will seek to the end of the file
+and parse the metrics immediately. So, if you want to just read
+the metrics, there is no need to use parseJobs() to read all the jobs first.
 
 Methods:
 
@@ -82,7 +85,6 @@ getVars():
 
 getMetrics():
     Returns the hash of metrics that were recorded for the build.
-    These are only available after all the Jobs have been parsed.
 
 getMessages():
     Returns the list of out-of-band messages that were emitted
@@ -242,8 +244,7 @@ sample-jobs - This sample script shows a few details about the Build,
     objects associated with it. That is, these are the jobs that would
     normally appear in a Make log.
 
-sample-metrics - shows to how parse the file to get the metrics, and
-    report them.
+sample-metrics - shows how to read the metrics and report them.
 
 show-errors - This shows the jobs that failed.
 
