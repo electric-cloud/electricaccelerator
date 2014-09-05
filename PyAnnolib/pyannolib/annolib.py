@@ -112,7 +112,10 @@ class AnnotatedBuild():
             assert not fh, "filename and fh both given"
 
             # Allow the exception to go back to the caller of AnnoFileParser
-            self.fh = anno_open(filename)
+            try:
+                self.fh = anno_open(filename)
+            except (IOError, ValueError) as e:
+                raise PyAnnolibError(e)
 
         elif fh:
             self.fh = fh

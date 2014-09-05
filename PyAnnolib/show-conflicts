@@ -155,18 +155,22 @@ class Analyzer:
 
 def run(filename):
 
-    analyzer = Analyzer(filename)
+    try:
+        analyzer = Analyzer(filename)
 
-    # First pass
-    analyzer.gather_job_ids()
-    print
+        # First pass
+        analyzer.gather_job_ids()
+        print
 
-    # Second pass
-    analyzer.read_interesting_jobs()
-    print
+        # Second pass
+        analyzer.read_interesting_jobs()
+        print
 
-    # Report
-    analyzer.report()
+        # Report
+        analyzer.report()
+
+    except annolib.PyAnnolibError, e:
+        sys.exit(e)
 
 
 def show_job(job):
