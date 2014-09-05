@@ -444,7 +444,7 @@ class MakeProcess:
         # a <make> is the <make>'s parent job.
         self.parent_job_id = None
 
-        self.make_proc_id = "M%08d" % (make_proc_num,)
+        self.make_proc_id = "M%08x" % (make_proc_num,)
 
 
     def __str__(self):
