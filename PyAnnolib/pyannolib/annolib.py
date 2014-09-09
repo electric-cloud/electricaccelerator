@@ -31,6 +31,7 @@ JOB_TYPE_SUBBUILD = "subbuild"
 JOB_TYPE_ALPHA = "alpha"
 JOB_TYPE_OMEGA = "omega"
 JOB_TYPE_UPDATE = "update"
+JOB_TYPE_STATCACHE = "statcache"
 
 # Dep type values
 DEP_TYPE_FILE = "file"
