@@ -71,12 +71,12 @@ OUTPUT_SRC_MAKE = "make"
 MESSAGE_SEVERITY_WARNING = "warning"
 MESSAGE_SEVERITY_ERROR = "error"
 
-
-# Show debug statements for parsing XML?
-DEBUG_XML = False
-
 # Some error strings
 MSG_UNEXPECTED_XML_ELEM = "Unexpected xml element: "
+
+# This value is returned by the parseJobs callback if
+# the caller wants parsing to stop. There is no way to re-start it.
+StopParseJobs = 1
 
 class PyAnnolibError(Exception):
     """Generic exception for any error this library wants
@@ -547,7 +547,6 @@ class Job(AnnoXMLNames):
             elif child_elem.tag == self.ELEMENT_DEPLIST:
                 self.parseDepList(child_elem)
 
-
             else:
                 assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
 
@@ -636,6 +635,100 @@ class Job(AnnoXMLNames):
     def getPartOf(self):
         return self.partof
 
+    def getTextReport(self):
+        text = """
+Job ID:    %s
+Type:      %s
+Status:    %s
+Thread:    %s
+""" % (self.job_id, self.type, self.status, self.thread)
+
+        if self.name:
+            text += "Name:      %s\n" % (self.name,)
+
+        if self.file:
+            text += "File:      %s\n" % (self.file,)
+
+        if self.line:
+            text += "Line:      %s\n" % (self.line,)
+
+        if self.needed_by:
+            text += "Needed By: %s\n" % (self.needed_by,)
+
+        if self.partof:
+            text += "Part Of:   %s\n" % (self.partof,)
+
+        if self.make:
+            text += "Make Proc: %s\n" % (self.make.getID(),)
+
+        if self.conflict:
+            text += "Conflict:\n"
+            text += self.conflict.getTextReport()
+            text += "\n"
+
+        if self.timings:
+            text += "Timings:\n"
+            for timing in self.timings:
+                text += timing.getTextReport()
+            text += "\n"
+
+        if self.waiting_jobs:
+            WAITING_JOB = "Waiting Jobs: "
+            LEN_WAITING_JOB = len(WAITING_JOB)
+            text += WAITING_JOB
+            i = 0
+            
+            # Did we jus start a new line? True/False
+            carriage_return = False
+
+            for (i, waiting_job) in enumerate(self.waiting_jobs):
+                # If we did just start a new line, shift over first.
+                if carriage_return == True:
+                    text += " " * LEN_WAITING_JOB
+                    carriage_return = False
+                elif i > 0:
+                    # No? then shift over just one space
+                    # (except if this is the very first item)
+                    text += " "
+
+                # Add the job id
+                text += waiting_job
+
+                # If we printed 3 jobs, the next loop needs to start
+                # on a new line.
+                if i > 0 and (i + 1) % 3 == 0:
+                    carriage_return = True
+                    text += "\n"
+
+            # Do we need a final new-line?
+            if not carriage_return:
+                text += "\n"
+
+        text += "\n"
+        if self.commands:
+            text += "Commands:\n"
+            for command in self.commands:
+                text += command.getTextReport()
+
+
+        if self.outputs:
+            text += "Outputs:\n"
+            for output in self.outputs:
+                text += output.getTextReport()
+            text += "\n"
+
+        if self.deplist:
+            text += "Dependencies:\n\n"
+            for dep in self.deplist:
+                text += dep.getTextReport()
+
+        if self.oplist:
+            text += "Operations:\n\n"
+            for op in self.oplist:
+                text += op.getTextReport()
+
+        return text
+
 
 class Operation:
     TYPE = "type"
@@ -663,6 +756,13 @@ class Operation:
     def getFound(self):
         return self.found
 
+    def getTextReport(self):
+        text  = "(%s) %s\n" % (self.type, self.file)
+        text += "FileType: %s Found: %s IsDir: %s\n\n" % \
+                (self.filetype, self.found, self.isdir)
+        return text
+
+
 class Timing:
     INVOKED = "invoked"
     COMPLETED = "completed"
@@ -681,6 +781,22 @@ class Timing:
 
     def getNode(self):
         return self.node
+
+    def getTextReport(self):
+
+        try:
+            duration = float(self.completed) - float(self.invoked)
+        except ValueError:
+            duration = None
+
+        text = " Node: %s " % (self.node,)
+        padding = "        " + " " * len(self.node,)
+        text += "Invoked:    %15s sec\n" % (self.invoked, )
+        text += padding + "Completed:  %15s sec\n" % (self.completed, )
+        text += padding + "Duration:   %15s sec\n" % (duration, )
+
+        return text
+
 
 class Command(AnnoXMLNames):
     LINE = "line"
@@ -715,6 +831,13 @@ class Command(AnnoXMLNames):
     def getOutputs(self):
         return self.outputs
 
+    def getTextReport(self):
+        text = "Line: %s\n" % (self.line,)
+        text += self.argv + "\n"
+        for output in self.outputs:
+            text += output.getTextReport()
+        return text
+
 class Output:
     def __init__(self, text, src):
         self.text = text
@@ -725,6 +848,12 @@ class Output:
 
     def getSrc(self):
         return self.src
+
+    def getTextReport(self):
+        text_report  = "------- Output (%s) -------\n" % (self.src,)
+        text_report += self.text
+        text_report += "--------%s-----------------\n" % ("-" * len(self.src),)
+        return text_report
 
 
 class Dependency:
@@ -745,6 +874,11 @@ class Dependency:
 
     def getType(self):
         return self.type
+
+    def getTextReport(self):
+        text  = "File: %s\n" % (self.file,)
+        text += "Type: %s WriteJob: %s\n\n" % (self.type, self.write_job)
+        return text
 
 class Conflict:
     TYPE = "type"
@@ -769,6 +903,14 @@ class Conflict:
 
     def getRerunBy(self):
         return self.rerun_by
+
+    def getTextReport(self):
+        return """File: %s
+Type: %s
+Write Job: %s
+Rerun By: %s
+""" % (self.file, self.type, self.write_job, self.rerun_by)
+
 
 class Message:
     THREAD = "thread"
@@ -882,7 +1024,9 @@ class AnnoXMLBodyParser(AnnoXMLNames):
                 job.setMakeProcess(self.make_elems[-1])
 
                 # Send the Job back to the user
-                self.cb(job, self.user_data)
+                retval = self.cb(job, self.user_data)
+                if retval == StopParseJobs:
+                    return
 
                 # Set the "previous job" to this job, so that
                 # we know which job begins a Make process.

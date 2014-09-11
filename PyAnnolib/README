@@ -154,6 +154,12 @@ getLine()
 getPartOf() - Used in FOLLOW-type jobs
     Retrieve these values.
 
+getTextReport()
+    Returns a string with all the information nicely formatted.
+    It's all the information that is available in the annotation record
+    for this job, but your eyes won't glaze over trying to read through
+    the XML markup.
+
 
 MakeProcess
 -----------
@@ -241,6 +247,8 @@ Sample Scripts
 
 compare-metrics - Show specified metrics between 2 anno files,
     or between the same-named anno files in 2 directories.
+
+extract-jobs - print individual job records to text files.
 
 sample-jobs - This sample script shows a few details about the Build,
     and then shows some data for each "rule" Job that has Command

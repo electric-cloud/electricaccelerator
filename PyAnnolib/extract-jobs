@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+"""
+Create individual files showing the details of specific jobs.
+"""
+
+import sys
+import argparse
+from pyannolib import annolib
+
+def run(filename, job_ids):
+
+    try:
+        build = annolib.AnnotatedBuild(filename)
+        
+        # Collect all the jobs in a hash, and look for conflict jobs
+        def job_cb(job, job_ids):
+
+            job_id = job.getID()
+
+            if job_id in job_ids:
+                text = job.getTextReport()
+                filename = job_id + ".txt"
+                try:
+                    print "Writing", filename
+                    with open(filename, "w") as fh:
+                        fh.write(text)
+                except IOError as e:
+                    sys.exit("Unable to write %s: %s" % (filename, e))
+
+                # Remove the job ID from the list
+                job_ids.remove(job_id)
+
+                # Should we stop?
+                if len(job_ids) == 0:
+                    return annolib.StopParseJobs
+
+        build.parseJobs(job_cb, job_ids)
+
+
+    except annolib.PyAnnolibError, e:
+        sys.exit(e)
+
+
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("annotation_file")
+    parser.add_argument("jobs", nargs="+")
+
+    args = parser.parse_args()
+
+    run(args.annotation_file, args.jobs)
+
+if __name__ == "__main__":
+    main()
