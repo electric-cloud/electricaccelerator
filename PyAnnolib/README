@@ -109,7 +109,12 @@ parseJobs(cb, user_data=None)
 
     def my_callback(job, user_data):
         # process the job objet here.
-
+        
+    If you want the loop across all jobs to finish becase you
+    are done with the annotation file, the callback function should
+    return annolib.StopParseJobs. Otherwise, the return value
+    of the callback function is ignored. Once the parsing has stopped,
+    it cannot be resumed for the same AnnotatedBuild object.
 
 getAllJobs()
 
