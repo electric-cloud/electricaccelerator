@@ -270,3 +270,5 @@ show-deps - shows the file dependency graph
 
 show-jobpath - shows the MakeProcess/Job hierarchy, like the "JobPath"
     tab in ElectricInsight
+
+show-parse-effects - shows the Make parse jobs that had side effects

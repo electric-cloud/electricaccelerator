@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+"""
+Report the Make parse jobs that had side-effects.
+"""
+
+import sys
+import argparse
+from pyannolib import annolib
+
+NON_WRITE_OPERATIONS = [
+        annolib.OP_TYPE_READ,
+        annolib.OP_TYPE_LOOKUP,
+]
+
+def report_job(job):
+
+    # Did this parse job create any files?
+    non_read_operations = [o for o in job.getOperations()
+            if o.getType() not in NON_WRITE_OPERATIONS]
+
+    if len(non_read_operations) == 0:
+        return
+
+    #text = job.getTextReport()
+    make = job.getMakeProcess()
+
+    print "-" * 80
+    print "Parse Job:", job.getID() 
+    print "make[%s]: %s" % (make.getLevel(), make.getID())
+    print "CWD: %s" % (make.getCWD())
+    print make.getCmd()
+
+    print 
+    for op in non_read_operations:
+        print "(%s) %s" % (op.getType(), op.getFile())
+
+    print "-" * 80
+    print
+
+def run(filename):
+
+    try:
+        build = annolib.AnnotatedBuild(filename)
+        
+        # Collect all the jobs in a hash, and look for conflict jobs
+        def job_cb(job, junk):
+
+            # We only want parse jobs
+            if job.getType() != annolib.JOB_TYPE_PARSE:
+                return
+
+            report_job(job)
+
+        build.parseJobs(job_cb, None)
+
+
+    except annolib.PyAnnolibError, e:
+        sys.exit(e)
+
+
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("annotation_file")
+
+    args = parser.parse_args()
+
+    run(args.annotation_file)
+
+if __name__ == "__main__":
+    main()
