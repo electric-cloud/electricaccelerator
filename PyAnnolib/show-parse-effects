@@ -5,15 +5,208 @@ Report the Make parse jobs that had side-effects.
 
 import sys
 import argparse
+import cgi
+from abc import ABCMeta, abstractmethod
 from pyannolib import annolib
 
+class OutputFormat:
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def report_header(self):
+        pass
+
+    @abstractmethod
+    def report_footer(self):
+        pass
+
+    @abstractmethod
+    def body_header(self):
+        pass
+
+    @abstractmethod
+    def body_record(self, item_num, file_list, job_set):
+        pass
+
+    @abstractmethod
+    def body_footer(self):
+        pass
+
+    @abstractmethod
+    def job_info(self, job):
+        pass
+
+class HTMLOutput(OutputFormat):
+
+    def report_header(self):
+        return """
+<html>
+<head>
+</head>
+<body>
+<h1>Files that were modified by more than one Parse Job
+"""
+
+    def report_footer(self):
+        return """
+</body>
+</html>
+"""
+    def body_header(self):
+        return """
+<table>
+<tr>
+    <th>Item</th>
+    <th>Files</th>
+    <th>Parse Jobs</th>
+</tr>
+"""
+    def body_record(self, item_num, file_list, job_set):
+        text = ""
+        text += '<tr><td valign="top">%d</td>' % (item_num,)
+
+        text += '<td valign="top"><ol>'
+        for filename in file_list:
+            text += "<li>%s</li>" % (cgi.escape(filename),)
+        text += "</ol></td>"
+
+        text += '<td valign="top">'
+        for i, job in enumerate(list(job_set)):
+            text += "(%d)<br>" % (i+1,)
+            text += report_job(job, self)
+        text += "</td>"
+        text += "</tr>"
+        return text
+
+    def body_footer(self):
+        return "</table>"
+
+    def job_info(self, job):
+        make = job.getMakeProcess()
+
+        text = ""
+        text += "Parse Job: %s (%s)<br>" % (cgi.escape(job.getID()),
+                cgi.escape(job.getStatus()))
+        text += "make[%s]: %s<br>" % (cgi.escape(make.getLevel()),
+                cgi.escape(make.getID()))
+        text += "CWD: %s<br>" % (cgi.escape(make.getCWD()))
+        text += "%s<br>" % (cgi.escape(make.getCmd()),)
+        return text
+
+
+
+class TextOutput(OutputFormat):
+    def report_header(self):
+        return ""
+
+    def report_footer(self):
+        return ""
+
+    def body_header(self):
+        return ""
+
+    def body_record(self, item_num, file_list, job_set):
+        text = ""
+        text += "\n\n%d\n" % (item_num,)
+
+        for filename in file_list:
+            text += "File: %s\n"  % (filename,)
+
+        for i, job in enumerate(list(job_set)):
+            text += "(%d)\n" % (i+1,)
+            text += report_job(job, self)
+            text += "\n"
+        return text
+
+    def body_footer(self):
+        return ""
+
+    def job_info(self, job):
+        make = job.getMakeProcess()
+
+        text = ""
+        text += "Parse Job: %s\n" % (job.getID(),)
+        text += "make[%s]: %s\n" % (make.getLevel(), make.getID())
+        text += "CWD: %s\n" % (make.getCWD())
+        text += "%s\n" % (make.getCmd(),)
+        return text
+
+
+
+# These operations only read files. We are not interested
+# in these.
 NON_WRITE_OPERATIONS = [
         annolib.OP_TYPE_READ,
         annolib.OP_TYPE_LOOKUP,
 ]
 
-def report_job(job):
+# Key = file, Value = set(Jobs)
+touched_files = {}
 
+def report_common_files(args, formatter):
+
+    print formatter.body_header()
+
+    files = touched_files.keys()
+
+    #
+    # Group all the touched files by the number of jobs
+    # that wrote/modified them
+    #
+
+    # Key = num_jobs, Value = [files]
+    files_by_num_jobs = {}
+
+    for filename in files:
+        num_jobs = len(touched_files[filename])
+        if num_jobs > 1:
+            file_list = files_by_num_jobs.setdefault(num_jobs, [])
+            file_list.append(filename)
+
+    item_num = 1
+
+    # Sort, decreasing, by the number of jobs that modified each file
+    records = files_by_num_jobs.items()
+    records.sort(lambda x, y: cmp(len(y[1]), len(x[1])))
+
+    for (num_jobs, file_list) in records:
+
+        files_by_job_set = {}
+
+        # Take all the groups of files that were modified by N jobs,
+        # and see how if the same set of jobs modified the same files.
+        for filename in file_list:
+            job_set = touched_files[filename]
+
+            for frozen_job_set in files_by_job_set.keys():
+                if frozen_job_set == job_set:
+                    files_by_job_set[frozen_job_set].append(filename)
+                    break
+            else:
+                frozen_job_set = frozenset(job_set)
+                files_by_job_set[frozen_job_set] = [filename]
+
+        # now we have groups:
+        # a set of jobs that each modified the same set of files
+        for job_set, file_list in files_by_job_set.items():
+            print formatter.body_record(item_num, file_list, job_set)
+            item_num += 1
+
+    print formatter.body_footer()
+
+
+def report_job(job, formatter):
+
+    # Did this parse job create any files?
+    non_read_operations = [o for o in job.getOperations()
+            if o.getType() not in NON_WRITE_OPERATIONS]
+
+    if len(non_read_operations) == 0:
+        return ""
+
+    return formatter.job_info(job)
+
+def analyze_job(job):
     # Did this parse job create any files?
     non_read_operations = [o for o in job.getOperations()
             if o.getType() not in NON_WRITE_OPERATIONS]
@@ -21,23 +214,17 @@ def report_job(job):
     if len(non_read_operations) == 0:
         return
 
-    #text = job.getTextReport()
-    make = job.getMakeProcess()
-
-    print "-" * 80
-    print "Parse Job:", job.getID() 
-    print "make[%s]: %s" % (make.getLevel(), make.getID())
-    print "CWD: %s" % (make.getCWD())
-    print make.getCmd()
-
-    print 
     for op in non_read_operations:
-        print "(%s) %s" % (op.getType(), op.getFile())
+        filename = op.getFile()
+        if not touched_files.has_key(filename):
+            job_set = touched_files[filename] = set()
+        else:
+            job_set = touched_files[filename]
 
-    print "-" * 80
-    print
+        job_set.add(job)
 
-def run(filename):
+
+def run(filename, args, formatter):
 
     try:
         build = annolib.AnnotatedBuild(filename)
@@ -49,7 +236,7 @@ def run(filename):
             if job.getType() != annolib.JOB_TYPE_PARSE:
                 return
 
-            report_job(job)
+            analyze_job(job)
 
         build.parseJobs(job_cb, None)
 
@@ -57,16 +244,27 @@ def run(filename):
     except annolib.PyAnnolibError, e:
         sys.exit(e)
 
+    print formatter.report_header()
+
+    report_common_files(args, formatter)
+
+    print formatter.report_footer()
 
 
 def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("annotation_file")
+    parser.add_argument("--html", action="store_true")
 
     args = parser.parse_args()
 
-    run(args.annotation_file)
+    if args.html:
+        formatter = HTMLOutput()
+    else:
+        formatter = TextOutput()
+
+    run(args.annotation_file, args, formatter)
 
 if __name__ == "__main__":
     main()
