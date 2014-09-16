@@ -189,6 +189,7 @@ def report_common_files(args, formatter):
         # now we have groups:
         # a set of jobs that each modified the same set of files
         for job_set, file_list in files_by_job_set.items():
+            file_list.sort()
             print formatter.body_record(item_num, file_list, job_set)
             item_num += 1
 
