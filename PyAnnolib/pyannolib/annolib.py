@@ -659,7 +659,9 @@ Thread:    %s
             text += "Part Of:   %s\n" % (self.partof,)
 
         if self.make:
-            text += "Make Proc: %s\n" % (self.make.getID(),)
+            text += "Make Proc: make[%s]: %s in %s\n" % \
+                    (self.make.getLevel(), self.make.getID(),
+                        self.make.getCWD())
 
         if self.conflict:
             text += "Conflict:\n"
