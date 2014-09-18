@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+"""
+Report on the parallelism seen in the build.
+"""
+
+import sys
+import argparse
+
+from pyannolib import annolib
+from pyannolib import sequencing
+
+start = -1
+end = -1
+
+
+def collate_job(job, cluster):
+    global start
+    global end
+
+    timings = job.getTimings()
+
+    for timing in timings:
+        cluster.addTiming(timing)
+        t_start = float(timing.getInvoked())
+        t_end = float(timing.getInvoked())
+
+        if start == -1:
+            start = t_start
+        else:
+            start = min(start, t_start)
+
+        end = max(end, t_end)
+
+
+
+def run(filename):
+
+    cluster = sequencing.Cluster()
+
+    try:
+        build = annolib.AnnotatedBuild(filename)
+        
+        # Collect all the jobs in a hash, and look for conflict jobs
+        def job_cb(job, cluster):
+            collate_job(job, cluster)
+
+        build.parseJobs(job_cb, cluster)
+
+    except annolib.PyAnnolibError, e:
+        sys.exit(e)
+
+#    print "\nJust added"
+#    for name, agent in cluster.agents.items():
+#        print name, agent.fragments
+
+    cluster.mergeOverlaps()
+
+#    print "\nJust merged"
+#    for name, agent in cluster.agents.items():
+#        print name, agent.fragments
+
+    cluster.makeDiscrete()
+
+#    print "\nMade discrete"
+#    for name, agent in cluster.agents.items():
+#        print name, agent.fragments
+
+    global_start = cluster.getEarliestStart()
+    global_end = cluster.getLatestEnd()
+
+    concurrency = cluster.calculateHistogram()
+
+#    print "\nCompleted histo"
+#    for name, agent in cluster.agents.items():
+#        print name, agent.fragments
+#    print "start:", start, "end:", end
+#    print "global_start:", global_start, "global_end:", global_end
+#    print "duration:", global_end - global_start
+
+    tot_time = 0.0
+    for N_time in concurrency.values():
+        tot_time += N_time
+
+    print
+    print
+    print "Total duration:", tot_time, "seconds"
+
+    discrete_Ns = concurrency.keys()
+    discrete_Ns.sort()
+    for N in discrete_Ns:
+        N_time = concurrency[N]
+        pct = 100.0 * N_time / tot_time
+        print "%3d: %8.2fs %5.1f %%" % (N, N_time, pct)
+
+    print "Total time:", tot_time, "s"
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("annotation_file")
+
+    args = parser.parse_args()
+
+    run(args.annotation_file)
+
+if __name__ == "__main__":
+    main()
