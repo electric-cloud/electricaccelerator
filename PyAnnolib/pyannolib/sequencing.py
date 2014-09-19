@@ -9,6 +9,11 @@ from pyannolib import annolib
 INVOKED = 1
 COMPLETED = 0
 
+# We need to round the timings down to fewer decimal points.
+# This value seems to work well enough
+NUM_DECIMAL_PLACES = 4
+
+
 class SequencingError(Exception):
     pass
 
@@ -42,7 +47,6 @@ class Agent:
         invoked = float(timing.getInvoked())
         completed = float(timing.getCompleted())
         self.addTimingTuple(invoked, completed)
-#        print "added", invoked, completed
 
     def addTimingTuple(self, invoked, completed):
         """Add a new fragment to our list."""
@@ -56,7 +60,8 @@ class Agent:
         # keep these fragements in reversed-sorted order. So if we
         # print out the whole list, it visibly makes more sense to 
         # show the completed time first, and the invoked time second.
-        new_frag = (completed, invoked)
+        new_frag = (round(completed, NUM_DECIMAL_PLACES),
+                round(invoked, NUM_DECIMAL_PLACES))
 
         # Are we empty?
         if len(self.fragments) == 0:
@@ -82,7 +87,6 @@ class Agent:
             # Find the fragments surrounding this fragment's start time
             prev_frag = None
             for i, next_frag in enumerate(self.fragments):
-#                print i, new_frag, "-->", prev_frag, next_frag
                 # Skip the first fragment; we already checked that boundary
                 if i == 0:
                     prev_frag = next_frag
@@ -101,7 +105,6 @@ class Agent:
                     # we can just drop this frag, since next_frag
                     # accounts for its time
                     if next_completed >= completed:
-#                        print "Subset!", invoked, completed
                         break
                     else:
                         # This frag finished elsewhere; perhaps in a gap,
@@ -189,21 +192,12 @@ class Agent:
             # visual reminder that I'm iterating
             continue
 
-    def makeDiscrete(self):
-        # Fudge our numbers so we have discrete units to count.
-        # Look at every 0.01 seconds to see if work was being done,
-        # and have a series of discrete fragments.
-        discrete_fragments = [ (round(x, 2), round(y,2)) 
-            for x, y in self.fragments]
-
-        self.fragments = discrete_fragments
-        self.mergeOverlaps()
-        
 
 
 
 class Cluster:
     """A container for all the agents."""
+
     def __init__(self):
         # Key = node name, Value = Agent object
         self.agents = {}
@@ -286,29 +280,14 @@ class Cluster:
             frag is returned as new_frag.
             """
 
-#            def almost_eq(x, y):
-#                return abs(x - y) < 0.0000001
-
-#            print "Comparing ts(%f, %f) to %s" % (time_slice_end,
-#                    time_slice_end, frag)
             # Is the time slice the same as this frag?
             if time_slice_start == frag[INVOKED] and \
                     time_slice_end == frag[COMPLETED]:
-#                print "equal"
-#            if almost_eq(time_slice_start, frag[INVOKED]) and \
-#                    almost_eq(time_slice_end, frag[COMPLETED]):
                 return True, None
 
             # Do they overlap? XXX check this logic
             if time_slice_end >= frag[COMPLETED] > time_slice_start >= frag[INVOKED]:
-#                print "overlap"
-#                overlap_time = frag[COMPLETED] - time_slice_start
                 new_frag = (time_slice_start, frag[INVOKED])
-#                new_duration = time_slice_start - frag[INVOKED]
-#                new_duration = round(new_duration, 2)
-                # if it's so tiny, pretend it's 0
-#                if new_duration < 0.000001:
-#                    new_frag = None
 
                 return True, new_frag
 
@@ -318,6 +297,8 @@ class Cluster:
         # Run our algorithm until there are no more fragments
         # to analyze
         tot_time = 0.0
+
+        minimum_slice_duration = pow(0.1, NUM_DECIMAL_PLACES)
 
         while self.frag_pops:
             # Look at all the frags and find the latest one
@@ -338,22 +319,15 @@ class Cluster:
             # from the end of all agents, where possible.
             time_slice_end = latest_completed_frag[COMPLETED]
             time_slice_start = latest_invoked_frag[INVOKED]
-            slice_duration = time_slice_end - time_slice_start + 0.01
-
-#            print "TIMESLICE (%f, %f)" % (time_slice_end, time_slice_start)
+            slice_duration = time_slice_end - time_slice_start + \
+                    minimum_slice_duration
 
             N = 0
             tot_time += slice_duration
 
-#            print "frag_pops:", self.frag_pops
             for name, frag in self.frag_pops.items():
                 overlapped, smaller_frag = chop(time_slice_start,
                         time_slice_end, frag)
-
-#                print "time = %f, #agents=%d, comparing %s (%s) -> %s, %s" % \
-#                        (tot_time, len(self.frag_pops.keys()),
-#                                name, frag,
-#                                overlapped, smaller_frag)
 
                 if overlapped:
                     N += 1
@@ -367,17 +341,30 @@ class Cluster:
                         self.frag_pops[name] = smaller_frag
 
             # Add to the bin
-#            print "N = %d duration = %f" % (N, slice_duration)
             if self.concurrency.has_key(N):
                 self.concurrency[N] += slice_duration
             else:
                 self.concurrency[N] = slice_duration
 
+            # I don't need this 'continue', but it's a nice
+            # visual reminder
             continue
 
-#        print "Done!"
-#        print "time = %f, #agents=%d, last slice(%f, %f)" % \
-#                (tot_time, len(self.frag_pops.keys()),
-#                        time_slice_end, time_slice_start)
 
         return self.concurrency
+
+
+SECS_IN_HOUR = 60 * 60
+SECS_IN_MINUTE = 60
+
+def hms(total_seconds):
+    """Given seconds, return a string of HhMmSs"""
+    (hours, remainder_minutes) = divmod(total_seconds, SECS_IN_HOUR)
+    (minutes, seconds) = divmod(remainder_minutes, SECS_IN_MINUTE)
+
+    if hours > 0:
+        return "%dh%dm%.3fs" % (hours, minutes, seconds)
+    elif minutes > 0:
+        return "%dm%.3fs" % (minutes, seconds)
+    else:
+        return "%.3fs" % (seconds,)
