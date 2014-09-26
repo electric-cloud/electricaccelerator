@@ -120,13 +120,27 @@ class HTMLOutput(OutputFormat):
         for op in job.getOperations():
             # Print any operation on the interesting file
             if op.getFile() == interesting_file:
-                text += "(%s) %s<br>\n" % (cgi.escape(op.getType()), cgi.escape(interesting_file))
+                text += "(%s) <b>%s</b><br>\n" % (cgi.escape(op.getType()), cgi.escape(interesting_file))
             # don't show any other read ops
-            elif op.getType() in READ_OPS:
-                continue
+#            elif op.getType() in READ_OPS:
+#                continue
             # and show all other (write, etc.) ops
-            else:
-                text += "(%s) %s<br>\n" % (cgi.escape(op.getType()), cgi.escape(op.getFile()))
+#            else:
+#                text += "(%s) %s<br>\n" % (cgi.escape(op.getType()), cgi.escape(op.getFile()))
+
+        text += "<br>\n"
+        deps = job.getDependencies()
+        if deps:
+            text += "Dependencies:<br>\n"
+            text += "<ol>\n"
+            for dep in deps:
+                if dep.getFile() == interesting_file:
+                    fmt = "<li>[%s] (%s) <b>%s</b><br>\n"
+                else:
+                    fmt = "<li>[%s] (%s) %s<br>\n"
+                text += fmt % (cgi.escape(dep.getWriteJob()), cgi.escape(dep.getType()),
+                                cgi.escape(dep.getFile()))
+            text += "</ol><br>\n"
 
         commands = job.getCommands()
         if commands:
@@ -191,11 +205,19 @@ class TextOutput(OutputFormat):
             if op.getFile() == interesting_file:
                 text += "(%s) %s\n" % (op.getType(), interesting_file)
             # don't show any other read ops
-            elif op.getType() in READ_OPS:
-                continue
+#            elif op.getType() in READ_OPS:
+#                continue
             # and show all other (write, etc.) ops
-            else:
-                text += "(%s) %s\n" % (op.getType(), op.getFile())
+#            else:
+#                text += "(%s) %s\n" % (op.getType(), op.getFile())
+
+        text += "\n"
+        deps = job.getDependencies()
+        if deps:
+            text += "Dependencies:\n"
+            for dep in deps:
+                text += "Written by %s, (%s) %s\n" % (dep.getWriteJob(), dep.getType(), dep.getFile())
+            text += "\n"
 
         commands = job.getCommands()
         if commands:
