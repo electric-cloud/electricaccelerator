@@ -7,6 +7,210 @@ import sys
 import argparse
 from pyannolib import annolib
 
+import cgi
+from abc import ABCMeta, abstractmethod
+
+class OutputFormat:
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def report_header(self):
+        pass
+
+    @abstractmethod
+    def report_footer(self):
+        pass
+
+    @abstractmethod
+    def body_header(self):
+        pass
+
+    @abstractmethod
+    def body_record_header(self):
+        pass
+
+    @abstractmethod
+    def body_record_item(self, num_reported, rule_jobs, duration, filename):
+        pass
+
+    @abstractmethod
+    def body_record_footer(self):
+        pass
+
+    @abstractmethod
+    def body_footer(self):
+        pass
+
+    @abstractmethod
+    def job_info(self, job, interesting_file):
+        pass
+
+class HTMLOutput(OutputFormat):
+
+    def report_header(self):
+        return """
+<html>
+<head>
+</head>
+<body>
+<h1>Conflicts by File</h1>
+"""
+
+    def report_footer(self):
+        return """
+</body>
+</html>
+"""
+    def body_header(self):
+        return """
+<table>
+<tr>
+    <th>Item</th>
+    <th>Conflict File and Job Information</th>
+</tr>
+"""
+
+    def body_footer(self):
+        return "</table>"
+
+    def body_record_header(self):
+        return "<tr>"
+
+    def body_record_footer(self):
+        text = ""
+        text += "</td>"
+        text += "</tr>"
+        return text
+
+    def body_record_item(self, num_reported, rule_jobs, duration, filename):
+        text = ""
+        text += '<td valign="top">%d</td>\n' % (num_reported+1,)
+
+        text += '<td valign="top">\n'
+        text += "<hr><ul>\n"
+        text += "<li>File: <b>%s</b></li>\n" % (cgi.escape(filename),)
+        text += "<li>Number of Jobs: %s</li>\n" % (len(rule_jobs),)
+#        text += "<li>Job Time Spread: %s seconds</li>\n" % (duration,)
+        text += "</ul>\n"
+        text += "<br>\n"
+        return text
+
+
+    def job_info(self, job, interesting_file):
+        text = ""
+        text += "Job: <b>%s</b> (%s)<br>\n" % (cgi.escape(job.getID()),
+                cgi.escape(job.getType()))
+
+        target = job.getName() or "None"
+        text += "Target: %s<br>\n" % (cgi.escape(target),)
+
+        for timing in job.getTimings():
+            text += "Invoked: %s Completed: %s<br>\n" % (timing.getInvoked(), timing.getCompleted())
+
+        makefile = job.getFile() or "None"
+        lineno = job.getLine() or "None"
+        text += "Makefile: %s line: %s<br>\n" % (cgi.escape(makefile), cgi.escape(lineno))
+
+        make = job.getMakeProcess()
+        text += "make[%s]: %s in %s<br>\n" % (make.getLevel(), make.getID(),
+                cgi.escape(make.getCWD()))
+        text += "%s<br>\n" % (cgi.escape(make.getCmd()),)
+        
+        text += "<br>\n"
+        for op in job.getOperations():
+            # Print any operation on the interesting file
+            if op.getFile() == interesting_file:
+                text += "(%s) %s<br>\n" % (cgi.escape(op.getType()), cgi.escape(interesting_file))
+            # don't show any other read ops
+            elif op.getType() in READ_OPS:
+                continue
+            # and show all other (write, etc.) ops
+            else:
+                text += "(%s) %s<br>\n" % (cgi.escape(op.getType()), cgi.escape(op.getFile()))
+
+        commands = job.getCommands()
+        if commands:
+            text += "<br>Commands:<br>\n"
+            for command in commands:
+                text += cgi.escape(command.getArgv()) + "<br>\n"
+
+        text += "<br>\n"
+        return text
+
+
+
+class TextOutput(OutputFormat):
+    def report_header(self):
+        return ""
+
+    def report_footer(self):
+        return ""
+
+    def body_header(self):
+        return ""
+
+    def body_footer(self):
+        return "=" * 80 + "\n"
+
+    def body_record_header(self):
+        return ""
+
+    def body_record_item(self, num_reported, rule_jobs, duration, filename):
+        text = ""
+        text += "=" * 80 + "\n\n"
+        text += "Conflict #%s\n" % (num_reported + 1,)
+        text += "\n"
+        text += "Number jobs: %s\n" % (len(rule_jobs),)
+#        text += "Job Time Spread: %s seconds\n" % (duration,)
+        text += "\n"
+        text += "File: %s\n" % (filename,)
+        text += "\n"
+        return text
+
+    def job_info(self, job, interesting_file):
+        # Print a rule job
+        text = ""
+        text += "Job: %s (%s)\n" % (job.getID(), job.getType())
+        text += "------------%s%s\n" % ("-" * len(job.getID()), "-" * len(job.getType()))
+        text += "\n"
+        text += "Target: %s\n" % (job.getName(),)
+
+        for timing in job.getTimings():
+            text += "Invoked: %s " % (timing.getInvoked(),) # no newline
+            text += "Completed: %s\n" % (timing.getCompleted(),)
+
+        text += "Makefile: %s line: %s\n" % (job.getFile(), job.getLine())
+
+        make = job.getMakeProcess()
+        text += "make[%s]: %s in %s\n" % (make.getLevel(), make.getID(),
+                make.getCWD())
+        
+        text += "\n"
+        for op in job.getOperations():
+            # Print any operation on the interesting file
+            if op.getFile() == interesting_file:
+                text += "(%s) %s\n" % (op.getType(), interesting_file)
+            # don't show any other read ops
+            elif op.getType() in READ_OPS:
+                continue
+            # and show all other (write, etc.) ops
+            else:
+                text += "(%s) %s\n" % (op.getType(), op.getFile())
+
+        commands = job.getCommands()
+        if commands:
+            text += "\nCommands:\n"
+            for command in commands:
+                text += command.getArgv() + "\n"
+
+        text += "\n"
+        return text
+
+    def body_record_footer(self):
+        return ""
+
+
+READ_OPS = [ annolib.OP_TYPE_LOOKUP, annolib.OP_TYPE_READ ]
 
 class Analyzer:
     def __init__(self, filename):
@@ -17,13 +221,16 @@ class Analyzer:
         self.num_conflicts = 0
 
         # The jobs that created a conflict, or
-        # The jobs that were run to fix those conflicts, or
-        # The jobs that wrote (what does that mean???)
+        # The re-run jobs that were run to fix those conflicts, or
+        # The rule jobs that wrote the file
         self.interesting_job_ids = set()
 
-        # Conflicts
+        # Conflict jobs referencing the same file
         # Key = filename, Value = [ Conflict job IDs ]
         self.conflict_filenames = {}
+
+        # Key = filename, Value = [ rule job IDs ]
+        self.extra_jobs = {}
 
         # Job ID / Job map, filled during the 2nd pass
         self.jobs = {}
@@ -34,16 +241,11 @@ class Analyzer:
         print "Conflict filenames:", self.conflict_filenames.keys()
 
     def gather_job_ids(self):
-        print >> sys.stderr, "Pass 1... Looking for conflicts"
-        sys.stderr.flush()
-
-        build = annolib.AnnotatedBuild(self.filename)
-        
-
         # Collect all the jobs in a hash, and look for conflict jobs
-        def job_cb(job, analyzer):
+
+        def job_cb(job, _):
             
-            analyzer.num_jobs += 1
+            self.num_jobs += 1
 
             # Did this job cause a conflict?
             if job.getStatus() == annolib.JOB_STATUS_CONFLICT:
@@ -56,18 +258,20 @@ class Analyzer:
                 filename = conflict.getFile()
                 if filename == None:
                     return
-                analyzer.num_conflicts +=1 
+
+                self.num_conflicts += 1 
 
                 # The conflict job record contains the conflict record,
-                # so we need it
+                # so we need it in pass #2
                 self.interesting_job_ids.add(conflict_job_id)
 
                 # Add our conflict job id to the record for this
                 # filename
-                conjobs = self.conflict_filenames.setdefault(filename, [])
-                conjobs.append(conflict_job_id)
+                conflict_jobs = self.conflict_filenames.setdefault(filename, [])
+                conflict_jobs.append(conflict_job_id)
 
-                # Other jobs to read in the 2nd pass
+                # The conflict job points to other jobs that we will need
+                # to read in the 2nd pass.
                 write_job_id = conflict.getWriteJob()
                 if write_job_id:
                     self.interesting_job_ids.add(write_job_id)
@@ -76,45 +280,76 @@ class Analyzer:
                 if rerun_job_id:
                     self.interesting_job_ids.add(rerun_job_id)
 
-        build.parseJobs(job_cb, self)
-
-        print >> sys.stderr, "\tRead %d records, with %d conflict jobs" % \
-                (self.num_jobs, self.num_conflicts)
-        sys.stderr.flush()
-
-    def read_interesting_jobs(self):
-        print >> sys.stderr, "Pass 2... Gathering the interesting jobs"
-        sys.stderr.flush()
+        print >> sys.stderr, "Pass 1... Looking for conflict job records"
 
         build = annolib.AnnotatedBuild(self.filename)
         
-        def job_cb(job, analyzer):
+        build.parseJobs(job_cb)
+
+        print >> sys.stderr, "\tRead %d records, with %d conflict jobs" % \
+                (self.num_jobs, self.num_conflicts)
+
+    def read_interesting_jobs(self):
+        print >> sys.stderr, "Pass 2... Gathering the interesting jobs"
+
+        build = annolib.AnnotatedBuild(self.filename)
+       
+
+        def job_cb(job, _):
             job_id = job.getID()
             if job_id in self.interesting_job_ids:
                 self.jobs[job_id] = job
                 self.interesting_job_ids.remove(job_id)
+                return
 
-        build.parseJobs(job_cb, self)
+            # or maybe we can tell by the file. Some conflicts aren't
+            # recorded by job ID apparently
+#            for op in job.getOperations():
+#                if op.getType() in READ_OPS:
+#                    continue
+#                if op.getFile() in self.conflict_filenames:
+#                    jobs = self.extra_jobs.setdefault(op.getFile(), [])
+#                    jobs.append(job)
+#                    print >> sys.stderr, "Found %s via %s %s" % (job_id, op.getType(), op.getFile())
+#                    return
+
+        build.parseJobs(job_cb)
 
         if len(self.interesting_job_ids) > 0:
-            print "Could not find jobs:", self.interesting_job_ids
+            print >> sys.stderr, "Could not find jobs:", self.interesting_job_ids
 
-    def report(self):
-        print >> sys.stderr, "Writing report..."
-        sys.stderr.flush()
 
-        num_reported = 0
-        num_skipped = 0
+    def find_resolution_times(self):
+        # For each conflict, look at the timings for all its
+        # associated jobs, and find the min invoked time and max
+        # completed time, so we can know the duration spent
+        # waiting
 
-        filenames = self.conflict_filenames.keys()
-        filenames.sort()
-        for filename in filenames:
+        def get_earliest_invoked(job):
+            return min([float(t.getInvoked()) for t in job.getTimings()])
 
-            # Go through the jobs that dealt with the conflict,
-            # and store only the Rule jobs
+        def get_latest_completed(job):
+            return max([float(t.getCompleted()) for t in job.getTimings()])
+
+        def look_at_job(job, rule_job):
+            if job:
+                if True:
+#                if job.getType() == annolib.JOB_TYPE_RULE:
+                    if job not in rule_jobs:
+                        invoked = get_earliest_invoked(job)
+                        completed = get_latest_completed(job)
+                        rule_jobs.append([invoked, completed, job])
+
+        # Key = filename, Value = [duration, [rule_jobs]]
+        self.resolution_times = {}
+
+        RECORD_INVOKED = 0
+        RECORD_COMPLETED = 1
+        RECORD_JOB = 2
+
+        for filename, conflict_job_ids in self.conflict_filenames.items():
+            # (invoked, completed, job)
             rule_jobs = []
-
-            conflict_job_ids = self.conflict_filenames[filename]
 
             for conflict_job_id in conflict_job_ids:
 
@@ -122,84 +357,114 @@ class Analyzer:
                 conflict = conflict_job.getConflict()
 
                 write_job = self.jobs.get(conflict.getWriteJob())
-                if write_job:
-                    if write_job.getType() == annolib.JOB_TYPE_RULE:
-                        if write_job not in rule_jobs:
-                            rule_jobs.append(write_job)
+                look_at_job(write_job, rule_jobs)
 
                 rerun_job = self.jobs.get(conflict.getRerunBy())
-                if rerun_job:
-                    if rerun_job.getType() == annolib.JOB_TYPE_RULE:
-                        if rerun_job not in rule_jobs:
-                            rule_jobs.append(rerun_job)
+                look_at_job(rerun_job, rule_jobs)
+
+            for extra_job in self.extra_jobs.get(filename, []):
+                look_at_job(extra_job, rule_jobs)
+
+            if not rule_jobs:
+                print >> sys.stderr, "No rule_jobs for", filename
+                print >> sys.stderr, "    Conflict IDs:", conflict_job_ids
+                continue
+
+            # now that we have all the jobs related to this filename,
+            # find the min and max times so we can find the
+            # "resoultion duration"
+            invoked = min([rec[RECORD_INVOKED] for rec in rule_jobs])
+            completed = max([rec[RECORD_COMPLETED] for rec in rule_jobs])
+            
+            duration = completed - invoked
+            flattened_rule_jobs = []
+            for rec in rule_jobs:
+                job = rec[RECORD_JOB]
+                if job not in flattened_rule_jobs:
+                    flattened_rule_jobs.append(job)
+
+            self.resolution_times[filename] = [duration, flattened_rule_jobs]
+
+    def report(self, formatter):
+        print >> sys.stderr, "Writing report..."
+
+        self.find_resolution_times()
+
+        num_reported = 0
+        num_skipped = 0
+
+        RECORD_DURATION = 0
+        RECORD_JOBS = 1
+
+        filenames = self.resolution_times.keys()
+
+        filenames.sort(lambda x, y: \
+                cmp(len(self.resolution_times[y][RECORD_JOBS]),
+                    len(self.resolution_times[x][RECORD_JOBS])))
+
+        print formatter.report_header()
+        print formatter.body_header()
+
+        for filename in filenames:
+
+            # Go through the jobs that dealt with the conflict,
+            # and store only the Rule jobs
+            rule_jobs = []
+
+            duration, rule_jobs = self.resolution_times[filename]
 
             # Are there > 1 rule jobs dealing with this conflict?
-            if len(rule_jobs) > 1:
-                print "=" * 80
-                print
-                print "Conflict #" + str(num_reported + 1)
-                print
-                print "File:", filename
-                print
+            if len(rule_jobs) > 0:
+                print formatter.body_record_header()
+                print formatter.body_record_item(num_reported, rule_jobs, duration, filename)
 
                 for rule_job in rule_jobs:
-                    show_job(rule_job)
+                    print formatter.job_info(rule_job, filename)
 
-                print
                 num_reported += 1
 
-        print "=" * 80
+                print formatter.body_record_footer()
 
-        print >> sys.stderr, "Reported on %d file conflicts" % (num_reported,)
-        sys.stderr.flush()
 
-def run(filename):
+        print formatter.body_footer()
+        print formatter.report_footer()
+
+        print >> sys.stderr, "Reported on %d files with conflicts" % (num_reported,)
+
+
+def run(filename, formatter):
 
     try:
         analyzer = Analyzer(filename)
 
         # First pass
         analyzer.gather_job_ids()
-        print
 
         # Second pass
         analyzer.read_interesting_jobs()
-        print
 
         # Report
-        analyzer.report()
+        analyzer.report(formatter)
 
     except annolib.PyAnnolibError, e:
         sys.exit(e)
 
-
-def show_job(job):
-    # Print a rule job
-    print "Job ID:", job.getID()
-    print
-    print "Target:", job.getName()
-    timings = job.getTimings()
-    for timing in timings:
-        print "Invoked:", timing.getInvoked(),
-        print "Completed:", timing.getCompleted()
-    print "Makefile:", job.getFile(), "line:", job.getLine()
-    commands = job.getCommands()
-    if commands:
-        print "Commands:"
-        for command in commands:
-            print command.getArgv()
-
-    print
 
 
 def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("annotation_file")
+    parser.add_argument("--html", action="store_true")
 
-    options = parser.parse_args()
+    args = parser.parse_args()
 
-    run(options.annotation_file)
+    if args.html:
+        formatter = HTMLOutput()
+    else:
+        formatter = TextOutput()
+
+    run(args.annotation_file, formatter)
 
 if __name__ == "__main__":
     main()
