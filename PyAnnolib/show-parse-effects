@@ -143,7 +143,7 @@ NON_WRITE_OPERATIONS = [
 # Key = file, Value = set(Jobs)
 touched_files = {}
 
-def report_common_files(args, formatter):
+def report_common_files(formatter):
 
     print formatter.body_header()
 
@@ -225,7 +225,7 @@ def analyze_job(job):
         job_set.add(job)
 
 
-def run(filename, args, formatter):
+def run(filename, formatter):
 
     try:
         build = annolib.AnnotatedBuild(filename)
@@ -247,7 +247,7 @@ def run(filename, args, formatter):
 
     print formatter.report_header()
 
-    report_common_files(args, formatter)
+    report_common_files(formatter)
 
     print formatter.report_footer()
 
@@ -265,7 +265,7 @@ def main():
     else:
         formatter = TextOutput()
 
-    run(args.annotation_file, args, formatter)
+    run(args.annotation_file, formatter)
 
 if __name__ == "__main__":
     main()
