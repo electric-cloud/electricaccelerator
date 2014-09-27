@@ -3,6 +3,7 @@
 Show the conflicts in a build.
 """
 
+import os
 import sys
 import argparse
 from pyannolib import annolib
@@ -13,90 +14,116 @@ from abc import ABCMeta, abstractmethod
 class OutputFormat:
     __metaclass__ = ABCMeta
 
+    def __init__(self, output_dir):
+        self.output_dir = output_dir
+
     @abstractmethod
-    def report_header(self):
+    def toc_header(self):
         pass
 
     @abstractmethod
-    def report_footer(self):
+    def toc_footer(self):
         pass
 
     @abstractmethod
-    def body_header(self):
+    def toc_start_item(self, name):
         pass
 
     @abstractmethod
-    def body_record_header(self):
+    def toc_end_item(self, name):
         pass
 
     @abstractmethod
-    def body_record_item(self, num_reported, rule_jobs, duration, filename):
+    def detail_header(self):
         pass
 
     @abstractmethod
-    def body_record_footer(self):
+    def detail_footer(self):
         pass
 
     @abstractmethod
-    def body_footer(self):
+    def detail_item(self, num_reported, rule_jobs, duration, filename):
         pass
 
     @abstractmethod
-    def job_info(self, job, interesting_file):
+    def detail_job_info(self, job, interesting_file):
         pass
+
+
 
 class HTMLOutput(OutputFormat):
 
-    def report_header(self):
-        return """
+    def toc_header(self):
+        self.toc_fh = open(os.path.join(self.output_dir, "index.html"), "w")
+        self.item_fh = None
+        self.num_items = 0
+
+        text =  """
 <html>
 <head>
 </head>
 <body>
 <h1>Conflicts by File</h1>
-"""
 
-    def report_footer(self):
-        return """
+<ol>
+"""
+        self.toc_fh.write(text)
+
+    def toc_footer(self):
+        text =  """
+</ol>
 </body>
 </html>
 """
-    def body_header(self):
-        return """
-<table>
-<tr>
-    <th>Item</th>
-    <th>Conflict File and Job Information</th>
-</tr>
-"""
+        self.toc_fh.write(text)
+        self.toc_fh.close()
 
-    def body_footer(self):
-        return "</table>"
+    def toc_start_item(self, name):
+        self.num_items += 1
+        text = '<li><a href="file-%d.html">%s</a>\n' % (self.num_items,
+                cgi.escape(name),)
+        self.toc_fh.write(text)
 
-    def body_record_header(self):
-        return "<tr>"
+        item_file = "file-%d.html" % (self.num_items,)
+        self.item_fh = open(os.path.join(self.output_dir, item_file), "w")
+        
+    def toc_end_item(self):
+        pass
 
-    def body_record_footer(self):
+    def detail_header(self):
+        text =  """
+<html>
+<head>
+</head>
+<body>
+<h1>Conflict file #%d</h1>
+""" % (self.num_items,)
+
+        self.item_fh.write(text)
+
+    def detail_footer(self):
         text = ""
-        text += "</td>"
-        text += "</tr>"
-        return text
+        text += "</body>"
+        text += "</html>"
+        self.item_fh.write(text)
+        self.item_fh.close()
 
-    def body_record_item(self, num_reported, rule_jobs, duration, filename):
+    def detail_item(self, rule_jobs, duration, filename):
         text = ""
-        text += '<td valign="top">%d</td>\n' % (num_reported+1,)
+#        text += '<td valign="top">%d</td>\n' % (self.num_items,)
 
-        text += '<td valign="top">\n'
+#        text += '<td valign="top">\n'
+        text += "<h2>%s</h2>" % (cgi.escape(filename),)
         text += "<hr><ul>\n"
         text += "<li>File: <b>%s</b></li>\n" % (cgi.escape(filename),)
         text += "<li>Number of Jobs: %s</li>\n" % (len(rule_jobs),)
 #        text += "<li>Job Time Spread: %s seconds</li>\n" % (duration,)
         text += "</ul>\n"
         text += "<br>\n"
-        return text
+        self.item_fh.write(text)
 
 
-    def job_info(self, job, interesting_file):
+    def detail_job_info(self, job, interesting_file):
         text = ""
         text += "Job: <b>%s</b> (%s)<br>\n" % (cgi.escape(job.getID()),
                 cgi.escape(job.getType()))
@@ -149,39 +176,53 @@ class HTMLOutput(OutputFormat):
                 text += cgi.escape(command.getArgv()) + "<br>\n"
 
         text += "<br>\n"
-        return text
+        self.item_fh.write(text)
 
 
 
 class TextOutput(OutputFormat):
-    def report_header(self):
-        return ""
+    def toc_header(self):
+        self.toc_fh = open(os.path.join(self.output_dir, "index.txt"), "w")
+        self.item_fh = None
+        self.num_items = 0
+        text = "Conflicts by File\n\n"
+        self.toc_fh.write(text)
 
-    def report_footer(self):
-        return ""
+    def toc_footer(self):
+        self.toc_fh.close()
 
-    def body_header(self):
-        return ""
+    def toc_start_item(self, name):
+        self.num_items += 1
+        text = "%6d. %s\n" % (self.num_items, name)
+        self.toc_fh.write(text)
 
-    def body_footer(self):
-        return "=" * 80 + "\n"
+        item_file = "file-%d.txt" % (self.num_items,)
+        self.item_fh = open(os.path.join(self.output_dir, item_file), "w")
 
-    def body_record_header(self):
-        return ""
+    def toc_end_item(self):
+        pass
 
-    def body_record_item(self, num_reported, rule_jobs, duration, filename):
+    def detail_header(self):
+        text = "=" * 80 + "\n\n"
+        self.item_fh.write(text)
+
+    def detail_footer(self):
+        text = "=" * 80 + "\n"
+        self.item_fh.write(text)
+        self.item_fh.close()
+
+    def detail_item(self, rule_jobs, duration, filename):
         text = ""
-        text += "=" * 80 + "\n\n"
-        text += "Conflict #%s\n" % (num_reported + 1,)
+        text += "Conflict #%s\n" % (self.num_items,)
         text += "\n"
         text += "Number jobs: %s\n" % (len(rule_jobs),)
 #        text += "Job Time Spread: %s seconds\n" % (duration,)
         text += "\n"
         text += "File: %s\n" % (filename,)
         text += "\n"
-        return text
+        self.item_fh.write(text)
 
-    def job_info(self, job, interesting_file):
+    def detail_job_info(self, job, interesting_file):
         # Print a rule job
         text = ""
         text += "Job: %s (%s)\n" % (job.getID(), job.getType())
@@ -226,10 +267,8 @@ class TextOutput(OutputFormat):
                 text += command.getArgv() + "\n"
 
         text += "\n"
-        return text
+        self.item_fh.write(text)
 
-    def body_record_footer(self):
-        return ""
 
 
 READ_OPS = [ annolib.OP_TYPE_LOOKUP, annolib.OP_TYPE_READ ]
@@ -424,8 +463,7 @@ class Analyzer:
                 cmp(len(self.resolution_times[y][RECORD_JOBS]),
                     len(self.resolution_times[x][RECORD_JOBS])))
 
-        print formatter.report_header()
-        print formatter.body_header()
+        formatter.toc_header()
 
         for filename in filenames:
 
@@ -437,19 +475,21 @@ class Analyzer:
 
             # Are there > 1 rule jobs dealing with this conflict?
             if len(rule_jobs) > 0:
-                print formatter.body_record_header()
-                print formatter.body_record_item(num_reported, rule_jobs, duration, filename)
+                num_reported += 1
+                formatter.toc_start_item(filename)
+
+                formatter.detail_header()
+                formatter.detail_item(rule_jobs, duration, filename)
 
                 for rule_job in rule_jobs:
-                    print formatter.job_info(rule_job, filename)
+                    formatter.detail_job_info(rule_job, filename)
 
-                num_reported += 1
+                formatter.detail_footer()
+                formatter.toc_end_item()
 
-                print formatter.body_record_footer()
+#        formatter.body_footer()
 
-
-        print formatter.body_footer()
-        print formatter.report_footer()
+        formatter.toc_footer()
 
         print >> sys.stderr, "Reported on %d files with conflicts" % (num_reported,)
 
@@ -477,14 +517,21 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("annotation_file")
-    parser.add_argument("--html", action="store_true")
+    parser.add_argument("output_dir")
+    parser.add_argument("--html", action="store_true",
+            help="Create HTML report")
 
     args = parser.parse_args()
 
+    try:
+        os.makedirs(args.output_dir)
+    except OSError as e:
+        sys.exit("Unable to mkdir %s: %s" % (args.output_dir, e))
+
     if args.html:
-        formatter = HTMLOutput()
+        formatter = HTMLOutput(args.output_dir)
     else:
-        formatter = TextOutput()
+        formatter = TextOutput(args.output_dir)
 
     run(args.annotation_file, formatter)
 
