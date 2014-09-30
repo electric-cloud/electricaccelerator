@@ -101,13 +101,16 @@ class AnnotatedBuild():
         # Initialize this since it is used in __str
         self.build_id = None
 
-        # This is initialized now, but won't be filled in until
-        # the very end of the file.
+        # Key = metric name, Value = metric value (string)
         self.metrics = {}
 
         # This is initialized now, but won't be filled in until
         # the message records are seen while processing jobs
         self.messages = []
+
+        # All MakeProcesses.
+        # Key = make proc ID, Value = MakeProcess object
+        self.make_procs = {}
 
         if filename:
             assert not fh, "filename and fh both given"
@@ -298,6 +301,14 @@ class AnnotatedBuild():
     def getMessages(self):
         return self.messages
 
+    def addMakeProcess(self, make_elem):
+        make_id = make_elem.getID()
+        assert make_id not in self.make_procs
+        self.make_procs[make_id] = make_elem
+
+    def getMakeProcess(self, make_id):
+        return self.make_procs.get(make_id)
+
     def parseJobs(self, cb, user_data=None):
         """Parse jobs and call the callback for each Job object."""
         if not self.fh:
@@ -321,6 +332,8 @@ class AnnotatedBuild():
         self.parseJobs(job_cb, None)
 
         return jobs
+
+
 
 ###################################################
 
@@ -731,6 +744,57 @@ Thread:    %s
 
         return text
 
+    def __getstate__(self):
+        return (
+                self.job_id,
+                self.status,
+                self.thread,
+                self.type,
+                self.name,
+                self.needed_by,
+                self.line,
+                self.file,
+                self.partof,
+                self.outputs,
+                self.make.getID(), # store the MakeProcess ID
+                self.timings,
+                self.oplist,
+                self.waiting_jobs,
+                self.commands,
+                self.deplist,
+                self.conflict,
+                self.retval,
+                )
+
+    def __setstate__(self, state):
+        (
+            self.job_id,
+            self.status,
+            self.thread,
+            self.type,
+            self.name,
+            self.needed_by,
+            self.line,
+            self.file,
+            self.partof,
+            self.outputs,
+            self.make_id,
+            self.timings,
+            self.oplist,
+            self.waiting_jobs,
+            self.commands,
+            self.deplist,
+            self.conflict,
+            self.retval,
+        ) = state
+        
+        self.make = None
+
+    def fix_unpickled_state(self, make_proc_hash):
+        if self.make_id:
+            self.make =  make_proc_hash.get(self.make_id)
+            del self.make_id
+
 
 class Operation:
     TYPE = "type"
@@ -1021,7 +1085,10 @@ class AnnoXMLBodyParser(AnnoXMLNames):
 
             if elem.tag == self.ELEMENT_JOB:
                 assert len(self.make_elems) > 0
+                print "starting job at", fh.tell()
+                print dir(icontext)
                 job = Job(elem)
+                print "\t", job.getID()
 
                 job.setMakeProcess(self.make_elems[-1])
 
@@ -1119,6 +1186,7 @@ class AnnoXMLBodyParser(AnnoXMLNames):
                 make_elem.setParentJobID(self.prev_job_elem.getID())
 
         self.make_elems.append(make_elem)
+        self.build.addMakeProcess(make_elem)
 
 
 

@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+# Copyright (c) 2014 by Cisco Systems, Inc.
+"""
+tyranno - the king of annotation file tools!
+"""
+
+__version__ = "0.0.1"
+
+import argparse
+import logging
+
+from tyrannocli import cmd_index
+from tyrannocli import cmd_explore
+
+def main():
+    description = "annotation file tool"
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument("--debug",
+            action="store_true",
+            help="Show debug messages")
+
+    parser.add_argument("--version",
+            action="version", version=__version__,
+            help="Report the version of this tool.")
+
+    help = "Sub-commands"
+    subparsers = parser.add_subparsers(help=help)
+
+    cmd_explore.SubParser(subparsers)
+    cmd_index.SubParser(subparsers)
+
+    args = parser.parse_args()
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    args.func(args)
+
+if __name__ == "__main__":
+    main()
