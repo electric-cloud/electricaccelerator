@@ -125,8 +125,9 @@ class HTMLOutput(OutputFormat):
 
     def detail_job_info(self, job, interesting_file):
         text = ""
-        text += "Job: <b>%s</b> (%s)<br>\n" % (cgi.escape(job.getID()),
-                cgi.escape(job.getType()))
+        text += "Job: <b>%s</b> (%s, %s)<br>\n" % (cgi.escape(job.getID()),
+                cgi.escape(job.getType()),
+                cgi.escape(job.getStatus()))
 
         target = job.getName() or "None"
         text += "Target: %s<br>\n" % (cgi.escape(target),)
@@ -144,16 +145,21 @@ class HTMLOutput(OutputFormat):
         text += "%s<br>\n" % (cgi.escape(make.getCmd()),)
         
         text += "<br>\n"
-        for op in job.getOperations():
-            # Print any operation on the interesting file
-            if op.getFile() == interesting_file:
-                text += "(%s) <b>%s</b><br>\n" % (cgi.escape(op.getType()), cgi.escape(interesting_file))
-            # don't show any other read ops
-#            elif op.getType() in READ_OPS:
-#                continue
-            # and show all other (write, etc.) ops
-#            else:
-#                text += "(%s) %s<br>\n" % (cgi.escape(op.getType()), cgi.escape(op.getFile()))
+        ops = job.getOperations()
+        if ops:
+            text += "Non-read filesystem operations:<br>\n"
+            text += "<ul>\n"
+            for op in job.getOperations():
+                # Print any operation on the interesting file
+                if op.getFile() == interesting_file:
+                    text += "<li>(%s) <b>%s</b><br>\n" % (cgi.escape(op.getType()), cgi.escape(interesting_file))
+                # don't show any other read ops
+                elif op.getType() in READ_OPS:
+                    continue
+                # and show all other (write, etc.) ops
+                else:
+                    text += "<li>(%s) %s<br>\n" % (cgi.escape(op.getType()), cgi.escape(op.getFile()))
+            text += "</ul>\n"
 
         text += "<br>\n"
         deps = job.getDependencies()
@@ -222,11 +228,13 @@ class TextOutput(OutputFormat):
         text += "\n"
         self.item_fh.write(text)
 
+
     def detail_job_info(self, job, interesting_file):
         # Print a rule job
         text = ""
-        text += "Job: %s (%s)\n" % (job.getID(), job.getType())
-        text += "------------%s%s\n" % ("-" * len(job.getID()), "-" * len(job.getType()))
+        text += "Job: %s (%s, %s)\n" % (job.getID(), job.getType(),
+                job.getStatus())
+        text += "----------%s%s%s\n" % ("-" * len(job.getID()), "-" * len(job.getType()), "-" * len(job.getStatus()))
         text += "\n"
         text += "Target: %s\n" % (job.getName(),)
 
@@ -241,16 +249,19 @@ class TextOutput(OutputFormat):
                 make.getCWD())
         
         text += "\n"
-        for op in job.getOperations():
-            # Print any operation on the interesting file
-            if op.getFile() == interesting_file:
-                text += "(%s) %s\n" % (op.getType(), interesting_file)
-            # don't show any other read ops
-#            elif op.getType() in READ_OPS:
-#                continue
-            # and show all other (write, etc.) ops
-#            else:
-#                text += "(%s) %s\n" % (op.getType(), op.getFile())
+        ops = job.getOperations()
+        if ops:
+            text += "Non-read filesystem operations:\n"
+            for op in ops:
+                # Print any operation on the interesting file
+                if op.getFile() == interesting_file:
+                    text += "(%s) %s\n" % (op.getType(), interesting_file)
+                # don't show any other read ops
+                elif op.getType() in READ_OPS:
+                    continue
+                # and show all other (write, etc.) ops
+                else:
+                    text += "(%s) %s\n" % (op.getType(), op.getFile())
 
         text += "\n"
         deps = job.getDependencies()
@@ -289,9 +300,6 @@ class Analyzer:
         # Conflict jobs referencing the same file
         # Key = filename, Value = [ Conflict job IDs ]
         self.conflict_filenames = {}
-
-        # Key = filename, Value = [ rule job IDs ]
-        self.extra_jobs = {}
 
         # Job ID / Job map, filled during the 2nd pass
         self.jobs = {}
@@ -363,17 +371,6 @@ class Analyzer:
                 self.interesting_job_ids.remove(job_id)
                 return
 
-            # or maybe we can tell by the file. Some conflicts aren't
-            # recorded by job ID apparently
-#            for op in job.getOperations():
-#                if op.getType() in READ_OPS:
-#                    continue
-#                if op.getFile() in self.conflict_filenames:
-#                    jobs = self.extra_jobs.setdefault(op.getFile(), [])
-#                    jobs.append(job)
-#                    print >> sys.stderr, "Found %s via %s %s" % (job_id, op.getType(), op.getFile())
-#                    return
-
         build.parseJobs(job_cb)
 
         if len(self.interesting_job_ids) > 0:
@@ -394,12 +391,16 @@ class Analyzer:
 
         def look_at_job(job, rule_job):
             if job:
-                if True:
-#                if job.getType() == annolib.JOB_TYPE_RULE:
+#                if True:
+                # We don't want statcache jobs
+                if job.getType() == annolib.JOB_TYPE_RULE or \
+                    job.getType() == annolib.JOB_TYPE_PARSE:
                     if job not in rule_jobs:
                         invoked = get_earliest_invoked(job)
                         completed = get_latest_completed(job)
                         rule_jobs.append([invoked, completed, job])
+#                elif job.getType() == annolib.JOB_TYPE_STATCACHE:
+#                    print job.getTextReport()
 
         # Key = filename, Value = [duration, [rule_jobs]]
         self.resolution_times = {}
@@ -423,12 +424,16 @@ class Analyzer:
                 rerun_job = self.jobs.get(conflict.getRerunBy())
                 look_at_job(rerun_job, rule_jobs)
 
-            for extra_job in self.extra_jobs.get(filename, []):
-                look_at_job(extra_job, rule_jobs)
-
             if not rule_jobs:
                 print >> sys.stderr, "No rule_jobs for", filename
                 print >> sys.stderr, "    Conflict IDs:", conflict_job_ids
+                for conflict_job_id in conflict_job_ids:
+                    write_job = self.jobs.get(conflict.getWriteJob())
+                    rerun_job = self.jobs.get(conflict.getRerunBy())
+                    print >> sys.stderr, "%s: %s" % ( write_job.getID(),
+                            write_job.getType())
+                    print >> sys.stderr, "%s: %s" % ( rerun_job.getID(),
+                            rerun_job.getType())
                 continue
 
             # now that we have all the jobs related to this filename,
@@ -474,7 +479,7 @@ class Analyzer:
             duration, rule_jobs = self.resolution_times[filename]
 
             # Are there > 1 rule jobs dealing with this conflict?
-            if len(rule_jobs) > 0:
+            if len(rule_jobs) > 1:
                 num_reported += 1
                 formatter.toc_start_item(filename)
 
