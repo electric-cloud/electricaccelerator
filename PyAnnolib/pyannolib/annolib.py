@@ -4,6 +4,7 @@ Handle the emake annotation file.
 """
 from pyannolib import concatfile
 import xml.sax
+import datetime
 
 #from xml.etree import ElementTree as ET
 from xml.etree import cElementTree as ET
@@ -289,6 +290,18 @@ class AnnotatedBuild():
 
     def getStart(self):
         return self.start_text
+
+    def getStartDateTime(self):
+        """Returns a datetime.datetime object that represents
+        the start time of the build. Note that we do not take into
+        account the timezone, even though it is present in the
+        start time string in the annotation file. This
+        can throw exceptions if the data is malformed."""
+
+        # Example: Thu 02 Oct 2014 12:16:53 PM PDT
+        fmt = "%a %d %b %Y %H:%M:%S %p %Z"
+
+        return datetime.datetime.strptime(self.start_text, fmt)
 
     def getBuildID(self):
         return self.build_id

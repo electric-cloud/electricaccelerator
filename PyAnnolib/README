@@ -76,12 +76,23 @@ the metrics, there is no need to use parseJobs() to read all the jobs first.
 
 Methods:
 
-getBuildID():
-getCM():
-getStart():
+getBuildID():   return the build ID
+
+getCM():        return the cluster manager
+
+getStart():     return the start time in string form
+
+getStartDateTime():
+    Returns a datetime.datetime object for the start time of
+    the build. The timezone information is not modeled in this
+    datetime object, even though it is present in the time string
+    in the annotation file.
+
 getProperties():
+    Returns the hash of properties for the build.
+
 getVars():
-    Retrieve these values.
+    Returns the hash of environment variables used in this build.
 
 getMetrics():
     Returns the hash of metrics that were recorded for the build.
@@ -122,6 +133,22 @@ getAllJobs()
     This loads all Job objects in memory at once, so if your
     annotation file is extremely huge, you might have to worry
     about memory size here.
+
+getMakeProcess(make_id):
+    Returns the MakeProcess object associated with the make ID
+    string. The make ID string starts with "M", and is followed
+    by a hexadecimal integer.
+
+getMakeJob(job_id):
+    Returns the Job record for the job ID string. The only
+    job records that are stored are the jobs that initiated
+    Make processes. Each MakeProcess object has a parent job ID
+    string that can be obtained with getParentJobID(). It is only
+    those job IDs that are stored in this hash. By using the
+    information about Make processes from getMakeProcess(), and
+    the jobs that begat those Make process, using getMakeJob(),
+    you can reconstruct the job path (the make process
+    hierarchy).
 
 close()
     Closes the filehandle. If you had AnnotatedBuild open the

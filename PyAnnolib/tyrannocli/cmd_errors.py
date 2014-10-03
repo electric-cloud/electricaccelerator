@@ -1,6 +1,7 @@
 import sys
 from pyannolib import annolib
 import tyrannolib
+import datetime
 
 printed_something = False
 
@@ -70,11 +71,20 @@ def cb(job, build):
 
     make_proc = job.getMakeProcess()
 
+    build_start_dt = build.getStartDateTime()
+
     print "Job ID: %s , Exit Value %s" % (job.getID(), job.getRetval())
     print "CWD: %s" % (make_proc.getCWD(),)
     for timing in job.getTimings():
-        print "Node: %s Start:%s End:%s" % (timing.getNode(),
-                timing.getInvoked(), timing.getCompleted())
+        job_start = float(timing.getInvoked())
+        job_end = float(timing.getCompleted())
+        job_start_dt = build_start_dt + datetime.timedelta(seconds=job_start)
+        job_end_dt = build_start_dt + datetime.timedelta(seconds=job_end)
+
+        print "Node: %s  Start: %s (%s)" % (timing.getNode(), job_start_dt,
+                timing.getInvoked())
+        print "      %s  End:   %s (%s)" % (" " * len(timing.getNode()),
+                job_end_dt, timing.getCompleted())
     print
 
     for cmd in job.getCommands():
@@ -94,11 +104,11 @@ def cb(job, build):
                 print text,
 
         print "--------------------------------------------------------------"
+        print
 
 #    for output in job.getOutputs():
 #        print op.getText()
 
-    print
     print "Make Process Hierarchy:"
     print
 
