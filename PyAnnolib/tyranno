@@ -11,6 +11,7 @@ import logging
 
 from tyrannocli import cmd_index
 from tyrannocli import cmd_explore
+from tyrannocli import cmd_errors
 
 def main():
     description = "annotation file tool"
@@ -29,6 +30,7 @@ def main():
 
     cmd_explore.SubParser(subparsers)
     cmd_index.SubParser(subparsers)
+    cmd_errors.SubParser(subparsers)
 
     args = parser.parse_args()
 

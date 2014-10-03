@@ -112,6 +112,10 @@ class AnnotatedBuild():
         # Key = make proc ID, Value = MakeProcess object
         self.make_procs = {}
 
+        # Jobs that spawned MakeProcesses
+        # Key = job ID, value = Job object
+        self.make_jobs = {}
+
         if filename:
             assert not fh, "filename and fh both given"
 
@@ -308,6 +312,17 @@ class AnnotatedBuild():
 
     def getMakeProcess(self, make_id):
         return self.make_procs.get(make_id)
+
+    def addMakeJob(self, job):
+        # For Make #0, we will be passed None for job,
+        # so check for that.
+        if job:
+            job_id = job.getID()
+            assert job_id not in self.make_jobs
+            self.make_jobs[job_id] = job
+
+    def getMakeJob(self, job_id):
+        return self.make_jobs.get(job_id)
 
     def parseJobs(self, cb, user_data=None):
         """Parse jobs and call the callback for each Job object."""
@@ -1085,10 +1100,11 @@ class AnnoXMLBodyParser(AnnoXMLNames):
 
             if elem.tag == self.ELEMENT_JOB:
                 assert len(self.make_elems) > 0
-                print "starting job at", fh.tell()
-                print dir(icontext)
+#                print "starting job at", fh.tell()
+#                print dir(icontext)
+#                print icontext._index
                 job = Job(elem)
-                print "\t", job.getID()
+#                print "\t", job.getID()
 
                 job.setMakeProcess(self.make_elems[-1])
 
@@ -1187,6 +1203,7 @@ class AnnoXMLBodyParser(AnnoXMLNames):
 
         self.make_elems.append(make_elem)
         self.build.addMakeProcess(make_elem)
+        self.build.addMakeJob(self.prev_job_elem)
 
 
 
