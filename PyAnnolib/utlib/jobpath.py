@@ -7,7 +7,7 @@ from pyannolib import annolib
 from utlib import util
 
 class JobPathTests(unittest.TestCase):
-    """Check the funcationaliby of jobpath"""
+    """Check the funcationality of jobpath"""
 
     @classmethod
     def setUpClass(cls):
@@ -16,50 +16,42 @@ class JobPathTests(unittest.TestCase):
         cls.build = annolib.AnnotatedBuild(annofile)
 
         # Collect all the jobs
-        cls.jobs = cls.build.getAllJobs()
+        cls.jobs = { job.getID() : job for job in cls.build.getAllJobs() }
 
         cls.build.close()
 
-    def find_job_for_target(self, target):
-        return [j for j in self.jobs if j.getName() == target][0]
+    def test_leaf_job(self):
+        # This job is the link of the 'make' executable
+        job  = self.jobs["J0000000012067840"]
 
-    def find_job_by_id(self, ID):
-        return [j for j in self.jobs if j.getID() == ID][0]
+        job_path = [obj.getID() for obj in self.build.getJobPath(job)]
 
-    def test_dir(self):
-        # Make #0
-        # emake.................
-        #
-        # J0...012012f50
-        # all
-        #
-        # Make #1
-        # /auto/ecloud/emake-7.0.0/64/bin/emake all-recursive
-        #
-        # J0..012028170
-        # all-recursive
-        #
-        # Make #6
-        # /auto/ecloud/emake-7.0.0/64/bin/emake all-am
-        #
-        # J0...0120671b0
-        # dir.o
-        dir_job = self.find_job_for_target("dir.o")
-        self.assertEqual(dir_job.getID(), "J00000000120671b0")
+        expected = ["M00000000", "J0000000012012f50",
+                    "M00000001", "J0000000012028170",
+                    "M00000006", "J0000000012067840"]
 
-        make6 = dir_job.getMakeProcess()
-        self.assertEqual(make6.getID(), "M00000006")
+        self.assertEqual(job_path, expected)
 
-        all_recursive_job_id = make6.getParentJobID()
-        self.assertEqual(all_recursive_job_id, "J0000000012028170")
-        all_recursive_job = self.find_job_by_id(all_recursive_job_id)
+    def test_parse_job(self):
+        # This job is the leaf Make process (parse job)
+        job = self.jobs["J000000001207d140"]
 
-        make1 = all_recursive_job.getMakeProcess()
-        self.assertEqual(make1.getID(), "M00000001")
+        job_path = [obj.getID() for obj in self.build.getJobPath(job)]
 
-        all_job_id = make1.getParentJobID()
-        self.assertEqual(all_job_id, "J0000000012012f50")
-        all_job = self.find_job_by_id(all_job_id)
+        expected = ["M00000000", "J0000000012012f50",
+                    "M00000001", "J0000000012028170",
+                    "M00000006", "J000000001207d140"]
 
-        make0 = all_job.getMakeProcess()
-        self.assertEqual(make0.getID(), "M00000000")
+        self.assertEqual(job_path, expected)
+
+
+    def test_submake_job(self):
+        # This job is the submake of 'all-recursive'
+        # It is a rule job
+        job = self.jobs["J0000000012012f50"]
+
+        job_path = [obj.getID() for obj in self.build.getJobPath(job)]
+
+        expected = ["M00000000", "J0000000012012f50"]
+
+        self.assertEqual(job_path, expected)

@@ -150,6 +150,18 @@ getMakeJob(job_id):
     you can reconstruct the job path (the make process
     hierarchy).
 
+getJobPath(job):
+    Return a list that correponds to the Job Path in Electric Insight.
+    Its members are the alternating sequences of MakeProcess
+    objects and Job objects that make up the sub-make hierarchy
+    that leads to "job". The first item in the list will be the root
+    MakeProcess (M00000000), and the last item will be the job
+    itself that was passed to getJobPath().
+
+getMakePath(job):
+    Similar to getJobPath(), but the list contains only the
+    MakeProcess objects, not the Job objects.
+
 close()
     Closes the filehandle. If you had AnnotatedBuild open the
     filehandle for you, you may want it to close it as well.

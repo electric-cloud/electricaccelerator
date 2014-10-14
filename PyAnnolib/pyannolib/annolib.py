@@ -337,6 +337,63 @@ class AnnotatedBuild():
     def getMakeJob(self, job_id):
         return self.make_jobs.get(job_id)
 
+    def getMakePath(self, job):
+        """This is just like getJobPath, but returns only
+        the MakeProcess objects."""
+        return [ obj for obj in self.getJobPath(job) if
+                isinstance(obj, MakeProcess) ]
+
+    def getJobPath(self, job):
+        """Returns a list of MakeProcess and Job objects, which
+        correspond to the "Job Path" tab for a job in Electric
+        Insight. It is the chain of jobs from the first MakeProc
+        down to job itself. The items alternate by MakeProc,
+        which represents a sub-make, and a Job, which is make
+        rule job or parse job, until you finally get to the
+        job that was passed in.
+
+        The first item in the list is the root MakeProc
+        (M00000000), and the last item is the job that was
+        passed in to getJobPath.
+        """
+       
+        assert isinstance(job, Job)
+
+        job_chain = []
+
+        # Start from the job given to us, pretending it
+        # was the last job we looked ad.
+        this_job = job
+        parent_make = job.getMakeProcess()
+
+        # The Job Path reported by Electric Insight shows
+        # these types of jobs (but this list might not
+        # be complete)
+        OK_TYPES = [JOB_TYPE_RULE, JOB_TYPE_PARSE]
+
+        # The Job Path reported by Electric Insight shows
+        # jobs with these statuses (but this list might not
+        # be complete)
+        OK_STATUSES = [JOB_STATUS_NORMAL, JOB_STATUS_RERUN]
+
+        while parent_make:
+            if this_job.getType() in OK_TYPES and \
+                    this_job.getStatus() in OK_STATUSES:
+                job_chain.insert(0, this_job)
+                job_chain.insert(0, parent_make)
+
+            parent_job_id = parent_make.getParentJobID()
+            this_job = self.getMakeJob(parent_job_id)
+
+            # The top-most, initial Make won't have a parent job.
+            # That's our condition to stop the loop!
+            if not this_job:
+                break
+
+            parent_make = this_job.getMakeProcess()
+
+        return job_chain
+
     def parseJobs(self, cb, user_data=None):
         """Parse jobs and call the callback for each Job object."""
         if not self.fh:
@@ -519,6 +576,12 @@ class MakeProcess:
     def getID(self):
         return self.make_proc_id
 
+    def getTextReport(self):
+        text = "%s make[%s] in %s\n" % (self.make_proc_id,
+                self.level, self.cwd)
+        text += self.cmd
+        return text
+
 class Job(AnnoXMLNames):
 
     ID = "id"
@@ -677,8 +740,7 @@ class Job(AnnoXMLNames):
         return self.partof
 
     def getTextReport(self):
-        text = """
-Job ID:    %s
+        text = """Job ID:    %s
 Type:      %s
 Status:    %s
 Thread:    %s
@@ -944,7 +1006,9 @@ class Output:
         return self.src
 
     def getTextReport(self):
-        text_report  = "------- Output (%s) -------\n" % (self.src,)
+        text_report  = "------- Output (%s) -------" % (self.src,)
+        if self.text[0] != "\n":
+            text_report += "\n"
         text_report += self.text
         text_report += "--------%s-----------------\n" % ("-" * len(self.src),)
         return text_report
