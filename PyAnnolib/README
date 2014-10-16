@@ -186,9 +186,20 @@ getType()
 getTimings()
 getMakeProcess()
 getWaitingJobs()
+    Returns a list of job IDs. Those are the jobs that are waiting
+    on this job to finish.
+
 getOutputs()
+    Returns the Output objects that this Job produced, if this job
+    was a Make job and the Make itself printed output.
+
 getOperations()
 getCommands()
+    Returns the Command objects that this Job ran if this Job was
+    not a Make job. Each Command object will have its own output,
+    retrievable by getOutput() on the Command object. This is different
+    from the Job objects getOutput() method, which is only for Make jobs.
+
 getDependencies()
 getConflict()
 getName()
