@@ -759,9 +759,11 @@ class Operation:
         return self.found
 
     def getTextReport(self):
-        text  = "(%s) %s\n" % (self.type, self.file)
-        text += "FileType: %s Found: %s IsDir: %s\n\n" % \
-                (self.filetype, self.found, self.isdir)
+        if self.found == "1":
+            found = "found"
+        else:
+            found == "not-found"
+        text  = "(%s,%s,%s) %s\n" % (self.type, self.filetype, found, self.file)
         return text
 
 
