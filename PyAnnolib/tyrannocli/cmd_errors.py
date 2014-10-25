@@ -24,6 +24,8 @@ def find_error_jobs(build):
             jobs[job_id] = job
             looking_for.remove(job_id)
             looking_for.add(job.getNeededBy())
+            for waiting_job_id in job.getWaitingJobs():
+                looking_for.add(waiting_job_id)
 
         if job.getType() != annolib.JOB_TYPE_RULE:
             return
@@ -32,6 +34,8 @@ def find_error_jobs(build):
 
         error_jobs.append(job)
         looking_for.add(job.getNeededBy())
+        for waiting_job_id in job.getWaitingJobs():
+            looking_for.add(waiting_job_id)
 
     build.parseJobs(cb)
     return error_jobs, jobs
@@ -86,6 +90,7 @@ def print_error_job(all_jobs, build, job):
     print "Target chain:"
     print_needed_by(all_jobs, job)
 
+
     for cmd in job.getCommands():
         print "Command:"
         argv = cmd.getArgv()
@@ -106,8 +111,15 @@ def print_error_job(all_jobs, build, job):
 
         print "--------------------------------------------------------------"
         print
+   
+    make_job_outputs = job.getOutputs()
+    if make_job_outputs:
+        print "Error from makefile parse job:"
+        for op in make_job_outputs:
+            print op.getTextReport()
 
-
+    #print "Waiting jobs:"
+    #print_waiting_jobs(all_jobs, job)
 
     #print "Make Process Hierarchy:"
     #print
@@ -126,6 +138,35 @@ def print_needed_by(all_jobs, job):
     else:
         print "top-level Make"
         print
+
+def print_waiting_jobs(all_jobs, job, seen=None, indent=0):
+    if seen == None:
+        seen = {}
+
+    if not job.getID() in seen:
+#        print job.getID(), "waiting on", job.getWaitingJobs()
+        spaces = "  " * indent
+
+        if job.getName():
+            print "%s%s %s (%s:%s)" % (spaces, job.getID(),
+                    job.getName(), job.getFile(),
+                    job.getLine())
+        else:
+            pass
+#            print "%s" % (job.getID(),)
+#            for op in job.getOutputs():
+#                print op.getText(),
+
+        seen[job.getID()] = True
+        print
+
+#    print "WAITING:", job.getWaitingJobs()
+    for waiting_job_id in job.getWaitingJobs():
+        if waiting_job_id in seen:
+            continue
+        waiting_job = all_jobs.get(waiting_job_id)
+        if waiting_job:
+            print_waiting_jobs(all_jobs, waiting_job, seen, indent+1)
 
 
 def Run(args):
