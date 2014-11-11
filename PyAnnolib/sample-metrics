@@ -6,25 +6,34 @@ This sample shows the metrics of a build, and nothing else.
 import argparse
 from pyannolib import annolib
 
-def run(filename):
+def run(filename, requested_metrics):
 
     build = annolib.AnnotatedBuild(filename)
     metrics = build.getMetrics()
 
-    keys = metrics.keys()
-    keys.sort()
-    for key in keys:
-        value = metrics[key]
-        print key, ":", value
+    # If the user wanted only some metrics, show them
+    if requested_metrics:
+        for metric_name in requested_metrics:
+            print metric_name, metrics.get(metric_name)
+
+    # otherwise, show all metrics
+    else:
+        keys = metrics.keys()
+        keys.sort()
+
+        for key in keys:
+            value = metrics[key]
+            print key, ":", value
 
 def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("annotation_file")
+    parser.add_argument("metrics", nargs="*")
 
-    options = parser.parse_args()
+    args = parser.parse_args()
 
-    run(options.annotation_file)
+    run(args.annotation_file, args.metrics)
 
 if __name__ == "__main__":
     main()
