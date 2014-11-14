@@ -42,11 +42,12 @@ def SubParser(subparsers):
     parser = subparsers.add_parser("deps", help=help)
     parser.set_defaults(func=Run)
 
-    parser.add_argument("anno_file")
-    parser.add_argument("-o", dest="output",
-            metavar="FILE",
-            help="Output file (stdout by default")
 
+    parser.add_argument("--makefile", metavar="FILE",
+            help="Write in makefile format to FILE")
+
+    parser.add_argument("anno_file")
+    parser.add_argument("root_labels", nargs="*")
 
 
 
@@ -71,7 +72,7 @@ WRITE_OPS = [
 
 
 #================================================= start of child process
-def read_annofile(build, roots, anno_queue):
+def read_annofile(build, roots_hash, anno_queue):
     """Read an annotation file and feed the file operations
     into the queue. The records put into the queue are tuples of
 
@@ -90,9 +91,12 @@ def read_annofile(build, roots, anno_queue):
         is relative to one of the emake roots."""
         op_type = op.getType()
         abspath = op.getFile()
-        for root in roots:
-            if abspath[:len(root)] == root:
-                relpath = abspath[len(root)+1:]
+        for root_path, label in roots_hash.items():
+            if abspath[:len(root_path)] == root_path:
+                if label:
+                    relpath = "${%s}/%s" % (label, abspath[len(root_path)+1:])
+                else:
+                    relpath = abspath[len(root_path)+1:]
                 break
         else:
             # This will never happen, as all paths
@@ -152,18 +156,40 @@ def read_annofile(build, roots, anno_queue):
     anno_queue.close()
 #================================================= end of child process
 
-def find_emake_roots(build):
+def find_emake_roots(build, root_labels):
     """Return the list of emake roots (absolute paths) used
     in this build."""
 
+    # Sanity check; root_labels should be 'name=value'
+    for root_label in root_labels:
+        n = root_label.count("=")
+        if n != 1:
+            msg = "%s should be of format 'label=path'" % (root_label,)
+            sys.exit(msg)
+
+    # Create a hash from the root labels on the comand-line
+    # Key = path, Value = label (from CLI)
+    label_map = {}
+    for root_label in root_labels:
+        name, path = root_label.split("=")
+        label_map[path] = name
+
+    # Find the roots from the anno file
     roots_string = build.getProperty("EmakeRoots")
     if not roots_string:
         sys.exit("No emake roots found.")
 
-    return roots_string.split(":")
+    root_paths = roots_string.split(":")
+
+    # Create the roots hash to be used during analysis
+    # Key = path, Value = label (or None)
+    roots_hash = { root_path : label_map.get(root_path) 
+            for root_path in root_paths }
+
+    return roots_hash
 
 
-def gather_job_records(fh, build, roots):
+def analyze_job_records(build, roots_hash, reporter):
     """Spawns the child process to parse the annotation file,
     and from the records returned from the parser, constructs
     a DAG. Returns the DAG object and the list of job nodes."""
@@ -174,7 +200,7 @@ def gather_job_records(fh, build, roots):
 
     # Analyze the annotation file in another process
     p = multiprocessing.Process(target=read_annofile,
-            args=(build, roots, anno_queue))
+            args=(build, roots_hash, anno_queue))
     p.start()
 
     # Get the first item (blocking until there is one to retreive)
@@ -183,53 +209,66 @@ def gather_job_records(fh, build, roots):
     REC_WRITE_OPS = 2
     record = anno_queue.get()
     while record:
-        print >> sys.stderr, "# %s, qsize=%d, read=%d, write=%d" % \
+        print >> sys.stderr, "%s, qsize=%d, read=%d, write=%d" % \
                 (record[REC_JOB_ID], anno_queue.qsize(),
                     len(record[REC_READ_OPS]), len(record[REC_WRITE_OPS]))
 
-        print_makefile(fh, record[REC_JOB_ID],
+        reporter.job_record(record[REC_JOB_ID],
                 record[REC_READ_OPS], record[REC_WRITE_OPS])
         record = anno_queue.get()
     
     p.join()
 
-def print_makefile(fh, job_id, read_ops, write_ops):
 
-    w_files = [op[OP_FILE] for op in write_ops]
-    r_files = [op[OP_FILE] for op in read_ops]
+class MakefileReporter:
 
-    print >> fh, "# %s" % (job_id,)
-    print >> fh, " ".join(w_files), ":", " ".join(r_files)
-    print >> fh
+    def __init__(self, args, roots_hash):
+        self.filename = args.makefile
+        self.roots_hash = roots_hash
 
+    def open(self):
+        try:
+            self.fh = open(self.filename, "w")
+        except IOError as e:
+            sys.exit(e)
 
-def run_report(fh, filename):
+        i = 1
+        for root_path, label in self.roots_hash.items():
+            if label:
+                print >> self.fh, "# %d. %s = %s" % (i, label, root_path)
+            else:
+                print >> self.fh, "# %d. (No name) %s" % (i, root_path)
+            i += 1
 
-    # Open the annotation file
-    build = annolib.AnnotatedBuild(filename)
+        print >> self.fh
 
-    # Find the emake roots
-    roots = find_emake_roots(build)
+    def job_record(self, job_id, read_ops, write_ops):
+        w_files = [op[OP_FILE] for op in write_ops]
+        r_files = [op[OP_FILE] for op in read_ops]
 
-    # Gather the job records and print
-    gather_job_records(fh, build, roots)
+        print >> self.fh, "# %s" % (job_id,)
+        print >> self.fh, " ".join(w_files), ":", " ".join(r_files)
+        print >> self.fh
 
+    def close(self):
+        try:
+            self.fh.close()
+        except IOError:
+            pass
 
 
 def Run(args):
     build = annolib.AnnotatedBuild(args.anno_file)
-    if args.output:
-        try:
-            fh = open(args.output, "w")
-        except IOError as e:
-            sys.exit(e)
+
+    # Find the emake roots
+    roots_hash = find_emake_roots(build, args.root_labels)
+
+    if args.makefile:
+        reporter = MakefileReporter(args, roots_hash)
     else:
-        fh = sys.stdout
+        sys.exit("Need --makefile")
 
-    run_report(fh, args.anno_file)
-
-    if args.output:
-        try:
-            fh.close()
-        except IOError as e:
-            pass
+    # Gather the job records and print
+    reporter.open()
+    analyze_job_records(build, roots_hash, reporter)
+    reporter.close()
