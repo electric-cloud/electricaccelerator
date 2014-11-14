@@ -4,6 +4,7 @@ Handle the emake annotation file.
 """
 from pyannolib import concatfile
 import xml.sax
+import datetime
 
 #from xml.etree import ElementTree as ET
 from xml.etree import cElementTree as ET
@@ -101,13 +102,20 @@ class AnnotatedBuild():
         # Initialize this since it is used in __str
         self.build_id = None
 
-        # This is initialized now, but won't be filled in until
-        # the very end of the file.
+        # Key = metric name, Value = metric value (string)
         self.metrics = {}
 
         # This is initialized now, but won't be filled in until
         # the message records are seen while processing jobs
         self.messages = []
+
+        # All MakeProcesses.
+        # Key = make proc ID, Value = MakeProcess object
+        self.make_procs = {}
+
+        # Jobs that spawned MakeProcesses
+        # Key = job ID, value = Job object
+        self.make_jobs = {}
 
         if filename:
             assert not fh, "filename and fh both given"
@@ -283,6 +291,18 @@ class AnnotatedBuild():
     def getStart(self):
         return self.start_text
 
+    def getStartDateTime(self):
+        """Returns a datetime.datetime object that represents
+        the start time of the build. Note that we do not take into
+        account the timezone, even though it is present in the
+        start time string in the annotation file. This
+        can throw exceptions if the data is malformed."""
+
+        # Example: Thu 02 Oct 2014 12:16:53 PM PDT
+        fmt = "%a %d %b %Y %H:%M:%S %p %Z"
+
+        return datetime.datetime.strptime(self.start_text, fmt)
+
     def getBuildID(self):
         return self.build_id
 
@@ -297,6 +317,82 @@ class AnnotatedBuild():
 
     def getMessages(self):
         return self.messages
+
+    def addMakeProcess(self, make_elem):
+        make_id = make_elem.getID()
+        assert make_id not in self.make_procs
+        self.make_procs[make_id] = make_elem
+
+    def getMakeProcess(self, make_id):
+        return self.make_procs.get(make_id)
+
+    def addMakeJob(self, job):
+        # For Make #0, we will be passed None for job,
+        # so check for that.
+        if job:
+            job_id = job.getID()
+            assert job_id not in self.make_jobs
+            self.make_jobs[job_id] = job
+
+    def getMakeJob(self, job_id):
+        return self.make_jobs.get(job_id)
+
+    def getMakePath(self, job):
+        """This is just like getJobPath, but returns only
+        the MakeProcess objects."""
+        return [ obj for obj in self.getJobPath(job) if
+                isinstance(obj, MakeProcess) ]
+
+    def getJobPath(self, job):
+        """Returns a list of MakeProcess and Job objects, which
+        correspond to the "Job Path" tab for a job in Electric
+        Insight. It is the chain of jobs from the first MakeProc
+        down to job itself. The items alternate by MakeProc,
+        which represents a sub-make, and a Job, which is make
+        rule job or parse job, until you finally get to the
+        job that was passed in.
+
+        The first item in the list is the root MakeProc
+        (M00000000), and the last item is the job that was
+        passed in to getJobPath.
+        """
+       
+        assert isinstance(job, Job)
+
+        job_chain = []
+
+        # Start from the job given to us, pretending it
+        # was the last job we looked ad.
+        this_job = job
+        parent_make = job.getMakeProcess()
+
+        # The Job Path reported by Electric Insight shows
+        # these types of jobs (but this list might not
+        # be complete)
+        OK_TYPES = [JOB_TYPE_RULE, JOB_TYPE_PARSE]
+
+        # The Job Path reported by Electric Insight shows
+        # jobs with these statuses (but this list might not
+        # be complete)
+        OK_STATUSES = [JOB_STATUS_NORMAL, JOB_STATUS_RERUN]
+
+        while parent_make:
+            if this_job.getType() in OK_TYPES and \
+                    this_job.getStatus() in OK_STATUSES:
+                job_chain.insert(0, this_job)
+                job_chain.insert(0, parent_make)
+
+            parent_job_id = parent_make.getParentJobID()
+            this_job = self.getMakeJob(parent_job_id)
+
+            # The top-most, initial Make won't have a parent job.
+            # That's our condition to stop the loop!
+            if not this_job:
+                break
+
+            parent_make = this_job.getMakeProcess()
+
+        return job_chain
 
     def parseJobs(self, cb, user_data=None):
         """Parse jobs and call the callback for each Job object."""
@@ -321,6 +417,8 @@ class AnnotatedBuild():
         self.parseJobs(job_cb, None)
 
         return jobs
+
+
 
 ###################################################
 
@@ -477,6 +575,12 @@ class MakeProcess:
 
     def getID(self):
         return self.make_proc_id
+
+    def getTextReport(self):
+        text = "%s make[%s] in %s\n" % (self.make_proc_id,
+                self.level, self.cwd)
+        text += self.cmd
+        return text
 
 class Job(AnnoXMLNames):
 
@@ -636,8 +740,7 @@ class Job(AnnoXMLNames):
         return self.partof
 
     def getTextReport(self):
-        text = """
-Job ID:    %s
+        text = """Job ID:    %s
 Type:      %s
 Status:    %s
 Thread:    %s
@@ -730,6 +833,57 @@ Thread:    %s
                 text += op.getTextReport()
 
         return text
+
+    def __getstate__(self):
+        return (
+                self.job_id,
+                self.status,
+                self.thread,
+                self.type,
+                self.name,
+                self.needed_by,
+                self.line,
+                self.file,
+                self.partof,
+                self.outputs,
+                self.make.getID(), # store the MakeProcess ID
+                self.timings,
+                self.oplist,
+                self.waiting_jobs,
+                self.commands,
+                self.deplist,
+                self.conflict,
+                self.retval,
+                )
+
+    def __setstate__(self, state):
+        (
+            self.job_id,
+            self.status,
+            self.thread,
+            self.type,
+            self.name,
+            self.needed_by,
+            self.line,
+            self.file,
+            self.partof,
+            self.outputs,
+            self.make_id,
+            self.timings,
+            self.oplist,
+            self.waiting_jobs,
+            self.commands,
+            self.deplist,
+            self.conflict,
+            self.retval,
+        ) = state
+        
+        self.make = None
+
+    def fix_unpickled_state(self, make_proc_hash):
+        if self.make_id:
+            self.make =  make_proc_hash.get(self.make_id)
+            del self.make_id
 
 
 class Operation:
@@ -854,7 +1008,9 @@ class Output:
         return self.src
 
     def getTextReport(self):
-        text_report  = "------- Output (%s) -------\n" % (self.src,)
+        text_report  = "------- Output (%s) -------" % (self.src,)
+        if self.text[0] != "\n":
+            text_report += "\n"
         text_report += self.text
         text_report += "--------%s-----------------\n" % ("-" * len(self.src),)
         return text_report
@@ -1023,7 +1179,11 @@ class AnnoXMLBodyParser(AnnoXMLNames):
 
             if elem.tag == self.ELEMENT_JOB:
                 assert len(self.make_elems) > 0
+#                print "starting job at", fh.tell()
+#                print dir(icontext)
+#                print icontext._index
                 job = Job(elem)
+#                print "\t", job.getID()
 
                 job.setMakeProcess(self.make_elems[-1])
 
@@ -1121,6 +1281,8 @@ class AnnoXMLBodyParser(AnnoXMLNames):
                 make_elem.setParentJobID(self.prev_job_elem.getID())
 
         self.make_elems.append(make_elem)
+        self.build.addMakeProcess(make_elem)
+        self.build.addMakeJob(self.prev_job_elem)
 
 
 
