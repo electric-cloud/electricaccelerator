@@ -11,6 +11,7 @@ from utlib.build import BuildTests
 from utlib.jobpath import JobPathTests
 from utlib.concat import ConcatTests
 from utlib.jobseq import SeqTests
+from utlib.dag import DAGTests
 
 
 if __name__ == "__main__":

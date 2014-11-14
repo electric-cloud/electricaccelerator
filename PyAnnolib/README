@@ -83,6 +83,9 @@ getProperties():
 getVars():
     Retrieve these values.
 
+getProperty(name):
+    Returns the value of the property, or None if it doesn't exist.
+
 getMetrics():
     Returns the hash of metrics that were recorded for the build.
 
@@ -165,6 +168,9 @@ getTextReport()
     for this job, but your eyes won't glaze over trying to read through
     the XML markup.
 
+getRetval()
+    Returns an integer value for the return code. 0 on success,
+    or non-0 on failure.
 
 MakeProcess
 -----------

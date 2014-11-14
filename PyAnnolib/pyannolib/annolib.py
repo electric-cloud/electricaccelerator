@@ -289,6 +289,9 @@ class AnnotatedBuild():
     def getProperties(self):
         return self.properties
 
+    def getProperty(self, name):
+        return self.properties.get(name)
+
     def getVars(self):
         return self.vars
 
@@ -762,7 +765,7 @@ class Operation:
         if self.found == "1":
             found = "found"
         else:
-            found == "not-found"
+            found = "not-found"
         text  = "(%s,%s,%s) %s\n" % (self.type, self.filetype, found, self.file)
         return text
 
