@@ -11,6 +11,7 @@ import logging
 
 #from tyrannocmd import cmd_index
 #from tyrannocmd import cmd_explore
+from tyrannocmd import cmd_deps
 from tyrannocmd import cmd_errors
 
 def main():
@@ -28,8 +29,9 @@ def main():
     help = "Sub-commands"
     subparsers = parser.add_subparsers(help=help)
 
-    cmd_explore.SubParser(subparsers)
-    cmd_index.SubParser(subparsers)
+#    cmd_explore.SubParser(subparsers)
+#    cmd_index.SubParser(subparsers)
+    cmd_deps.SubParser(subparsers)
     cmd_errors.SubParser(subparsers)
 
     args = parser.parse_args()
