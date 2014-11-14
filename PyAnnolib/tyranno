@@ -9,9 +9,9 @@ __version__ = "0.0.1"
 import argparse
 import logging
 
-from tyrannocli import cmd_index
-from tyrannocli import cmd_explore
-from tyrannocli import cmd_errors
+#from tyrannocmd import cmd_index
+#from tyrannocmd import cmd_explore
+from tyrannocmd import cmd_errors
 
 def main():
     description = "annotation file tool"

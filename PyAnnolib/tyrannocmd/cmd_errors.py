@@ -14,6 +14,13 @@ def SubParser(subparsers):
 
 
 def find_error_jobs(build):
+    """Returns all the Jobs that were not successful.
+    Also returns a hash of all the jobs that are related
+    to those error jobs (which jobs were waiting for the
+    failed jobs).
+
+    Returns (error_jobs list, jobs hash)."""
+
     error_jobs = []
     looking_for = set()
     jobs = {}
