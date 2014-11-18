@@ -183,20 +183,49 @@ close()
 Job
 ---
 getID()
+    Returns a string with the job id. The string starts with "J",
+    followed by a hexadecimal number.
+
 getStatus()
+    Returns a string with one of the status types. The possible values are:
+        normal, rerun, conflict, reverted, skipped
+
 getThread()
+
 getType()
+    Returns a string representing the job type. The possible values are:
+        continuation, end, exist, external, follow, parse, remake,
+        rule, subbuild, alpha, omega, update, statcache
+
 getTimings()
+    Returns a list of Timing objects. A Timing object models
+    the start and end times of running the job on a node in the
+    cluster. For most jobs there is only one Timing object, but
+    if there is some issue where emake needs to run the job again,
+    it will. It actually runs it up to three times on different
+    agents. See:
+    https://electriccloud.zendesk.com/hc/en-us/articles/202830223-KBEA-Error-Code-EC1073
+
 getMakeProcess()
+    Returns the MakeProcess which has the info about the sub-make
+    which started this Job.
+
 getWaitingJobs()
     Returns a list of job IDs. Those are the jobs that are waiting
     on this job to finish.
 
 getOutputs()
     Returns the Output objects that this Job produced, if this job
-    was a Make job and the Make itself printed output.
+    was a Make job and the Make itself printed output (parsing
+    warnings, etc.). Otherwise, to see the command outputs, use
+    getCommands() to get each Command object, which have their
+    own getOutputs() method.
 
 getOperations()
+    Returns a list of the Operation objects if this build recorded
+    "file" information in the annotation file. Operation objects
+    show the operations on files under any of the emake roots.
+
 getCommands()
     Returns the Command objects that this Job ran if this Job was
     not a Make job. Each Command object will have its own output,
@@ -219,14 +248,21 @@ getTextReport()
     the XML markup.
 
 getRetval()
-    Returns an integer value for the return code. 0 on success,
+    Returns an intbeger value for the return code. 0 on success,
     or non-0 on failure.
 
 MakeProcess
 -----------
 getLevel()
+    Returns a string specifying the make-level. The root make
+    is "0", the child sub-make is "1", the grand-child sub-make is "2", etc.
+
 getCmd()
+    Returns the command-line for this sub-make process
+
 getCWD()
+    Returns the CWD of the sub-make process.
+
 getOWD()
 getMode()
     Retrieve these values.

@@ -3,7 +3,7 @@
 import os
 import unittest
 
-from pyannolib import digraph
+from tyrannolib import digraph
 
 class DAGTests(unittest.TestCase):
     """Check the DAG logic."""

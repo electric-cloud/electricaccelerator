@@ -837,56 +837,56 @@ Thread:    %s
 
         return text
 
-    def __getstate__(self):
-        return (
-                self.job_id,
-                self.status,
-                self.thread,
-                self.type,
-                self.name,
-                self.needed_by,
-                self.line,
-                self.file,
-                self.partof,
-                self.outputs,
-                self.make.getID(), # store the MakeProcess ID
-                self.timings,
-                self.oplist,
-                self.waiting_jobs,
-                self.commands,
-                self.deplist,
-                self.conflict,
-                self.retval,
-                )
-
-    def __setstate__(self, state):
-        (
-            self.job_id,
-            self.status,
-            self.thread,
-            self.type,
-            self.name,
-            self.needed_by,
-            self.line,
-            self.file,
-            self.partof,
-            self.outputs,
-            self.make_id,
-            self.timings,
-            self.oplist,
-            self.waiting_jobs,
-            self.commands,
-            self.deplist,
-            self.conflict,
-            self.retval,
-        ) = state
-        
-        self.make = None
-
-    def fix_unpickled_state(self, make_proc_hash):
-        if self.make_id:
-            self.make =  make_proc_hash.get(self.make_id)
-            del self.make_id
+#    def __getstate__(self):
+#        return (
+#                self.job_id,
+#                self.status,
+#                self.thread,
+#                self.type,
+#                self.name,
+#                self.needed_by,
+#                self.line,
+#                self.file,
+#                self.partof,
+#                self.outputs,
+#                self.make.getID(), # store the MakeProcess ID
+#                self.timings,
+#                self.oplist,
+#                self.waiting_jobs,
+#                self.commands,
+#                self.deplist,
+#                self.conflict,
+#                self.retval,
+#                )
+#
+#    def __setstate__(self, state):
+#        (
+#            self.job_id,
+#            self.status,
+#            self.thread,
+#            self.type,
+#            self.name,
+#            self.needed_by,
+#            self.line,
+#            self.file,
+#            self.partof,
+#            self.outputs,
+#            self.make_id,
+#            self.timings,
+#            self.oplist,
+#            self.waiting_jobs,
+#            self.commands,
+#            self.deplist,
+#            self.conflict,
+#            self.retval,
+#        ) = state
+#        
+#        self.make = None
+#
+#    def fix_unpickled_state(self, make_proc_hash):
+#        if self.make_id:
+#            self.make =  make_proc_hash.get(self.make_id)
+#            del self.make_id
 
 
 class Operation:
