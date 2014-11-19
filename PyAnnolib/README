@@ -88,17 +88,27 @@ getStartDateTime():
     datetime object, even though it is present in the time string
     in the annotation file.
 
+getLocalAgents():
+    Returns "true" or None... were local agents used in the build?
+
 getProperties():
     Returns the hash of properties for the build.
-
-getVars():
-    Returns the hash of environment variables used in this build.
 
 getProperty(name):
     Returns the value of the property, or None if it doesn't exist.
 
+getVars():
+    Returns the hash of environment variables used in this build.
+
+getVar(name):
+    Returns the value of the environment variable as recorded
+    for this build, or None if it doesn't exist
+
 getMetrics():
     Returns the hash of metrics that were recorded for the build.
+
+getMetric(name):
+    Returns the value of the named metric, or None if it doesn't exists
 
 getMessages():
     Returns the list of out-of-band messages that were emitted

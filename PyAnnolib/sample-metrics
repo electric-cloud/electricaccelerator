@@ -9,15 +9,15 @@ from pyannolib import annolib
 def run(filename, requested_metrics):
 
     build = annolib.AnnotatedBuild(filename)
-    metrics = build.getMetrics()
 
     # If the user wanted only some metrics, show them
     if requested_metrics:
         for metric_name in requested_metrics:
-            print metric_name, metrics.get(metric_name)
+            print metric_name, build.getMetric(metric_name)
 
     # otherwise, show all metrics
     else:
+        metrics = build.getMetrics()
         keys = metrics.keys()
         keys.sort()
 

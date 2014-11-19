@@ -3,8 +3,6 @@ Code for analyzing the sequencing of jobs, as they
 are ordered in the agent nodes in the cluster.
 """
 
-from pyannolib import annolib
-
 # Indices into the fragment tuple
 INVOKED = 1
 COMPLETED = 0
@@ -92,7 +90,7 @@ class Agent:
                     prev_frag = next_frag
                     continue
 
-                prev_completed = prev_frag[COMPLETED]
+                #prev_completed = prev_frag[COMPLETED]
                 prev_invoked = prev_frag[INVOKED]
                 next_completed = next_frag[COMPLETED]
                 next_invoked = next_frag[INVOKED]
@@ -143,7 +141,6 @@ class Agent:
         #
         # Look at each node; if it overlaps with its neighbor
         # to the right, merge the two, and keep comparing.
-        looking_at = 0
         len_fragments = len(self.fragments)
 
         # One or no fragments? Nothing to merge! Return now.

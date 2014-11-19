@@ -1,6 +1,5 @@
 # Copyright (c) 2014 by Cisco Systems, Inc.
 
-import os
 import unittest
 
 from tyrannolib import digraph

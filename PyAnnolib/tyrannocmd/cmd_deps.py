@@ -28,9 +28,6 @@ Show the dependencies for the build.
 # runs in a child process, and terminates once the parse is complete.
 
 import sys
-import os
-import argparse
-import types
 import multiprocessing
 
 from pyannolib import annolib
@@ -119,8 +116,8 @@ def read_annofile(build, roots_hash, anno_queue):
             return
 
         make_proc = job.getMakeProcess()
-        job_cwd = make_proc.getCWD()
-        len_job_cwd = len(job_cwd)
+#        job_cwd = make_proc.getCWD()
+#        len_job_cwd = len(job_cwd)
 
         # Divide all the file operations into 2 groups,
         # one for reading, and one for writing

@@ -3,14 +3,17 @@
 Handle the emake annotation file.
 """
 from pyannolib import concatfile
-import xml.sax
+import re
 import datetime
-
-#from xml.etree import ElementTree as ET
-from xml.etree import cElementTree as ET
-
-import types
 import os
+
+try:
+    # Try to import the C-based ElementTree (faster!)
+    from xml.etree import cElementTree as ET
+except ImportError:
+    # But use the Python-based ElementTree if necessary
+    from xml.etree import ElementTree as ET
+
 
 # Job status values
 JOB_STATUS_NORMAL = "normal"
@@ -84,23 +87,78 @@ class PyAnnolibError(Exception):
     to pass back to the client"""
     pass
 
-class FinishedHeaderException(Exception):
-    """This is used internally for AnnoXMLHeaderHandler to
-    stop processing the XML file mid-stream and resume executing
-    back where it was called (in parseFH)."""
-    pass
 
-class AnnotatedBuild():
+###################################################
+
+class AnnoXMLNames:
+    """These constants are used by any class that is parsing 
+    the annotation XML."""
+
+    # Found in the "header"
+    ELEMENT_BUILD = "build"
+    ELEMENT_PROPERTIES = "properties"
+    ELEMENT_PROPERTY = "property"
+    ELEMENT_ENVIRONMENT = "environment"
+    ELEMENT_VAR = "var"
+    ATTR_PROP_NAME = "name"
+    ATTR_VAR_NAME = "name"
+
+    # Found in the metrics "footer"
+    ELEMENT_METRIC = "metric"
+    ATTR_METRIC_NAME = "name"
+
+    # Found in the "body"
+    ELEMENT_MAKE = "make"
+    ELEMENT_JOB = "job"
+    ELEMENT_OUTPUT = "output"
+    ELEMENT_OPLIST = "opList"
+    ELEMENT_OP = "op"
+    ELEMENT_METRICS = "metrics"
+    ELEMENT_METRIC = "metric"
+    ELEMENT_TIMING = "timing"
+    ELEMENT_WAITING_JOBS = "waitingJobs"
+    ELEMENT_COMMAND = "command"
+    ELEMENT_ARGV = "argv"
+    ELEMENT_OUTPUT = "output"
+    ELEMENT_DEPLIST = "depList"
+    ELEMENT_DEP = "dep"
+    ELEMENT_FAILED = "failed"
+    ELEMENT_CONFLICT = "conflict"
+    ELEMENT_MESSAGE = "message"
+
+    # These attributes are handled by the AnnoXMLBodyParser directly
+    ATTR_WAITINGJOBS_IDLIST = "idList"
+    ATTR_METRIC_NAME = "name"
+    ATTR_OUTPUT_SRC = "src"
+    ATTR_FAILED_CODE = "code"
+
+
+
+###################################################
+
+
+
+class AnnotatedBuild(AnnoXMLNames):
     ID = "id"
     CM = "cm"
     START = "start"
-    ELEMENT_METRIC = "metric"
-    ATTR_METRIC_NAME = "name"
+    LOCAL_AGENTS = "localAgents"
 
     def __init__(self, filename, fh=None):
         """Can raise IOError"""
         # Initialize this since it is used in __str
         self.build_id = None
+        
+        # Other fields to initialize
+        self.cm = None
+        self.start_text = None
+        self.local_agents = None
+
+        # Key = property name, Value = property value (string)
+        self.properties = {}
+
+        # Key = env var name, Value = env var value (string)
+        self.vars = {}
 
         # Key = metric name, Value = metric value (string)
         self.metrics = {}
@@ -132,8 +190,19 @@ class AnnotatedBuild():
         else:
             assert 0, "Neither filename or fh given"
 
-        # Do the parse
-        self._parseFH()
+        # Parse the header
+        self._parse_header()
+
+        # Now, skip to the end of the file and look for metrics.
+        self._parse_metrics()
+
+        # Set the filehandle back to the beginning; when parseJobs()
+        # is run, it uses AnnoXMLBodyParser, which skips over all the XML
+        # fields that are part of the header. It's not the most efficient
+        # way to handle the separation of body and header; it would be
+        # much nicer to skip over the header and start parsing where
+        # the body starts. Maybe we'll do that in the future.
+        self.fh.seek(0, os.SEEK_SET)
 
     def close(self):
         """Closes the filehandle, which may be needed if you had
@@ -144,71 +213,89 @@ class AnnotatedBuild():
     def __str__(self):
         return "<AnnotatedBuild id=%s>" % (self.build_id,)
 
-    def _parseFH(self):
-        """Parse the annotation file handle"""
 
-        # Create the parser
-        parser = xml.sax.make_parser()
+    def _parse_header(self):
+        # Read the complete header into a string
+        header_text = self._read_header()
 
-        # Create the handler
-        handler = AnnoXMLHeaderHandler()
+        # Add a fake </build> to end it
+        header_text += "</build>"
 
-        # Tell the parser to use our handler
-        parser.setContentHandler(handler)
-
-        # Don't fetch the DTD
-        parser.setFeature(xml.sax.handler.feature_external_ges, False)
-
-        # Parse the file
+        # Parse the XML string
         try:
-            parser.parse(self.fh)
-        except FinishedHeaderException, exc:
-            # After parsing the header, it throws an exception
-            # so we can regain control here. We reset the file handle
-            # and return the Build object to the user. The Build
-            # object has it's own parse_jobs() function, which will
-            # re-parse the annotation file, looking only at the "body"
-            # of the file, not the "header".
+            root = ET.fromstring(header_text)
+        except ET.ParseError, e:
+            msg = "Error parsing header XML: %s" % (e,)
+            raise PyAnnolibError(msg)
 
-            # The hdr_data tuple is the first argument to the exception,
-            # which is what we need to store before we can parse
-            # the jobs sequentially.
-            hdr_data = exc.args[0]
-            self._init_from_hdr_data(hdr_data)
+        # Get the 'build' data (root XML node)
+        self.build_id = root.attrib.get(self.ID)
+        self.cm = root.attrib.get(self.CM)
+        self.start_text = root.attrib.get(self.START)
+        self.local_agents = root.attrib.get(self.LOCAL_AGENTS)
 
-            # Now, skip to the end of the file and look for metrics.
-            self.parseMetrics()
+        # Store the data from the rest of the header
+        for elem in list(root):
+            if elem.tag == self.ELEMENT_PROPERTIES:
+                for prop_elem in list(elem):
+                    if prop_elem.tag == self.ELEMENT_PROPERTY:
+                        prop_name = prop_elem.get(self.ATTR_PROP_NAME)
+                        self.properties[prop_name] = prop_elem.text
+                    else:
+                        msg = "Unexpected element in <properties>: %s" % \
+                                (prop_elem.tag,)
+                        raise PyAnnolibError(msg)
 
-            # Set the filehandle back to the beginning; when parseJobs()
-            # is run, it uses AnnoXMLBodyParser, which skips over all the XML
-            # fields that are part of the header. It's not the most efficient
-            # way to handle the separation of body and header; it would be
-            # much nicer to skip over the header and start parsing where
-            # the body starts, but the innards of xml.sax are complicated,
-            # and the header itself is rather small when compared to the
-            # body, so it's not a horrible solution.
-            self.fh.seek(0, os.SEEK_SET)
+            elif elem.tag == self.ELEMENT_ENVIRONMENT:
+                for var_elem in list(elem):
+                    if var_elem.tag == self.ELEMENT_VAR:
+                        var_name = var_elem.get(self.ATTR_VAR_NAME)
+                        self.vars[var_name] = var_elem.text
+                    else:
+                        msg = "Unexpected element in <environment>: %s" % \
+                                (var_elem.tag,)
+                        raise PyAnnolibError(msg)
 
-            # Done with processing the header, so return now.
-            return
-
-        # Because we caught FinishedHeaderException to return
-        # the Build object to the user, we should not have
-        # reached this point.
-        raise ValueError("Should not have reached. Corrupt Build record.")
+            else:
+                msg = "Unexpected element in <build>: %s" % (elem.tag,)
+                raise PyAnnolibError(msg)
 
 
-    def _init_from_hdr_data(self, hdr_data):
-        """Use the header data to populte our data structures."""
-        (xmlattrs, properties, vars) = hdr_data
-        self.build_id = xmlattrs[self.ID]
-        self.cm = xmlattrs[self.CM]
-        self.start_text = xmlattrs[self.START]
+    def _read_header(self):
+        # Read chunks of the file until we find the
+        # first <message> or <make> record
+        # I suspect only <make> can come first, but who knows?
+        BYTES_TO_READ = 32768
+        header_text = ""
 
-        self.properties = properties
-        self.vars = vars
+        re_start = re.compile(r"(?P<start><message|<make)")
 
-    def parseMetrics(self):
+        start_pos = 0
+        while True:
+            new_data = self.fh.read(BYTES_TO_READ)
+            # EOF?
+            if new_data == "":
+                msg = "Did not find end of header"
+                raise PyAnnolibError(msg)
+
+            # Can we see the first thing after the header?
+            header_text += new_data
+            m = re_start.search(header_text, start_pos)
+            if m:
+                i = m.start("start")
+                return header_text[:i]
+            else:
+                # On the next loop we will read more data
+                # but let's increment start_pos by a value less
+                # than BYTES_TO_READ so that in case the string
+                # was split between this read and the next read
+                # we will still find it. The maximum string size
+                # is len("<message"), which is 8. Thus,
+                # we should start scanning at BYTES_TO_READ - ( 8 - 1 )
+                start_pos += (BYTES_TO_READ - 7)
+
+
+    def _parse_metrics(self):
         metrics_text = self._read_metrics_footer()
 
         # Parse the XML string
@@ -224,7 +311,7 @@ class AnnotatedBuild():
                 metric_name = elem.get(self.ATTR_METRIC_NAME)
                 self.metrics[metric_name] = elem.text
             else:
-                msg = UNEXPECTED_XML_ELEM + elem.tag
+                msg = MSG_UNEXPECTED_XML_ELEM + elem.tag
                 raise PyAnnolibError(msg)
 
     def _read_metrics_footer(self):
@@ -291,6 +378,9 @@ class AnnotatedBuild():
     def getStart(self):
         return self.start_text
 
+    def getLocalAgents(self):
+        return self.local_agents
+
     def getStartDateTime(self):
         """Returns a datetime.datetime object that represents
         the start time of the build. Note that we do not take into
@@ -315,8 +405,14 @@ class AnnotatedBuild():
     def getVars(self):
         return self.vars
 
+    def getVar(self, name):
+        return self.vars.get(name)
+
     def getMetrics(self):
         return self.metrics
+
+    def getMetric(self, name):
+        return self.metrics.get(name)
 
     def getMessages(self):
         return self.messages
@@ -400,7 +496,7 @@ class AnnotatedBuild():
     def parseJobs(self, cb, user_data=None):
         """Parse jobs and call the callback for each Job object."""
         if not self.fh:
-            raise ValueError("filehandle was not set in Build object")
+            raise PyAnnolibError("filehandle was not set in Build object")
 
         # Create the parser
         parser = AnnoXMLBodyParser(self, cb, user_data)
@@ -420,106 +516,6 @@ class AnnotatedBuild():
         self.parseJobs(job_cb, None)
 
         return jobs
-
-
-
-###################################################
-
-class AnnoXMLNames:
-    """These constants are used by both AnnoXMLHeaderHandler,
-    and AnnoXMLBodyParser, but don't need to be global. So, they
-    are in this base class, inherited by the two using classes."""
-    # Found in the "header"
-    ELEMENT_BUILD = "build"
-    ELEMENT_PROPERTIES = "properties"
-    ELEMENT_PROPERTY = "property"
-    ELEMENT_ENVIRONMENT = "environment"
-    ELEMENT_VAR = "var"
-
-    # These attributes are handled by the AnnoXMLHeaderHandler directly
-    ATTR_PROP_NAME = "name"
-    ATTR_VAR_NAME = "name"
-
-    # Found in the "body"
-    ELEMENT_MAKE = "make"
-    ELEMENT_JOB = "job"
-    ELEMENT_OUTPUT = "output"
-    ELEMENT_OPLIST = "opList"
-    ELEMENT_OP = "op"
-    ELEMENT_METRICS = "metrics"
-    ELEMENT_METRIC = "metric"
-    ELEMENT_TIMING = "timing"
-    ELEMENT_WAITING_JOBS = "waitingJobs"
-    ELEMENT_COMMAND = "command"
-    ELEMENT_ARGV = "argv"
-    ELEMENT_OUTPUT = "output"
-    ELEMENT_DEPLIST = "depList"
-    ELEMENT_DEP = "dep"
-    ELEMENT_FAILED = "failed"
-    ELEMENT_CONFLICT = "conflict"
-    ELEMENT_MESSAGE = "message"
-
-    # These attributes are handled by the AnnoXMLBodyParser directly
-    ATTR_WAITINGJOBS_IDLIST = "idList"
-    ATTR_METRIC_NAME = "name"
-    ATTR_OUTPUT_SRC = "src"
-    ATTR_FAILED_CODE = "code"
-
-########################
-
-class AnnoXMLHeaderHandler(xml.sax.handler.ContentHandler, AnnoXMLNames):
-    """This sax parser handles the "header" portion of the annotation
-    XML file, before the build jobs start."""
-    def __init__(self):
-        self.chars = ""
-        self.property_name = None
-        self.var_name = None
-        self.indent = 0
-
-        self.build_xmlattrs = None
-        self.properties = {}
-        self.vars = {}
-
-    def startElement(self, name, xmlattrs):
-        self.chars = ""
-
-        if name == self.ELEMENT_BUILD:
-            self.build_xmlattrs = xmlattrs
-
-        elif name == self.ELEMENT_PROPERTIES:
-            pass
-
-        elif name == self.ELEMENT_PROPERTY:
-            self.property_name = xmlattrs[self.ATTR_PROP_NAME]
-
-        elif name == self.ELEMENT_ENVIRONMENT:
-            pass
-
-        elif name == self.ELEMENT_VAR:
-            self.var_name = xmlattrs[self.ATTR_VAR_NAME]
-
-
-
-    def endElement(self, name):
-        if name == self.ELEMENT_PROPERTY:
-            self.properties[self.property_name] = self.chars
-            self.property_name = None
-
-        elif name == self.ELEMENT_VAR:
-            self.vars[self.var_name] = self.chars
-            self.var_name = None
-
-        # at the end if <environment> we can pass back
-        # the header fields
-        elif name  == self.ELEMENT_ENVIRONMENT:
-            hdr_data = (self.build_xmlattrs, self.properties, self.vars)
-            raise FinishedHeaderException(hdr_data)
-
-        self.chars = ""
-
-
-    def characters(self, chars):
-        self.chars += chars
 
 
 
@@ -1314,5 +1310,5 @@ def anno_open(filename, mode="rb"):
         return open(filename, mode)
     else:
         if not mode in [READ, READ_BINARY]:
-            raise ValueError("Only read-only mode is supported.")
+            raise PyAnnolibError("Only read-only mode is supported.")
         return concatfile.ConcatenatedFile(filenames, mode)
