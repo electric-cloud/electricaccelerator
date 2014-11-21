@@ -3,6 +3,10 @@ from pyannolib import annolib
 import tyrannolib
 import datetime
 
+
+TYPE_JOB = 0
+TYPE_MAKE = 1
+
 def SubParser(subparsers):
 
     help = "Produce a nice error report"
@@ -12,55 +16,28 @@ def SubParser(subparsers):
 
     parser.add_argument("anno_file")
 
-
 def find_error_jobs(build):
-    """Returns all the Jobs that were not successful.
-    Also returns a hash of all the jobs that are related
-    to those error jobs (which jobs were waiting for the
-    failed jobs).
+    """Returns all the Jobs that were not successful."""
 
-    Returns (error_jobs list, jobs hash)."""
+    job_errors = []
+    make_errors = []
 
-    error_jobs = []
-    looking_for = set()
-    jobs = {}
-
-    def cb(job,_errors):
-        job_id = job.getID()
-        if job_id in looking_for:
-            jobs[job_id] = job
-            looking_for.remove(job_id)
-            looking_for.add(job.getNeededBy())
-            for waiting_job_id in job.getWaitingJobs():
-                looking_for.add(waiting_job_id)
+    def cb(job, _):
 
         if job.getType() != annolib.JOB_TYPE_RULE:
             return
         if job.getRetval() == job.SUCCESS:
             return
 
-        error_jobs.append(job)
-        looking_for.add(job.getNeededBy())
-        for waiting_job_id in job.getWaitingJobs():
-            looking_for.add(waiting_job_id)
+        if job.getOutputs():
+            make_errors.append(job)
+        else:
+            job_errors.append(job)
 
     build.parseJobs(cb)
-    return error_jobs, jobs
+    return job_errors, make_errors
 
 
-def print_header(build):
-    props = build.getProperties()
-    print "Build ID: %s on Host %s, Cluster Manager: %s" % \
-            (build.getBuildID(), props.get("UnixNodename"),
-            build.getCM())
-    print "Start Time: %s" % (build.getStart(),)
-    print
-#    print "make[0] in %s" % (props.get("CWD"),)
-#    print props.get("CommandLine")
-#    print
-
-def print_footer():
-    print "=" * 80
 
 def report_make_chain(chain):
     for make_proc in chain:
@@ -69,15 +46,19 @@ def report_make_chain(chain):
         print make_proc.getCmd()
         print
 
-def print_error_job(all_jobs, build, job):
-
-    print "=" * 80
+def print_error_job(n, build, job, report_type):
 
     make_proc = job.getMakeProcess()
 
     build_start_dt = build.getStartDateTime()
 
-    print "(%s)" % (job.getName())
+    if report_type == TYPE_JOB:
+        print "Failed Command #%d: %s" % (n, job.getName())
+    else:
+        print "Failed Make #%d" % (n,)
+    print
+
+#    print "(%s)" % (job.getName())
     print
     print "Job ID: %s , Exit Value %s" % (job.getID(), job.getRetval())
     print "CWD: %s" % (make_proc.getCWD(),)
@@ -94,45 +75,38 @@ def print_error_job(all_jobs, build, job):
                 job_end_dt, timing.getCompleted())
     print
 
-    print "Target chain:"
-    print_needed_by(all_jobs, job)
-
-
     for cmd in job.getCommands():
-        print "Command:"
+        print "Command:\n"
         argv = cmd.getArgv()
         print argv
         print
-        print "---Output-----------------------------------------------------"
-        for i, op in enumerate(cmd.getOutputs()):
-            text = op.getText()
-            if i == 0 and text == argv + "\n":
-                # If Make prints the command (no "@" at the beginning
-                # of the line in the action), it will look just like argv,
-                # so let's avoid printing it again here.
-                continue
-            elif i == 0 and text == "\n":
-                continue
-            else:
-                print text,
-
-        print "--------------------------------------------------------------"
+        print_outputs(argv, cmd.getOutputs())
         print
    
     make_job_outputs = job.getOutputs()
     if make_job_outputs:
-        print "Error from makefile parse job:"
-        for op in make_job_outputs:
-            print op.getTextReport()
+        print "Make Process Hierarchy:"
+        print
 
-    #print "Waiting jobs:"
-    #print_waiting_jobs(all_jobs, job)
+        make_chain = build.getMakePath(job)
+        report_make_chain(make_chain)
 
-    #print "Make Process Hierarchy:"
-    #print
+        print_outputs(None, make_job_outputs)
 
-    #make_chain = build.getMakePath(job)
-    #report_make_chain(make_chain)
+def print_outputs(argv, outputs):
+    print "-" * 30, "Output", "-" * 30
+    for i, op in enumerate(outputs):
+        text = op.getText()
+        if i == 0 and argv != None and text == argv + "\n":
+            # If Make prints the command (no "@" at the beginning
+            # of the line in the action), it will look just like argv,
+            # so let's avoid printing it again here.
+            continue
+        elif i == 0 and text == "\n":
+            continue
+        else:
+            print text,
+    print "-" * (60  + len("Output") + 2)
 
 def print_needed_by(all_jobs, job):
     print "%s %s (%s:%s) needed by" % (job.getID(), job.getName(),
@@ -175,16 +149,84 @@ def print_waiting_jobs(all_jobs, job, seen=None, indent=0):
         if waiting_job:
             print_waiting_jobs(all_jobs, waiting_job, seen, indent+1)
 
+def print_message(n, message):
+    print "Cluster Manager Message #%d" % (n,)
+    print
+    print "%s (%s) at %s seconds" % \
+            (message.getCode(), message.getSeverity(),
+                    message.getTime())
+    print message.getText()
+    print
+    print "-" * 80
+
+def print_header(build, messages, error_jobs, error_makes):
+    
+    # Newer versions of emake have this property
+    hostname = build.getProperty("UnixNodename")
+
+    # Older versions do not, so let's look for $HOSTNAME
+    if not hostname:
+        hostname = build.getVar("HOSTNAME")
+
+    print "=" * 80
+    print
+    print "Build ID: %s on Host %s, Cluster Manager: %s" % \
+            (build.getBuildID(), hostname, build.getCM())
+    print "Start Time: %s" % (build.getStart(),)
+    print
+
+    # Summary information
+    print "Summary:"
+    if messages:
+        print "\tCluster Manager messages:", len(messages)
+
+    if error_jobs:
+        print "\tFailed commands:", len(error_jobs)
+
+    if error_makes:
+        print "\tFailed Make commands:", len(error_makes)
+
+    print
+    print "-" * 80
+
+#    print "make[0] in %s" % (props.get("CWD"),)
+#    print props.get("CommandLine")
+#    print
+
+def print_footer():
+    print "=" * 80
+
+
+def report(build, messages, error_jobs, error_makes):
+    print_header(build, messages, error_jobs, error_makes)
+
+    # Details
+    for i, message in enumerate(messages):
+        print_message(i+1, message)
+
+    for i, job in enumerate(error_jobs):
+        print_error_job(i+1, build, job, TYPE_JOB)
+
+    for i, job in enumerate(error_makes):
+        print_error_job(i+1, build, job, TYPE_MAKE)
+
+    print_footer()
 
 def Run(args):
     build = annolib.AnnotatedBuild(args.anno_file)
 
-    error_jobs, jobs = find_error_jobs(build)
-    if error_jobs:
+    # We have to parse the entire file first
+    error_jobs, error_makes = find_error_jobs(build)
 
-        print_header(build)
-        for job in error_jobs:
-            print_error_job(jobs, build, job)
-        print_footer()
+    messages = build.getMessages()
+
+    if messages or error_jobs or error_makes:
+        report(build, messages, error_jobs, error_makes)
+
+#    if error_jobs:
+
+#        for job in error_jobs:
+#            print_error_job(jobs, build, job)
+#        print_footer()
 
 

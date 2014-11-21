@@ -1082,7 +1082,7 @@ class Message:
         self.time = elem.get(self.TIME)
         self.severity = elem.get(self.SEVERITY)
         self.code = elem.get(self.CODE)
-        self.text = None
+        self.text = elem.text
 
     def setText(self, text):
         self.text = text

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE build SYSTEM "build.dtd">
+<build id="441409" cm="sjc-buildcm2:8030" start="Wed 14 Aug 2013 07:30:54 AM PDT">
+<properties>
+<property name="CommandLine">/sw/licensed/ecloud/latest/64/bin/emake --emake-annodetail=file,history,waiting --emake-annofile=_emake.Makefile.wrong.xml --emake-build-label=EC_EMAKE --emake-cm=sjc-buildcm2 --emake-historyfile=_emake.Makefile.wrong.data --emake-history=create --emake-root=/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles --emake-resource=sjc-cel-5.50-x86-64 -f Makefile.wrong</property>
+<property name="Version">5.3.0.35969 64-bit (build_5.3_35969_OPT_2010.12.10_07:07:48)</property>
+<property name="CWD">/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles</property>
+<property name="PID">15334</property>
+<property name="HistoryFile">_emake.Makefile.wrong.data</property>
+<property name="HistoryExists">no</property>
+<property name="HistoryMD5">00000000000000000000000000000000</property>
+<property name="AnnoDetail">basic,file,history,waiting</property>
+</properties>
+<environment>
+<var name="CC_DIFF_OPTS">-u</var>
+<var name="CISCO_MAKE_WAS_HERE">YES</var>
+<var name="COLORTERM"></var>
+<var name="CVS_RSH">ssh</var>
+<var name="DISPLAY">:1.0</var>
+<var name="EDITOR">vim</var>
+<var name="GCONF_GLOBAL_LOCKS">1</var>
+<var name="GCONF_SHARED_LOCKS">1</var>
+<var name="GS_LIB">/users/gilramir/.fonts</var>
+<var name="GTK2_RC_FILES">/etc/gtk-2.0/gtkrc:/users/gilramir/.gtkrc-2.0:/users/gilramir/.kde/share/config/gtkrc-2.0</var>
+<var name="GTK_RC_FILES">/etc/gtk/gtkrc:/users/gilramir/.gtkrc:/users/gilramir/.kde/share/config/gtkrc</var>
+<var name="G_BROKEN_FILENAMES">1</var>
+<var name="HISTSIZE">1000</var>
+<var name="HOME">/users/gilramir</var>
+<var name="HOSTNAME">sjc-ads-971</var>
+<var name="JAVA_HOME">/sw/licensed/sun/jdk/1.6.0_13-64</var>
+<var name="KDEDIR">/usr</var>
+<var name="KDE_FULL_SESSION">true</var>
+<var name="KDE_IS_PRELINKED">1</var>
+<var name="KDE_MULTIHEAD">false</var>
+<var name="KDE_NO_IPV6">1</var>
+<var name="KONSOLE_DCOP">DCOPRef(konsole-7200,konsole)</var>
+<var name="KONSOLE_DCOP_SESSION">DCOPRef(konsole-7200,session-1)</var>
+<var name="LANG">en_US.UTF-8</var>
+<var name="LD_LIBRARY_PATH"></var>
+<var name="LESSOPEN">|/usr/bin/lesspipe.sh %25s</var>
+<var name="LOGNAME">gilramir</var>
+<var name="LS_COLORS">no=00:fi=00:di=00;34:ln=00;36:pi=40;33:so=00;35:bd=40;33;01:cd=40;33;01:or=01;05;37;41:mi=01;05;37;41:ex=00;32:*.cmd=00;32:*.exe=00;32:*.com=00;32:*.btm=00;32:*.bat=00;32:*.sh=00;32:*.csh=00;32:*.tar=00;31:*.tgz=00;31:*.arj=00;31:*.taz=00;31:*.lzh=00;31:*.zip=00;31:*.z=00;31:*.Z=00;31:*.gz=00;31:*.bz2=00;31:*.bz=00;31:*.tz=00;31:*.rpm=00;31:*.cpio=00;31:*.jpg=00;35:*.gif=00;35:*.bmp=00;35:*.xbm=00;35:*.xpm=00;35:*.png=00;35:*.tif=00;35:</var>
+<var name="MAIL">/var/spool/mail/gilramir</var>
+<var name="MAKE">/sw/licensed/ecloud/latest/64/bin/emake</var>
+<var name="MANPATH">/ws/gilramir-sjc/distro/cel-5.50-x86-64/man:/ws/gilramir-sjc/distro/cel-5.50-x86-64/share/man:/router/man:/usr/man:/usr/share/man:/usr/local/man:/usr/atria/doc/man:/usr/cisco/man</var>
+<var name="MYDISTRO">/ws/gilramir-sjc/distro/cel-5.50-x86-64</var>
+<var name="NB">/nobackup/gilramir</var>
+<var name="NNTPSERVER">usenet.cisco.com</var>
+<var name="OLDPWD">/users/gilramir/prj/electricaccelerator/PyAnnolib</var>
+<var name="PATH">/sw/licensed/ecloud/latest/64/bin:/sw/licensed/ecloud/latest/bin:/router/bin:/usr/cisco/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/usr/atria/bin:/sbin:/opt/electriccloud/electriccommander/bin:/users/gilramir/bin:/ws/gilramir-sjc/distro/cel-5.50-x86-64/bin:/users/gilramir/bin:/ws/gilramir-sjc/distro/cel-5.50-x86-64/bin:/usr/kerberos/bin:/usr/local/bin:/bin:/usr/bin:/usr/atria/bin:/usr/cisco/bin:/usr/atria/bin:/usr/cisco/bin</var>
+<var name="PKG_CONFIG_PATH">/ws/gilramir-sjc/distro/cel-5.50-x86-64/lib/pkgconfig</var>
+<var name="PRINTER">SJ24-3-f8-8</var>
+<var name="PWD">/users/gilramir/prj/electricaccelerator/PyAnnolib/utfiles</var>
+<var name="SESSION_MANAGER">local/sjc-ads-971:/tmp/.ICE-unix/16045</var>
+<var name="SHELL">/bin/bash</var>
+<var name="SHLVL">6</var>
+<var name="SSH_AGENT_PID">15974</var>
+<var name="SSH_ASKPASS">/usr/libexec/openssh/gnome-ssh-askpass</var>
+<var name="SSH_AUTH_SOCK">/tmp/ssh-SkAYc15972/agent.15972</var>
+<var name="SSH_CLIENT">171.70.58.203 42049 22</var>
+<var name="SSH_CONNECTION">171.70.58.203 42049 171.70.57.163 22</var>
+<var name="SSH_TTY">/dev/pts/0</var>
+<var name="TERM">xterm</var>
+<var name="TFTP">/tftpboot/gilramir</var>
+<var name="THIS_SERVER">cel-5.50-x86-64</var>
+<var name="TMPDIR">/nobackup/gilramir/tmp</var>
+<var name="TZ">PST8PDT</var>
+<var name="USER">gilramir</var>
+<var name="VNCDESKTOP">gilramir-sjc-550 CEL-5.50</var>
+<var name="VWS">/ws/gilramir-sjc</var>
+<var name="WINDOWID">33554439</var>
+<var name="WS">/ws/gilramir-sjc</var>
+<var name="WWW">/nfs/wwwPeople/gilramir</var>
+<var name="XCURSOR_THEME">default</var>
+<var name="XDG_CONFIG_DIRS">/etc/kde/xdg:/etc/xdg</var>
+<var name="_">/router/bin/emake-aurora</var>
+<var name="chmdo">() {  chmod
+}</var>
+<var name="ct">() {  cleartool "$@"
+}</var>
+<var name="grpe">() {  grep "$@"
+}</var>
+<var name="jbos">() {  jobs
+}</var>
+<var name="lsco">() {  cleartool lsprivate -co -short
+}</var>
+<var name="lsprivate">() {  cleartool lsprivate -other -short -do
+}</var>
+<var name="mkdircd">() {  mkdir "$@" &amp;&amp; cd "$1"
+}</var>
+<var name="mroe">() {  more "$@"
+}</var>
+<var name="rmview">() {  VIEW=$(ct pwv | grep 'Working directory view' | awk '{print $4;}');
+ if [ "$VIEW" != '**' ]; then
+ cd ~;
+ echo Removing $VIEW;
+ cc_rmview -force -view "$VIEW" -vob /vob/ios;
+ fi
+}</var>
+</environment>
+<message thread="42e1e940" time="0.672006" severity="warning" code="EC2107">
+Lost connection to agent sjc5-bc-508-6, will retry. Reason: agent reports: [bad root "/efsroots/5/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles": unable to stat "/efsroots/5/ws" (No such file or directory (error code 0x2))] at: 2013/08/14 07:30:54
+</message>
+<make level="0" cmd="/sw/licensed/ecloud/latest/64/bin/emake --emake-annodetail=file,history,waiting --emake-annofile=_emake.Makefile.wrong.xml --emake-build-label=EC_EMAKE --emake-cm=sjc-buildcm2 --emake-historyfile=_emake.Makefile.wrong.data --emake-history=create --emake-root=/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles --emake-resource=sjc-cel-5.50-x86-64 -f Makefile.wrong" cwd="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles" mode="gmake">
+<job id="J000000001059e640" thread="4381f940" type="parse">
+<opList>
+<op type="read" file="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles/Makefile.wrong"/>
+<op type="read" file="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles" filetype="dir" isdir="1"/>
+</opList>
+<timing invoked="0.827140" completed="0.951810" node="sjc5-bc-513-11"/>
+</job>
+<job id="J00000000105bd820" thread="4381f940" type="exist" name="Makefile.wrong">
+<timing invoked="0.951818" completed="0.951825" node="sjc5-bc-513-11"/>
+<waitingJobs idList="J00000000105bd870"/>
+</job>
+<job id="J00000000105bd870" thread="4381f940" type="remake">
+<timing invoked="0.951826" completed="0.951830" node="sjc5-bc-513-11"/>
+</job>
+<job id="J00000000105bd8c0" thread="4381f940" type="rule" name="file1" file="Makefile.wrong" line="8" neededby="J00000000105bd910">
+<command line="9">
+<argv>echo file1 &gt; file1</argv>
+<output>echo file1 &gt; file1
+</output>
+</command>
+<command line="10">
+<argv>echo file2-from-1 &gt; file2</argv>
+<output>echo file2-from-1 &gt; file2
+</output>
+</command>
+<opList>
+<op type="create" file="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles/file1" found="0"/>
+<op type="create" file="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles/file2" found="0"/>
+</opList>
+<timing invoked="0.951831" completed="1.022632" node="sjc5-bc-513-11"/>
+<waitingJobs idList="J00000000105bd910"/>
+</job>
+<job id="J00000000105bd910" thread="4381f940" type="rule" name="missing" file="Makefile.wrong" line="4">
+<command line="5">
+<argv>cat file1 file2 &gt; missing</argv>
+<output>cat file1 file2 &gt; missing
+</output>
+</command>
+<opList>
+<op type="create" file="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles/missing" found="0"/>
+<op type="read" file="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles/file1"/>
+<op type="read" file="/ws/gilramir-sjc/prj/electricaccelerator/PyAnnolib/utfiles/file2"/>
+</opList>
+<timing invoked="1.022821" completed="1.149856" node="sjc5-bc-513-11"/>
+<waitingJobs idList="J000000001059c420"/>
+</job>
+<job id="J000000001059c420" thread="4381f940" type="end">
+<timing invoked="1.150020" completed="1.150037" node="sjc5-bc-513-11"/>
+</job>
+</make>
+<metrics>
+<metric name="terminated">6</metric>
+<metric name="conflicts">0</metric>
+<metric name="runjobs">2</metric>
+<metric name="writeThrottleWaitTime">0.000000</metric>
+<metric name="duration">1.000000</metric>
+<metric name="clusterAvailability">100</metric>
+<metric name="totalAgentCount">32</metric>
+<metric name="noAgentsWaitTime">0</metric>
+<metric name="totalChains">31</metric>
+<metric name="chainLatestReads">129</metric>
+<metric name="chainSerialReads">179</metric>
+<metric name="chainWrites">29</metric>
+<metric name="elapsed">1.341190</metric>
+<metric name="nodeReadBytes">0</metric>
+<metric name="nodeWriteBytes">0</metric>
+<metric name="nodeReadTime">0.000000</metric>
+<metric name="nodeWriteTime">0.000227</metric>
+<metric name="nodeReadWaitTime">0.000000</metric>
+<metric name="nodeWriteWaitTime">0.000000</metric>
+<metric name="diskWriteBytes">38</metric>
+<metric name="diskReadBytes">204</metric>
+<metric name="diskReadTime">0.000227</metric>
+<metric name="diskWriteTime">0.003777</metric>
+<metric name="diskReadWaitTime">0.000062</metric>
+<metric name="diskWriteWaitTime">0.001417</metric>
+<metric name="usageBytes">38</metric>
+<metric name="symlinkReads">0</metric>
+<metric name="termDiskCopiedBytes">0</metric>
+<metric name="termDiskMovedBytes">38</metric>
+<metric name="termDiskRemovedBytes">0</metric>
+<metric name="termDiskRemovedTmpBytes">0</metric>
+<metric name="termDiskCopiedFiles">0</metric>
+<metric name="termDiskMovedFiles">3</metric>
+<metric name="termDiskRemovedFiles">0</metric>
+<metric name="termDiskRemovedTmpFiles">0</metric>
+<metric name="compressTime">0.000000</metric>
+<metric name="compressBytesIn">0</metric>
+<metric name="compressBytesOut">0</metric>
+<metric name="decompressTime">0.000000</metric>
+<metric name="decompressBytesIn">0</metric>
+<metric name="decompressBytesOut">0</metric>
+<metric name="maxMakeCount">0</metric>
+<metric name="maxArenaCount">1</metric>
+<metric name="freezeTime">0.000000</metric>
+<metric name="timerThreadCount">1</metric>
+<metric name="timer:jobqueue">0.004852</metric>
+</metrics>
+</build>
