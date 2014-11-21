@@ -37,8 +37,6 @@ def find_error_jobs(build):
     build.parseJobs(cb)
     return job_errors, make_errors
 
-
-
 def report_make_chain(chain):
     for make_proc in chain:
         print "%s make[%s] in %s" % (make_proc.getID(),
@@ -46,17 +44,18 @@ def report_make_chain(chain):
         print make_proc.getCmd()
         print
 
-def print_error_job(n, build, job, report_type):
+def print_error_job(n, show_summary, build, job, report_type):
 
     make_proc = job.getMakeProcess()
 
     build_start_dt = build.getStartDateTime()
 
-    if report_type == TYPE_JOB:
-        print "Failed Command #%d: %s" % (n, job.getName())
-    else:
-        print "Failed Make #%d" % (n,)
-    print
+    if show_summary:
+        if report_type == TYPE_JOB:
+            print "Failed Command #%d: %s" % (n, job.getName())
+        else:
+            print "Failed Make #%d" % (n,)
+        print
 
 #    print "(%s)" % (job.getName())
     print
@@ -108,58 +107,24 @@ def print_outputs(argv, outputs):
             print text,
     print "-" * (60  + len("Output") + 2)
 
-def print_needed_by(all_jobs, job):
-    print "%s %s (%s:%s) needed by" % (job.getID(), job.getName(),
-            job.getFile(), job.getLine()),
-    next_job_id = job.getNeededBy()
-    next_job = all_jobs.get(next_job_id)
-    if next_job:
-        print ":"
-        print_needed_by(all_jobs, next_job)
-    else:
-        print "top-level Make"
+
+def print_message(n, show_summary, build, message):
+    if show_summary:
+        print "Cluster Manager Message #%d" % (n,)
         print
 
-def print_waiting_jobs(all_jobs, job, seen=None, indent=0):
-    if seen == None:
-        seen = {}
+    build_start_dt = build.getStartDateTime()
 
-    if not job.getID() in seen:
-#        print job.getID(), "waiting on", job.getWaitingJobs()
-        spaces = "  " * indent
+    message_time = float(message.getTime())
+    message_dt = build_start_dt + datetime.timedelta(seconds=message_time)
 
-        if job.getName():
-            print "%s%s %s (%s:%s)" % (spaces, job.getID(),
-                    job.getName(), job.getFile(),
-                    job.getLine())
-        else:
-            pass
-#            print "%s" % (job.getID(),)
-#            for op in job.getOutputs():
-#                print op.getText(),
-
-        seen[job.getID()] = True
-        print
-
-#    print "WAITING:", job.getWaitingJobs()
-    for waiting_job_id in job.getWaitingJobs():
-        if waiting_job_id in seen:
-            continue
-        waiting_job = all_jobs.get(waiting_job_id)
-        if waiting_job:
-            print_waiting_jobs(all_jobs, waiting_job, seen, indent+1)
-
-def print_message(n, message):
-    print "Cluster Manager Message #%d" % (n,)
-    print
-    print "%s (%s) at %s seconds" % \
+    print "%s (%s) at %s (%s)" % \
             (message.getCode(), message.getSeverity(),
-                    message.getTime())
+                    message_dt, message.getTime())
     print message.getText()
     print
-    print "-" * 80
 
-def print_header(build, messages, error_jobs, error_makes):
+def print_header(build, show_summary, messages, error_jobs, error_makes):
     
     # Newer versions of emake have this property
     hostname = build.getProperty("UnixNodename")
@@ -175,6 +140,9 @@ def print_header(build, messages, error_jobs, error_makes):
     print "Start Time: %s" % (build.getStart(),)
     print
 
+    if not show_summary:
+        return
+
     # Summary information
     print "Summary:"
     if messages:
@@ -187,7 +155,6 @@ def print_header(build, messages, error_jobs, error_makes):
         print "\tFailed Make commands:", len(error_makes)
 
     print
-    print "-" * 80
 
 #    print "make[0] in %s" % (props.get("CWD"),)
 #    print props.get("CommandLine")
@@ -197,18 +164,28 @@ def print_footer():
     print "=" * 80
 
 
-def report(build, messages, error_jobs, error_makes):
-    print_header(build, messages, error_jobs, error_makes)
+def report(build, show_summary, messages, error_jobs, error_makes):
+    print_header(build, show_summary, messages, error_jobs, error_makes)
+
+
+    if show_summary:
+        print "-" * 80
 
     # Details
     for i, message in enumerate(messages):
-        print_message(i+1, message)
+        print_message(i+1, show_summary, build, message)
+        if show_summary:
+            print "-" * 80
 
     for i, job in enumerate(error_jobs):
-        print_error_job(i+1, build, job, TYPE_JOB)
+        print_error_job(i+1, show_summary, build, job, TYPE_JOB)
+        if show_summary:
+            print "-" * 80
 
     for i, job in enumerate(error_makes):
-        print_error_job(i+1, build, job, TYPE_MAKE)
+        print_error_job(i+1, show_summary, build, job, TYPE_MAKE)
+        if show_summary:
+            print "-" * 80
 
     print_footer()
 
@@ -221,7 +198,9 @@ def Run(args):
     messages = build.getMessages()
 
     if messages or error_jobs or error_makes:
-        report(build, messages, error_jobs, error_makes)
+        num_problems = len(messages) + len(error_jobs) + len(error_makes)
+        show_summary = num_problems > 1
+        report(build, show_summary, messages, error_jobs, error_makes)
 
 #    if error_jobs:
 
