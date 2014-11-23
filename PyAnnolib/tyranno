@@ -13,6 +13,7 @@ import logging
 #from tyrannocmd import cmd_explore
 from tyrannocmd import cmd_deps
 from tyrannocmd import cmd_errors
+from tyrannocmd import cmd_show
 
 def main():
     description = "annotation file tool"
@@ -33,6 +34,7 @@ def main():
 #    cmd_index.SubParser(subparsers)
     cmd_deps.SubParser(subparsers)
     cmd_errors.SubParser(subparsers)
+    cmd_show.SubParser(subparsers)
 
     args = parser.parse_args()
 

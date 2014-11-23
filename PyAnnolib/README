@@ -204,8 +204,22 @@ getThread()
 
 getType()
     Returns a string representing the job type. The possible values are:
-        continuation, end, exist, external, follow, parse, remake,
-        rule, subbuild, alpha, omega, update, statcache
+        
+        (from Electric Cloud's "Electric Accelerator: Overview
+        and Getting Started")
+
+        parse - parses makefiles
+        existence - checks for existence of top-level targets w/o rules
+        remake - determines if a makefile remake is needed
+        rule - runs the commands in the action part of a rule
+        continuation - like rule, but for commands after a sub-make
+        follow - follows every submake; handles output and exit status
+            for the make process
+        end - for each make, does work after the final target is built
+
+        (no info on these):
+        external, subbuild, alpha, omega, update, statcache
+
 
 getTimings()
     Returns a list of Timing objects. A Timing object models

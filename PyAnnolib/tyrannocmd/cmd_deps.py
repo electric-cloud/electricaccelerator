@@ -108,7 +108,8 @@ def read_annofile(build, roots_hash, anno_queue):
 
         # We only want jobs of certain types
         job_type = job.getType()
-        if job_type != annolib.JOB_TYPE_RULE:
+        if job_type != annolib.JOB_TYPE_RULE and \
+                job_type != annolib.JOB_TYPE_CONTINUATION:
             return
 
         # And only successful jobs

@@ -24,7 +24,8 @@ def find_error_jobs(build):
 
     def cb(job, _):
 
-        if job.getType() != annolib.JOB_TYPE_RULE:
+        if job.getType() != annolib.JOB_TYPE_RULE and \
+                job.getType() != annolib.JOB_TYPE_CONTINUATION:
             return
         if job.getRetval() == job.SUCCESS:
             return
@@ -93,19 +94,22 @@ def print_error_job(n, show_summary, build, job, report_type):
         print_outputs(None, make_job_outputs)
 
 def print_outputs(argv, outputs):
-    print "-" * 30, "Output", "-" * 30
-    for i, op in enumerate(outputs):
-        text = op.getText()
-        if i == 0 and argv != None and text == argv + "\n":
-            # If Make prints the command (no "@" at the beginning
-            # of the line in the action), it will look just like argv,
-            # so let's avoid printing it again here.
-            continue
-        elif i == 0 and text == "\n":
-            continue
-        else:
+
+    # See if we shoudl not show the first output.
+    # If it's just a repeated of the command argv, we've already
+    # shown that.
+    if argv and outputs:
+        first_text = outputs[0].getText()
+        # Ignore any whitespace at the beginning and end
+        if first_text.strip() == argv.strip():
+            outputs = outputs[1:]
+
+    if outputs:
+        print "-" * 30, "Output", "-" * 30
+        for i, op in enumerate(outputs):
+            text = op.getText()
             print text,
-    print "-" * (60  + len("Output") + 2)
+        print "-" * (60  + len("Output") + 2)
 
 
 def print_message(n, show_summary, build, message):
@@ -201,11 +205,4 @@ def Run(args):
         num_problems = len(messages) + len(error_jobs) + len(error_makes)
         show_summary = num_problems > 1
         report(build, show_summary, messages, error_jobs, error_makes)
-
-#    if error_jobs:
-
-#        for job in error_jobs:
-#            print_error_job(jobs, build, job)
-#        print_footer()
-
 
