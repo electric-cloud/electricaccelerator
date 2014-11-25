@@ -78,6 +78,10 @@ MESSAGE_SEVERITY_ERROR = "error"
 # Some error strings
 MSG_UNEXPECTED_XML_ELEM = "Unexpected xml element: "
 
+# This value is returned by the parseJobs callback if
+# the caller wants parsing to stop. There is no way to re-start it.
+StopParseJobs = 1
+
 class PyAnnolibError(Exception):
     """Generic exception for any error this library wants
     to pass back to the client"""
@@ -497,6 +501,14 @@ class AnnotatedBuild(AnnoXMLNames):
         jobs = [job for job in self.iterJobs()]
 
         return jobs
+
+    def parseJobs(self, cb, user_data=None):
+        """Like iterJobs, but calls a callback function as cb(job, user_data).
+        If the callback returns StopParseJobs, the iteration stops."""
+        for job in self.iterJobs():
+            retval = cb(job, user_data)
+            if retval == StopParseJobs:
+                break
 
     def iterJobs(self):
         """Parse jobs and yield one Job at a time."""

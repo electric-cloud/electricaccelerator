@@ -125,6 +125,30 @@ iterJobs()
     in memory at once, this function lets you handle each Job
     object one at aa time.
 
+
+parseJobs(cb, user_data=None)
+
+    This was the original API for retrieving one job at a time.
+    iterJobs() is nicer, but parseJobs() is still provided.
+
+    For each Job record in the XML file, runs the callback function
+    (cb), passing it that Job object and user_data. The user_data
+    is any additional data that your code wishes for the callback
+    function to see; it is a handy way of passing in other objects
+    that the callback might need.
+    
+    The callback function will look like:
+    
+    def my_callback(job, user_data):
+        # process the job object here.
+    
+    If you want the loop across all jobs to finish becase you
+    are done with the annotation file, the callback function should
+    return annolib.StopParseJobs. Otherwise, the return value
+    of the callback function is ignored. Once the parsing has stopped,
+    it cannot be resumed for the same AnnotatedBuild object.
+
+
 getAllJobs()
 
     Returns a list of all Job objects in the annotation file.
