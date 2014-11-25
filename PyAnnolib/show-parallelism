@@ -17,12 +17,10 @@ def run(filename):
         build = annolib.AnnotatedBuild(filename)
         
         # Collect all the jobs in a hash, and look for conflict jobs
-        def job_cb(job, cluster):
+        for job in build.iterJobs():
             timings = job.getTimings()
             for timing in timings:
                 cluster.addTiming(timing)
-
-        build.parseJobs(job_cb, cluster)
 
     except annolib.PyAnnolibError, e:
         sys.exit(e)

@@ -22,20 +22,18 @@ def find_error_jobs(build):
     job_errors = []
     make_errors = []
 
-    def cb(job, _):
-
+    for job in build.iterJobs():
         if job.getType() != annolib.JOB_TYPE_RULE and \
                 job.getType() != annolib.JOB_TYPE_CONTINUATION:
-            return
+            continue
         if job.getRetval() == job.SUCCESS:
-            return
+            continue
 
         if job.getOutputs():
             make_errors.append(job)
         else:
             job_errors.append(job)
 
-    build.parseJobs(cb)
     return job_errors, make_errors
 
 def report_make_chain(chain):
@@ -108,7 +106,8 @@ def print_outputs(argv, outputs):
         print "-" * 30, "Output", "-" * 30
         for i, op in enumerate(outputs):
             text = op.getText()
-            print text,
+            # The output can contain non-ascii characters
+            print text.encode('utf-8'),
         print "-" * (60  + len("Output") + 2)
 
 

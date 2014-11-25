@@ -21,14 +21,13 @@ def show_jobpath(build, job):
 
 def run(filename, job_ids):
 
-    def cb(job, _):
+    # Gather all the jobs
+    build = annolib.AnnotatedBuild(filename)
+
+    for job in build.iterJobs():
         job_id = job.getID()
         if job_id in job_ids:
             jobs[job_id] = job
-
-    # Gather all the jobs
-    build = annolib.AnnotatedBuild(filename)
-    build.parseJobs(cb, None)
 
     # Report the job path for each job
     for job_id in job_ids:

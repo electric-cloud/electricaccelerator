@@ -78,10 +78,6 @@ MESSAGE_SEVERITY_ERROR = "error"
 # Some error strings
 MSG_UNEXPECTED_XML_ELEM = "Unexpected xml element: "
 
-# This value is returned by the parseJobs callback if
-# the caller wants parsing to stop. There is no way to re-start it.
-StopParseJobs = 1
-
 class PyAnnolibError(Exception):
     """Generic exception for any error this library wants
     to pass back to the client"""
@@ -493,30 +489,25 @@ class AnnotatedBuild(AnnoXMLNames):
 
         return job_chain
 
-    def parseJobs(self, cb, user_data=None):
-        """Parse jobs and call the callback for each Job object."""
-        if not self.fh:
-            raise PyAnnolibError("filehandle was not set in Build object")
-
-        # Create the parser
-        parser = AnnoXMLBodyParser(self, cb, user_data)
-
-        # Parse the file
-        parser.parse(self.fh)
-
     def getAllJobs(self):
         """Gather all Job records in a list and return that list.
         It's a convenience function; the same could be done via parseJobs()
         and the appropriate callback."""
-        jobs = []
 
-        def job_cb(job, junk):
-            jobs.append(job)
-
-        self.parseJobs(job_cb, None)
+        jobs = [job for job in self.iterJobs()]
 
         return jobs
 
+    def iterJobs(self):
+        """Parse jobs and yield one Job at a time."""
+        if not self.fh:
+            raise PyAnnolibError("filehandle was not set in Build object")
+
+        # Create the parser
+        parser = AnnoXMLBodyParser(self)
+
+        # Parse the file
+        return parser.parse(self.fh)
 
 
 ####################################################
@@ -1105,10 +1096,8 @@ class Message:
 
 class AnnoXMLBodyParser(AnnoXMLNames):
 
-    def __init__(self, build, cb, user_data):
+    def __init__(self, build):
         self.build = build
-        self.cb = cb
-        self.user_data = user_data
         self.chars = ""
         self.indent = 0
 
@@ -1128,7 +1117,7 @@ class AnnoXMLBodyParser(AnnoXMLNames):
         self.metrics = {}
 
 
-    def parse(self, fh):
+    def parse(self, fh, use_generator=False):
     
         # The XML looks like this:
         # <make>
@@ -1175,21 +1164,17 @@ class AnnoXMLBodyParser(AnnoXMLNames):
                     continue
 
             # Everything else is an END event
+            def call_yield(job):
+                yield job
 
             if elem.tag == self.ELEMENT_JOB:
                 assert len(self.make_elems) > 0
-#                print "starting job at", fh.tell()
-#                print dir(icontext)
-#                print icontext._index
                 job = Job(elem)
-#                print "\t", job.getID()
 
                 job.setMakeProcess(self.make_elems[-1])
 
                 # Send the Job back to the user
-                retval = self.cb(job, self.user_data)
-                if retval == StopParseJobs:
-                    return
+                yield job
 
                 # Set the "previous job" to this job, so that
                 # we know which job begins a Make process.

@@ -103,22 +103,20 @@ def read_annofile(build, roots_hash, anno_queue):
 
         return (op_type, relpath)
 
-    def find_rule_jobs(job, _):
-        """Return the interesting rule jobs."""
+    for job in build.iterJobs():
+        # Find the interesting rule jobs.
 
         # We only want jobs of certain types
         job_type = job.getType()
         if job_type != annolib.JOB_TYPE_RULE and \
                 job_type != annolib.JOB_TYPE_CONTINUATION:
-            return
+            continue
 
         # And only successful jobs
         if job.getRetval() != 0:
-            return
+            continue
 
         make_proc = job.getMakeProcess()
-#        job_cwd = make_proc.getCWD()
-#        len_job_cwd = len(job_cwd)
 
         # Divide all the file operations into 2 groups,
         # one for reading, and one for writing
@@ -141,11 +139,9 @@ def read_annofile(build, roots_hash, anno_queue):
 
         # Proceed only if we have both read and write operations
         if (not read_ops) or (not write_ops):
-            return
+            continue
 
         anno_queue.put((job.getID(), read_ops, write_ops))
-
-    build.parseJobs(find_rule_jobs)
 
     # Indicate it's the end of the stream
     anno_queue.put(None)

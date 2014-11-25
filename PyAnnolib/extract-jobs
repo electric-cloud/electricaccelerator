@@ -13,7 +13,7 @@ def run(filename, job_ids):
         build = annolib.AnnotatedBuild(filename)
         
         # Collect all the jobs in a hash, and look for conflict jobs
-        def job_cb(job, job_ids):
+        for job in build.iterJobs():
 
             job_id = job.getID()
 
@@ -32,10 +32,7 @@ def run(filename, job_ids):
 
                 # Should we stop?
                 if len(job_ids) == 0:
-                    return annolib.StopParseJobs
-
-        build.parseJobs(job_cb, job_ids)
-
+                    break
 
     except annolib.PyAnnolibError, e:
         sys.exit(e)

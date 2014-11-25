@@ -312,7 +312,11 @@ class Analyzer:
     def gather_job_ids(self):
         # Collect all the jobs in a hash, and look for conflict jobs
 
-        def job_cb(job, _):
+        print >> sys.stderr, "Pass 1... Looking for conflict job records"
+
+        build = annolib.AnnotatedBuild(self.filename)
+
+        for job in build.iterJobs():
             
             self.num_jobs += 1
 
@@ -326,7 +330,7 @@ class Analyzer:
                 conflict = job.getConflict()
                 filename = conflict.getFile()
                 if filename == None:
-                    return
+                    continue
 
                 self.num_conflicts += 1 
 
@@ -349,12 +353,7 @@ class Analyzer:
                 if rerun_job_id:
                     self.interesting_job_ids.add(rerun_job_id)
 
-        print >> sys.stderr, "Pass 1... Looking for conflict job records"
-
-        build = annolib.AnnotatedBuild(self.filename)
         
-        build.parseJobs(job_cb)
-
         print >> sys.stderr, "\tRead %d records, with %d conflict jobs" % \
                 (self.num_jobs, self.num_conflicts)
 
@@ -363,15 +362,12 @@ class Analyzer:
 
         build = annolib.AnnotatedBuild(self.filename)
        
-
-        def job_cb(job, _):
+        for job in build.iterJobs():
             job_id = job.getID()
             if job_id in self.interesting_job_ids:
                 self.jobs[job_id] = job
                 self.interesting_job_ids.remove(job_id)
-                return
-
-        build.parseJobs(job_cb)
+                continue
 
         if len(self.interesting_job_ids) > 0:
             print >> sys.stderr, "Could not find jobs:", self.interesting_job_ids

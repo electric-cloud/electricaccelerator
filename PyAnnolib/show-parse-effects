@@ -231,15 +231,12 @@ def run(filename, formatter):
         build = annolib.AnnotatedBuild(filename)
         
         # Collect all the jobs in a hash, and look for conflict jobs
-        def job_cb(job, junk):
-
+        for job in bulid.iterJobs():
             # We only want parse jobs
             if job.getType() != annolib.JOB_TYPE_PARSE:
-                return
+                continue
 
             analyze_job(job)
-
-        build.parseJobs(job_cb, None)
 
 
     except annolib.PyAnnolibError, e:

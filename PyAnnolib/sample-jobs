@@ -7,8 +7,6 @@ commands, with a bit of detail about reads/writes.
 import argparse
 from pyannolib import annolib
 
-num_jobs = 0
-
 def run(filename):
 
     build = annolib.AnnotatedBuild(filename)
@@ -18,16 +16,13 @@ def run(filename):
     print "CWD:", props["CWD"]
     print "AnnoDetail:", props["AnnoDetail"]
 
+    num_jobs = 0
 
-    def job_cb(job, junk):
-        global num_jobs
+    for job in build.iterJobs():
         num_jobs += 1
-
         print job.getTextReport()
 
 
-
-    build.parseJobs(job_cb)
     print "Total number of jobs:", num_jobs
 
 def main():

@@ -17,9 +17,7 @@ def SubParser(subparsers):
 
 def print_jobs(build, job_ids):
 
-
-    def job_cb(job, job_ids):
-
+    for job in build.iterJobs():
         if job.getID() in job_ids:
             print job.getTextReport()
             print
@@ -27,10 +25,7 @@ def print_jobs(build, job_ids):
 
             # We're done; stop the search
             if len(job_ids) == 0:
-                return annolib.StopParseJobs
-
-    build.parseJobs(job_cb, job_ids)
-
+                break
 
 def Run(args):
     build = annolib.AnnotatedBuild(args.anno_file)
