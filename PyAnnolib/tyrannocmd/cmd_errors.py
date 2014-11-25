@@ -1,8 +1,10 @@
+# Copyright (c) 2014 by Cisco Systems, Inc.
+
+import os
 import sys
 from pyannolib import annolib
 import tyrannolib
 import datetime
-
 
 TYPE_JOB = 0
 TYPE_MAKE = 1
@@ -14,6 +16,10 @@ def SubParser(subparsers):
     parser = subparsers.add_parser("errors", help=help)
     parser.set_defaults(func=Run)
 
+    parser.add_argument("--exit-with-build-rc",
+            action="store_true",
+            help="Tyranno will exit with the build's return code")
+
     parser.add_argument("anno_file")
 
 def find_error_jobs(build):
@@ -21,11 +27,17 @@ def find_error_jobs(build):
 
     job_errors = []
     make_errors = []
+    end_job = None
 
     for job in build.iterJobs():
+        if job.getType() == annolib.JOB_TYPE_END:
+            end_job = job
+            continue
+
         if job.getType() != annolib.JOB_TYPE_RULE and \
                 job.getType() != annolib.JOB_TYPE_CONTINUATION:
             continue
+
         if job.getRetval() == job.SUCCESS:
             continue
 
@@ -34,7 +46,7 @@ def find_error_jobs(build):
         else:
             job_errors.append(job)
 
-    return job_errors, make_errors
+    return job_errors, make_errors, end_job
 
 def report_make_chain(chain):
     for make_proc in chain:
@@ -127,7 +139,8 @@ def print_message(n, show_summary, build, message):
     print message.getText()
     print
 
-def print_header(build, show_summary, messages, error_jobs, error_makes):
+def print_header(anno_file, build, show_summary,
+        messages, error_jobs, error_makes):
     
     # Newer versions of emake have this property
     hostname = build.getProperty("UnixNodename")
@@ -138,6 +151,10 @@ def print_header(build, show_summary, messages, error_jobs, error_makes):
 
     print "=" * 80
     print
+    if not os.path.isabs(anno_file):
+        anno_file = os.path.abspath(anno_file)
+
+    print "Annotation file:", anno_file
     print "Build ID: %s on Host %s, Cluster Manager: %s" % \
             (build.getBuildID(), hostname, build.getCM())
     print "Start Time: %s" % (build.getStart(),)
@@ -159,17 +176,14 @@ def print_header(build, show_summary, messages, error_jobs, error_makes):
 
     print
 
-#    print "make[0] in %s" % (props.get("CWD"),)
-#    print props.get("CommandLine")
-#    print
 
 def print_footer():
     print "=" * 80
 
 
-def report(build, show_summary, messages, error_jobs, error_makes):
-    print_header(build, show_summary, messages, error_jobs, error_makes)
-
+def report(anno_file, build, show_summary, messages, error_jobs, error_makes):
+    print_header(anno_file, build, show_summary,
+            messages, error_jobs, error_makes)
 
     if show_summary:
         print "-" * 80
@@ -196,12 +210,17 @@ def Run(args):
     build = annolib.AnnotatedBuild(args.anno_file)
 
     # We have to parse the entire file first
-    error_jobs, error_makes = find_error_jobs(build)
+    error_jobs, error_makes, end_job = find_error_jobs(build)
 
     messages = build.getMessages()
 
+    # If there is something to report, report it
     if messages or error_jobs or error_makes:
         num_problems = len(messages) + len(error_jobs) + len(error_makes)
         show_summary = num_problems > 1
-        report(build, show_summary, messages, error_jobs, error_makes)
+        report(args.anno_file, build, show_summary,
+                messages, error_jobs, error_makes)
 
+    # Shall we exit with the same retval the build had?
+    if args.exit_with_build_rc and end_job:
+        sys.exit(end_job.getRetval())
