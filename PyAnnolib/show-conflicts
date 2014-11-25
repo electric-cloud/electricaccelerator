@@ -390,6 +390,7 @@ class Analyzer:
 #                if True:
                 # We don't want statcache jobs
                 if job.getType() == annolib.JOB_TYPE_RULE or \
+                    job.getType() == annolib.JOB_TYPE_CONTINUATION or \
                     job.getType() == annolib.JOB_TYPE_PARSE:
                     if job not in rule_jobs:
                         invoked = get_earliest_invoked(job)
@@ -524,10 +525,11 @@ def main():
 
     args = parser.parse_args()
 
-    try:
-        os.makedirs(args.output_dir)
-    except OSError as e:
-        sys.exit("Unable to mkdir %s: %s" % (args.output_dir, e))
+    if not os.path.exists(args.output_dir):
+        try:
+            os.makedirs(args.output_dir)
+        except OSError as e:
+            sys.exit("Unable to mkdir %s: %s" % (args.output_dir, e))
 
     if args.html:
         formatter = HTMLOutput(args.output_dir)
