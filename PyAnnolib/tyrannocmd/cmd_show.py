@@ -1,7 +1,6 @@
-import sys
-from pyannolib import annolib
-import tyrannolib
+# Copyright (c) 2014 by Cisco Systems, Inc.
 
+from pyannolib import annolib
 
 def SubParser(subparsers):
 
@@ -32,7 +31,7 @@ def Run(args):
 
 
     job_ids =  [j for j in args.job_or_make_ID if j[0] == "J"]
-    make_ids = [m for m in args.job_or_make_ID if m[0] == "M"]
+    #make_ids = [m for m in args.job_or_make_ID if m[0] == "M"]
 
     if job_ids:
         print_jobs(build, job_ids)

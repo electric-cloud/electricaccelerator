@@ -116,8 +116,6 @@ def read_annofile(build, roots_hash, anno_queue):
         if job.getRetval() != 0:
             continue
 
-        make_proc = job.getMakeProcess()
-
         # Divide all the file operations into 2 groups,
         # one for reading, and one for writing
         # Items are (op, relpath) tuples

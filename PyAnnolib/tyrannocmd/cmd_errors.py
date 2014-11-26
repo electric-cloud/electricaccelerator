@@ -3,7 +3,6 @@
 import os
 import sys
 from pyannolib import annolib
-import tyrannolib
 import datetime
 
 TYPE_JOB = 0
@@ -74,10 +73,17 @@ def print_error_job(n, show_summary, build, job, report_type):
     print "CWD: %s" % (make_proc.getCWD(),)
 
     for timing in job.getTimings():
-        job_start = float(timing.getInvoked())
-        job_end = float(timing.getCompleted())
-        job_start_dt = build_start_dt + datetime.timedelta(seconds=job_start)
-        job_end_dt = build_start_dt + datetime.timedelta(seconds=job_end)
+
+        if build_start_dt:
+            job_start = float(timing.getInvoked())
+            job_end = float(timing.getCompleted())
+            job_start_dt = build_start_dt + \
+                    datetime.timedelta(seconds=job_start)
+            job_end_dt = build_start_dt + \
+                    datetime.timedelta(seconds=job_end)
+        else:
+            job_start_dt = ""
+            job_end_dt = ""
 
         print "Node: %s  Start: %s (%s)" % (timing.getNode(), job_start_dt,
                 timing.getInvoked())
@@ -131,7 +137,11 @@ def print_message(n, show_summary, build, message):
     build_start_dt = build.getStartDateTime()
 
     message_time = float(message.getTime())
-    message_dt = build_start_dt + datetime.timedelta(seconds=message_time)
+    if build_start_dt:
+        message_dt = build_start_dt + \
+            datetime.timedelta(seconds=message_time)
+    else:
+        message_dt = ""
 
     print "%s (%s) at %s (%s)" % \
             (message.getCode(), message.getSeverity(),

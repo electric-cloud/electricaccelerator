@@ -4,8 +4,6 @@ Report on the parallelism seen in the build.
 """
 
 import sys
-import sys
-import argparse
 
 from pyannolib import annolib
 from pyannolib import sequencing
