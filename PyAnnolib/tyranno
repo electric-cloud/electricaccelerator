@@ -9,10 +9,9 @@ __version__ = "0.0.1"
 import argparse
 import logging
 
-#from tyrannocmd import cmd_index
-#from tyrannocmd import cmd_explore
 from tyrannocmd import cmd_deps
 from tyrannocmd import cmd_errors
+from tyrannocmd import cmd_parallel
 from tyrannocmd import cmd_show
 
 def main():
@@ -30,10 +29,9 @@ def main():
     help = "Sub-commands"
     subparsers = parser.add_subparsers(help=help)
 
-#    cmd_explore.SubParser(subparsers)
-#    cmd_index.SubParser(subparsers)
     cmd_deps.SubParser(subparsers)
     cmd_errors.SubParser(subparsers)
+    cmd_parallel.SubParser(subparsers)
     cmd_show.SubParser(subparsers)
 
     args = parser.parse_args()

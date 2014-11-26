@@ -1,20 +1,32 @@
-#!/usr/bin/env python
+# Copyright (c) 2014 by Cisco Systems, Inc.
 """
 Report on the parallelism seen in the build.
 """
-#import time
+
+import sys
 import sys
 import argparse
 
 from pyannolib import annolib
 from pyannolib import sequencing
 
-def run(filename):
+def SubParser(subparsers):
+
+    help = "Show the parallelism in a build"
+
+    parser = subparsers.add_parser("parallel", help=help)
+    parser.set_defaults(func=Run)
+
+
+    parser.add_argument("anno_file")
+
+
+def Run(args):
 
     cluster = sequencing.Cluster()
 #    print "Collating Jobs", time.ctime()
     try:
-        build = annolib.AnnotatedBuild(filename)
+        build = annolib.AnnotatedBuild(args.anno_file)
         
         # Collect all the jobs in a hash, and look for conflict jobs
         for job in build.iterJobs():
@@ -39,7 +51,7 @@ def run(filename):
 
     print
     print "Parallelism Histogram for:"
-    print filename
+    print args.anno_file
     print
     print "AGENTS       TIME PERCENT"
 
@@ -53,14 +65,8 @@ def run(filename):
     print
     print "TOTAL TIME:", sequencing.hms(tot_time)
 
-def main():
-    parser = argparse.ArgumentParser()
 
-    parser.add_argument("annotation_file")
 
-    args = parser.parse_args()
 
-    run(args.annotation_file)
 
-if __name__ == "__main__":
-    main()
+
