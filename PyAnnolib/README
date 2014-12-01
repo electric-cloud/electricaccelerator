@@ -376,8 +376,6 @@ sample-jobs - This sample script shows a few details about the Build,
 
 sample-metrics - shows how to read the metrics and report them.
 
-show-errors - This shows the jobs that failed.
-
 show-conflicts - shows the conflicting jobs in a build
 
 show-deps - shows the file dependency graph
@@ -386,3 +384,8 @@ show-jobpath - shows the MakeProcess/Job hierarchy, like the "JobPath"
     tab in ElectricInsight
 
 show-parse-effects - shows the Make parse jobs that had side effects
+
+Reports
+=======
+'tyranno' is a command-line tool for packaging together various
+reports. See "tyranno --help" for more information.
