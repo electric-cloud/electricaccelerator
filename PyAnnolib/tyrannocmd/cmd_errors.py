@@ -15,6 +15,9 @@ def SubParser(subparsers):
     parser = subparsers.add_parser("errors", help=help)
     parser.set_defaults(func=Run)
 
+    parser.add_argument("-o", metavar="FILE",
+            help="Store output in FILE (stdout is default)")
+
     parser.add_argument("--exit-with-build-rc",
             action="store_true",
             help="Tyranno will exit with the build's return code")
@@ -47,14 +50,14 @@ def find_error_jobs(build):
 
     return job_errors, make_errors, end_job
 
-def report_make_chain(chain):
+def report_make_chain(out_fh, chain):
     for make_proc in chain:
-        print "%s make[%s] in %s" % (make_proc.getID(),
+        print >> out_fh, "%s make[%s] in %s" % (make_proc.getID(),
                 make_proc.getLevel(), make_proc.getCWD())
-        print make_proc.getCmd()
-        print
+        print >> out_fh, make_proc.getCmd()
+        print >> out_fh
 
-def print_error_job(n, show_summary, build, job, report_type):
+def print_error_job(out_fh, n, show_summary, build, job, report_type):
 
     make_proc = job.getMakeProcess()
 
@@ -62,15 +65,14 @@ def print_error_job(n, show_summary, build, job, report_type):
 
     if show_summary:
         if report_type == TYPE_JOB:
-            print "Failed Command #%d: %s" % (n, job.getName())
+            print >> out_fh, "Failed Command #%d: %s" % (n, job.getName())
         else:
-            print "Failed Make #%d" % (n,)
-        print
+            print >> out_fh, "Failed Make #%d" % (n,)
+        print >> out_fh
 
-#    print "(%s)" % (job.getName())
-    print
-    print "Job ID: %s , Exit Value %s" % (job.getID(), job.getRetval())
-    print "CWD: %s" % (make_proc.getCWD(),)
+    print >> out_fh
+    print >> out_fh, "Job ID: %s , Exit Value %s" % (job.getID(), job.getRetval())
+    print >> out_fh, "CWD: %s" % (make_proc.getCWD(),)
 
     for timing in job.getTimings():
 
@@ -85,31 +87,32 @@ def print_error_job(n, show_summary, build, job, report_type):
             job_start_dt = ""
             job_end_dt = ""
 
-        print "Node: %s  Start: %s (%s)" % (timing.getNode(), job_start_dt,
-                timing.getInvoked())
-        print "      %s  End:   %s (%s)" % (" " * len(timing.getNode()),
+        print >> out_fh, "Node: %s  Start: %s (%s)" % (timing.getNode(),
+                job_start_dt, timing.getInvoked())
+        print >> out_fh, "      %s  End:   %s (%s)" % \
+                (" " * len(timing.getNode()),
                 job_end_dt, timing.getCompleted())
-    print
+    print >> out_fh
 
     for cmd in job.getCommands():
-        print "Command:\n"
+        print >> out_fh, "Command:\n"
         argv = cmd.getArgv()
-        print argv
-        print
-        print_outputs(argv, cmd.getOutputs())
-        print
+        print >> out_fh, argv
+        print >> out_fh
+        print_outputs(out_fh, argv, cmd.getOutputs())
+        print >> out_fh
    
     make_job_outputs = job.getOutputs()
     if make_job_outputs:
-        print "Make Process Hierarchy:"
-        print
+        print >> out_fh, "Make Process Hierarchy:"
+        print >> out_fh
 
         make_chain = build.getMakePath(job)
-        report_make_chain(make_chain)
+        report_make_chain(out_fh, make_chain)
 
-        print_outputs(None, make_job_outputs)
+        print_outputs(out_fh, None, make_job_outputs)
 
-def print_outputs(argv, outputs):
+def print_outputs(out_fh, argv, outputs):
 
     # See if we shoudl not show the first output.
     # If it's just a repeated of the command argv, we've already
@@ -121,18 +124,17 @@ def print_outputs(argv, outputs):
             outputs = outputs[1:]
 
     if outputs:
-        print "-" * 30, "Output", "-" * 30
+        print >> out_fh, "-" * 30, "Output", "-" * 30
         for i, op in enumerate(outputs):
             text = op.getText()
             # The output can contain non-ascii characters
-            print text.encode('utf-8'),
-        print "-" * (60  + len("Output") + 2)
+            print >> out_fh, text.encode('utf-8'),
+        print >> out_fh, "-" * (60  + len("Output") + 2)
 
 
-def print_message(n, show_summary, build, message):
+def print_message(out_fh, n, show_summary, build, message):
     if show_summary:
-        print "Cluster Manager Message #%d" % (n,)
-        print
+        print >> out_fh, "Cluster Manager Message #%d\n" % (n,)
 
     build_start_dt = build.getStartDateTime()
 
@@ -143,13 +145,13 @@ def print_message(n, show_summary, build, message):
     else:
         message_dt = ""
 
-    print "%s (%s) at %s (%s)" % \
+    print >> out_fh, "%s (%s) at %s (%s)" % \
             (message.getCode(), message.getSeverity(),
                     message_dt, message.getTime())
-    print message.getText()
-    print
+    print >> out_fh, message.getText()
+    print >> out_fh
 
-def print_header(anno_file, build, show_summary,
+def print_header(out_fh, anno_file, build, show_summary,
         messages, error_jobs, error_makes):
     
     # Newer versions of emake have this property
@@ -159,77 +161,96 @@ def print_header(anno_file, build, show_summary,
     if not hostname:
         hostname = build.getVar("HOSTNAME")
 
-    print "=" * 80
-    print
+    print >> out_fh, "=" * 80, "\n"
+
     if not os.path.isabs(anno_file):
         anno_file = os.path.abspath(anno_file)
 
-    print "Annotation file:", anno_file
-    print "Build ID: %s on Host %s, Cluster Manager: %s" % \
+    print >> out_fh, "Annotation file:", anno_file
+    print >> out_fh, "Build ID: %s on Host %s, Cluster Manager: %s" % \
             (build.getBuildID(), hostname, build.getCM())
-    print "Start Time: %s" % (build.getStart(),)
-    print
+    print >> out_fh, "Start Time: %s\n" % (build.getStart(),)
 
     if not show_summary:
         return
 
     # Summary information
-    print "Summary:"
+    print >> out_fh, "Summary:"
     if messages:
-        print "\tCluster Manager messages:", len(messages)
+        print >> out_fh, "\tCluster Manager messages:", len(messages)
 
     if error_jobs:
-        print "\tFailed commands:", len(error_jobs)
+        print >> out_fh, "\tFailed commands:", len(error_jobs)
 
     if error_makes:
-        print "\tFailed Make commands:", len(error_makes)
+        print >> out_fh, "\tFailed Make commands:", len(error_makes)
 
-    print
-
-
-def print_footer():
-    print "=" * 80
+    print >> out_fh
 
 
-def report(anno_file, build, show_summary, messages, error_jobs, error_makes):
-    print_header(anno_file, build, show_summary,
+def print_footer(out_fh):
+    print >> out_fh, "=" * 80
+
+
+def report(out_fh, anno_file, build, show_summary, messages, error_jobs, error_makes):
+    print_header(out_fh, anno_file, build, show_summary,
             messages, error_jobs, error_makes)
 
     if show_summary:
-        print "-" * 80
+        print >> out_fh, "-" * 80
 
     # Details
     for i, message in enumerate(messages):
-        print_message(i+1, show_summary, build, message)
+        print_message(out_fh, i+1, show_summary, build, message)
         if show_summary:
-            print "-" * 80
+            print >> out_fh, "-" * 80
 
     for i, job in enumerate(error_jobs):
-        print_error_job(i+1, show_summary, build, job, TYPE_JOB)
+        print_error_job(out_fh, i+1, show_summary, build, job, TYPE_JOB)
         if show_summary:
-            print "-" * 80
+            print >> out_fh, "-" * 80
 
     for i, job in enumerate(error_makes):
-        print_error_job(i+1, show_summary, build, job, TYPE_MAKE)
+        print_error_job(out_fh, i+1, show_summary, build, job, TYPE_MAKE)
         if show_summary:
-            print "-" * 80
+            print >> out_fh, "-" * 80
 
-    print_footer()
+    print_footer(out_fh)
 
 def Run(args):
     build = annolib.AnnotatedBuild(args.anno_file)
+
+    if args.o:
+        try:
+            out_fh = open(args.o, "w")
+        except IOError as e:
+            sys.exit(e)
+    else:
+        out_fh = sys.stdout
 
     # We have to parse the entire file first
     error_jobs, error_makes, end_job = find_error_jobs(build)
 
     messages = build.getMessages()
 
-    # If there is something to report, report it
-    if messages or error_jobs or error_makes:
-        num_problems = len(messages) + len(error_jobs) + len(error_makes)
-        show_summary = num_problems > 1
-        report(args.anno_file, build, show_summary,
-                messages, error_jobs, error_makes)
+    try:
+        # If there is something to report, report it
+        if messages or error_jobs or error_makes:
+            num_problems = len(messages) + len(error_jobs) + len(error_makes)
+            show_summary = num_problems > 1
+            report(out_fh, args.anno_file, build, show_summary,
+                    messages, error_jobs, error_makes)
+
+    except IOError as e:
+        print >> sys.stderr, e
+
+    finally:
+        # Close the file
+        if args.o:
+            try:
+                out_fh.close()
+            except IOError as e:
+                pass
 
     # Shall we exit with the same retval the build had?
     if args.exit_with_build_rc and end_job:
