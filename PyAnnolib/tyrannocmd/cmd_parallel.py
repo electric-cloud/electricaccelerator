@@ -6,7 +6,7 @@ Report on the parallelism seen in the build.
 import sys
 
 from pyannolib import annolib
-from pyannolib import sequencing
+from tyrannolib import sequencing
 
 def SubParser(subparsers):
 

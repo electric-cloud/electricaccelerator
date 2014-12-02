@@ -1,7 +1,7 @@
 # Copyright (c) 2014 by Cisco Systems, Inc.
 
 import unittest
-from pyannolib import sequencing
+from tyrannolib import sequencing
 
 class SeqTests(unittest.TestCase):
     """Check the sequencing algorithms.
