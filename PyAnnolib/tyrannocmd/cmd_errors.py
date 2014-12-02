@@ -37,6 +37,7 @@ def find_error_jobs(build):
             continue
 
         if job.getType() != annolib.JOB_TYPE_RULE and \
+                job.getType() != annolib.JOB_TYPE_PARSE and \
                 job.getType() != annolib.JOB_TYPE_CONTINUATION:
             continue
 
@@ -44,6 +45,7 @@ def find_error_jobs(build):
             continue
 
         if job.getOutputs():
+            # These can be parse jobs, or not
             make_errors.append(job)
         else:
             job_errors.append(job)
