@@ -18,6 +18,9 @@ def SubParser(subparsers):
     parser.add_argument("-o", metavar="FILE",
             help="Store output in FILE (stdout is default)")
 
+    parser.add_argument("--tee", action="store_true",
+            help="In addition to writing to -o FILE, tee to stdout")
+
     parser.add_argument("--exit-with-build-rc",
             action="store_true",
             help="Tyranno will exit with the build's return code")
@@ -222,6 +225,12 @@ def report(out_fh, anno_file, build, show_summary, messages, error_jobs, error_m
 def Run(args):
     build = annolib.AnnotatedBuild(args.anno_file)
 
+    # --tee only makes sense with -o
+    if args.tee:
+        if not args.o:
+            msg = "--tee is only used with -o FILE"
+            sys.exit(msg)
+
     if args.o:
         try:
             out_fh = open(args.o, "w")
@@ -242,6 +251,11 @@ def Run(args):
             show_summary = num_problems > 1
             report(out_fh, args.anno_file, build, show_summary,
                     messages, error_jobs, error_makes)
+
+            # Repeat the report to stdout (--tee)?
+            if args.tee:
+                report(sys.stdout, args.anno_file, build, show_summary,
+                        messages, error_jobs, error_makes)
 
     except IOError as e:
         print >> sys.stderr, e
