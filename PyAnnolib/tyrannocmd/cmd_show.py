@@ -4,12 +4,16 @@ from pyannolib import annolib
 
 def SubParser(subparsers):
 
-    help = "Show data from the annoation file"
+    help = "Show data from the annotation file"
 
     parser = subparsers.add_parser("show", help=help)
     parser.set_defaults(func=Run)
 
+    parser.add_argument("--metric", metavar="NAME", action="append",
+            help="Show metric value (can be given more than once)")
+
     parser.add_argument("anno_file")
+
     parser.add_argument("job_or_make_ID", nargs="*")
 
 
@@ -35,3 +39,8 @@ def Run(args):
 
     if job_ids:
         print_jobs(build, job_ids)
+
+    if args.metric:
+        for metric_name in args.metric:
+            print metric_name, build.getMetric(metric_name)
+
