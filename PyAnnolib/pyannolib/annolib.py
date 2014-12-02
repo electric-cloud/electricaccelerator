@@ -592,7 +592,7 @@ class MakeProcess:
         return self.make_proc_id
 
     def getTextReport(self):
-        text = "%s make[%s] in %s\n" % (self.make_proc_id,
+        text = "%s make[%s], CWD=%s\n" % (self.make_proc_id,
                 self.level, self.cwd)
         text += self.cmd
         return text
@@ -777,7 +777,7 @@ Thread:    %s
             text += "Part Of:   %s\n" % (self.partof,)
 
         if self.make:
-            text += "Make Proc: make[%s]: %s in %s\n" % \
+            text += "Make Proc: make[%s]: %s, CWD=%s\n" % \
                     (self.make.getLevel(), self.make.getID(),
                         self.make.getCWD())
 

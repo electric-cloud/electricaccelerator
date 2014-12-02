@@ -54,7 +54,7 @@ def find_error_jobs(build):
 
 def report_make_chain(out_fh, chain):
     for make_proc in chain:
-        print >> out_fh, "%s make[%s] in %s" % (make_proc.getID(),
+        print >> out_fh, "%s make[%s], CWD=%s" % (make_proc.getID(),
                 make_proc.getLevel(), make_proc.getCWD())
         print >> out_fh, make_proc.getCmd()
         print >> out_fh
@@ -163,12 +163,12 @@ def print_header(out_fh, anno_file, build, show_summary,
     if not hostname:
         hostname = build.getVar("HOSTNAME")
 
-    print >> out_fh, "=" * 80, "\n"
+    print >> out_fh, "=" * 80
 
     if not os.path.isabs(anno_file):
         anno_file = os.path.abspath(anno_file)
 
-    print >> out_fh, "Annotation file:", anno_file
+    print >> out_fh, "Annotation file:\n", anno_file, "\n"
     print >> out_fh, "Build ID: %s on Host %s, Cluster Manager: %s" % \
             (build.getBuildID(), hostname, build.getCM())
     print >> out_fh, "Start Time: %s\n" % (build.getStart(),)
