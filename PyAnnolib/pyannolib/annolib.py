@@ -297,6 +297,8 @@ class AnnotatedBuild(AnnoXMLNames):
 
     def _parse_metrics(self):
         metrics_text = self._read_metrics_footer()
+        if not metrics_text:
+            return
 
         # Parse the XML string
         try:
@@ -315,6 +317,8 @@ class AnnotatedBuild(AnnoXMLNames):
                 raise PyAnnolibError(msg)
 
     def _read_metrics_footer(self):
+        """Returns the text of the <metrics></metrics> block of XML.
+        Or, returns None if it is missing."""
         # Number of bytes to skip backwards at a time.
         # In my tests, the metrics section is ~3000 bytes.
         SKIP_NUM_BYTES = 500
@@ -343,7 +347,7 @@ class AnnotatedBuild(AnnoXMLNames):
                 # Didn't find it. Are there any other indications
                 # that we have gone too far? If we see a job, then yes.
                 if data.find(ELEM_STRING_END_JOB) != -1:
-                    return
+                    return None
                 else:
                     pos -= SKIP_NUM_BYTES
                     self.fh.seek(pos, os.SEEK_SET)
