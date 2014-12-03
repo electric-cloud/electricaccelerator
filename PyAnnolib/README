@@ -263,6 +263,11 @@ getLine()
 getPartOf() - Used in FOLLOW-type jobs
     Retrieve these values.
 
+getVars() - returns a hash
+getVar(varname) - returns a value
+    Returns environment variables for the job if the annotation detail
+    included 'environment'
+
 getTextReport()
     Returns a string with all the information nicely formatted.
     It's all the information that is available in the annotation record

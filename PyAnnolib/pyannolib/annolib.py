@@ -633,6 +633,7 @@ class Job(AnnoXMLNames):
         self.commands = []
         self.deplist = []
         self.conflict = None
+        self.vars = {}
 
         # The return value of the Job. By default
         # we assume success, but a <failed> record overrides that.
@@ -669,6 +670,16 @@ class Job(AnnoXMLNames):
 
             elif child_elem.tag == self.ELEMENT_DEPLIST:
                 self.parseDepList(child_elem)
+
+            elif child_elem.tag == self.ELEMENT_ENVIRONMENT:
+                for var_elem in list(child_elem):
+                    if var_elem.tag == self.ELEMENT_VAR:
+                        var_name = var_elem.get(self.ATTR_VAR_NAME)
+                        self.vars[var_name] = var_elem.text
+                    else:
+                        msg = "Unexpected element in <environment>: %s" % \
+                                (var_elem.tag,)
+                        raise PyAnnolibError(msg)
 
             else:
                 assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
@@ -757,6 +768,12 @@ class Job(AnnoXMLNames):
 
     def getPartOf(self):
         return self.partof
+
+    def getVars(self):
+        return self.vars
+
+    def getVar(self, name):
+        return self.vars.get(name)
 
     def getTextReport(self):
         text = """Job ID:    %s
