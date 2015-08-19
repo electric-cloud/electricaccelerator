@@ -254,6 +254,7 @@ getCommands()
     retrievable by getOutput() on the Command object. This is different
     from the Job objects getOutput() method, which is only for Make jobs.
 
+getCommitTimes()
 getDependencies()
 getConflict()
 getName()
@@ -315,6 +316,13 @@ getInvoked()
 getCompleted()
 getNode()
     Retrieve these values.
+
+CommitTimes
+-----------
+getStart()
+getWait()
+getCommit()
+getWrite()
 
 Command
 -------

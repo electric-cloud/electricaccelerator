@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE build SYSTEM "build.dtd">
+<build id="3483" cm="sjc-buildcm1:8030" start="Thu 18 Jul 2013 09:22:14 PM PDT">
+<properties>
+<property name="CommandLine">/auto/ecloud/emake-7.0.0/64/bin/emake --emake-annodetail=file,history,waiting --emake-annofile=_emake.default.xml --emake-build-label=EC_EMAKE --emake-cm=sjc-buildcm1 --emake-historyfile=_emake.default.data --emake-history=create --emake-root=/nobackup/gilramir/tmp/make-3.82 --emake-resource=sjc-cel-5.50-x86-64</property>
+<property name="Debug"></property>
+<property name="RDebug"></property>
+<property name="CWD">/nobackup/gilramir/tmp/make-3.82</property>
+<property name="HistoryFile">_emake.default.data</property>
+<property name="HistoryExists">no</property>
+<property name="HistoryMD5">00000000000000000000000000000000</property>
+<property name="Version">7.0.0.48421 64-bit (build_7.0_48421_OPT_2013.04.11_17:11:18)</property>
+<property name="PID">2832</property>
+<property name="HiddenWarnings"></property>
+<property name="BuildMode">cluster</property>
+<property name="EmakeRoots">/nobackup/gilramir/tmp/make-3.82</property>
+<property name="ReadOnlyRoots"></property>
+<property name="SymRoots"></property>
+<property name="RegRoots"></property>
+<property name="TmpDir"></property>
+<property name="AutoDepend">no</property>
+<property name="BuildClass"></property>
+<property name="ResourceName">sjc-cel-5.50-x86-64</property>
+<property name="ClearCase"></property>
+<property name="HistoryMode">create</property>
+<property name="JobLimit">0</property>
+<property name="MemLimit">15000000000</property>
+<property name="Priority">0</property>
+<property name="Architecture">x86_64_Linux</property>
+<property name="OSFamily">Unix</property>
+<property name="UnixSysname">Linux</property>
+<property name="UnixNodename">sjc-ads-971</property>
+<property name="UnixRelease">2.6.18-194.8.1.el5</property>
+<property name="UnixVersion">#1 SMP Wed Jun 23 10:52:51 EDT 2010</property>
+<property name="UnixMachine">x86_64</property>
+<property name="GnuDomainname">cisco.com</property>
+<property name="LinuxKernelVersion">Linux version 2.6.18-194.8.1.el5 (mockbuild@x86-006.build.bos.redhat.com) (gcc version 4.1.2 20080704 (Red Hat 4.1.2-48)) #1 SMP Wed Jun 23 10:52:51 EDT 2010
+</property>
+<property name="LinuxDistribution">Red Hat Enterprise Linux Server release 5.6 (Tikanga)
+Kernel \r on an \m
+
+</property>
+<property name="UnixStackLimit">soft 10485760 hard unlimited</property>
+<property name="AnnoDetail">basic,file,history,waiting</property>
+</properties>
+<environment>
+<var name="CC_DIFF_OPTS">-u</var>
+</environment>
+<make level="0" cmd="/auto/ecloud/emake-7.0.0/64/bin/emake --emake-annodetail=file,history,waiting --emake-annofile=_emake.default.xml --emake-build-label=EC_EMAKE --emake-cm=sjc-buildcm1 --emake-historyfile=_emake.default.data --emake-history=create --emake-root=/nobackup/gilramir/tmp/make-3.82 --emake-resource=sjc-cel-5.50-x86-64" cwd="/nobackup/gilramir/tmp/make-3.82" mode="gmake3.81">
+<job id="J0000000012011dd0" thread="43318940" type="exist" name=".deps/vpath.Po">
+<commitTimes start="4.048628" wait="4.048629" commit="4.048635" write="4.058635"/>
+<timing invoked="0.364035" completed="0.364044" node="sjc5-bc-504-1"/>
+<waitingJobs idList="J0000000012012d20"/>
+</job>
+</make>
+<metrics>
+<metric name="terminated">300</metric>
+<metric name="conflicts">0</metric>
+<metric name="runjobs">27</metric>
+<metric name="writeThrottleWaitTime">0.000000</metric>
+<metric name="hiddenWarningCounts"></metric>
+<metric name="duration">3.000000</metric>
+<metric name="clusterAvailability">100</metric>
+<metric name="totalAgentCount">32</metric>
+<metric name="noAgentsWaitTime">0</metric>
+<metric name="totalChains">565</metric>
+<metric name="chainLatestReads">8363</metric>
+<metric name="chainSerialReads">10190</metric>
+<metric name="chainWrites">516</metric>
+<metric name="historyFitness">0</metric>
+<metric name="elapsed">2.474018</metric>
+<metric name="nodeReadBytes">0</metric>
+<metric name="nodeWriteBytes">0</metric>
+<metric name="nodeReadTime">0.000000</metric>
+<metric name="nodeWriteTime">0.018961</metric>
+<metric name="nodeReadWaitTime">0.000000</metric>
+<metric name="nodeWriteWaitTime">0.000000</metric>
+<metric name="diskWriteBytes">1679013</metric>
+<metric name="diskReadBytes">1608835</metric>
+<metric name="diskReadTime">0.018961</metric>
+<metric name="diskWriteTime">0.800040</metric>
+<metric name="diskReadWaitTime">0.003271</metric>
+<metric name="diskWriteWaitTime">0.003748</metric>
+<metric name="usageBytes">1679013</metric>
+<metric name="symlinkReads">0</metric>
+<metric name="termDiskCopiedBytes">0</metric>
+<metric name="termDiskMovedBytes">1679013</metric>
+<metric name="termDiskRemovedBytes">0</metric>
+<metric name="termDiskRemovedTmpBytes">0</metric>
+<metric name="termDiskCopiedFiles">0</metric>
+<metric name="termDiskMovedFiles">49</metric>
+<metric name="termDiskRemovedFiles">0</metric>
+<metric name="termDiskRemovedTmpFiles">0</metric>
+<metric name="compressTime">0.000000</metric>
+<metric name="compressBytesIn">0</metric>
+<metric name="compressBytesOut">0</metric>
+<metric name="decompressTime">0.001433</metric>
+<metric name="decompressBytesIn">289930</metric>
+<metric name="decompressBytesOut">562491</metric>
+<metric name="maxMakeCount">0</metric>
+<metric name="maxArenaCount">3</metric>
+<metric name="freezeTime">0.000000</metric>
+<metric name="timerThreadCount">29</metric>
+<metric name="timer:jobqueue">0.005754</metric>
+<metric name="timer:mutex.jobrunstate">0.000012</metric>
+<metric name="timer:mutex.nodeinit">1.626655</metric>
+</metrics>
+</build>

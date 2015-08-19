@@ -12,6 +12,7 @@ from utlib.jobpath import JobPathTests
 from utlib.concat import ConcatTests
 from utlib.jobseq import SeqTests
 from utlib.dag import DAGTests
+from utlib.emake8 import Emake8Tests
 
 
 if __name__ == "__main__":

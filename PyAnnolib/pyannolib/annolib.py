@@ -125,6 +125,7 @@ class AnnoXMLNames:
     ELEMENT_FAILED = "failed"
     ELEMENT_CONFLICT = "conflict"
     ELEMENT_MESSAGE = "message"
+    ELEMENT_COMMIT_TIMES = "commitTimes"
 
     # These attributes are handled by the AnnoXMLBodyParser directly
     ATTR_WAITINGJOBS_IDLIST = "idList"
@@ -634,6 +635,7 @@ class Job(AnnoXMLNames):
         self.deplist = []
         self.conflict = None
         self.vars = {}
+        self.commit_times = None
 
         # The return value of the Job. By default
         # we assume success, but a <failed> record overrides that.
@@ -680,6 +682,9 @@ class Job(AnnoXMLNames):
                         msg = "Unexpected element in <environment>: %s" % \
                                 (var_elem.tag,)
                         raise PyAnnolibError(msg)
+
+            elif child_elem.tag == self.ELEMENT_COMMIT_TIMES:
+                self.commit_times = CommitTimes(child_elem)
 
             else:
                 assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
@@ -745,6 +750,9 @@ class Job(AnnoXMLNames):
     def getCommands(self):
         return self.commands
 
+    def getCommitTimes(self):
+        return self.commit_times
+
     def getDependencies(self):
         return self.deplist
 
@@ -805,6 +813,11 @@ Thread:    %s
         if self.conflict:
             text += "Conflict:\n"
             text += self.conflict.getTextReport()
+            text += "\n"
+
+        if self.commitTimes:
+            text += "Commands:\n"
+            text += self.commitTimes.getTextReport()
             text += "\n"
 
         if self.timings:
@@ -1108,6 +1121,38 @@ Rerun By: %s
 """ % (self.file, self.type, self.write_job, self.rerun_by)
 
 
+class CommitTimes:
+    START = "start"
+    WAIT = "wait"
+    COMMIT = "commit"
+    WRITE = "write"
+
+    def __init__(self, elem):
+        self.start = elem.get(self.START)
+        self.wait = elem.get(self.WAIT)
+        self.commit = elem.get(self.COMMIT)
+        self.write = elem.get(self.WRITE)
+
+    def getStart(self):
+        return self.start
+
+    def getWait(self):
+        return self.wait
+
+    def getCommit(self):
+        return self.commit
+
+    def getWrite(self):
+        return self.write
+
+    def getTextReport(self):
+        return """Start: %s
+Wait: %s
+Commit: %s
+Write: %s
+""" % (self.start, self.wait, self.commit, self.write)
+
+
 class Message:
     THREAD = "thread"
     TIME = "time"
@@ -1257,6 +1302,8 @@ class AnnoXMLBodyParser(AnnoXMLNames):
             elif elem.tag == self.ELEMENT_DEPLIST:
                 continue
             elif elem.tag == self.ELEMENT_DEP:
+                continue
+            elif elem.tag == self.ELEMENT_COMMIT_TIMES:
                 continue
 
             # Explicitly skip the elements found only in the metrics
