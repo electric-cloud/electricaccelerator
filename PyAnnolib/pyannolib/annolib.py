@@ -145,10 +145,14 @@ class AnnotatedBuild(AnnoXMLNames):
     START = "start"
     LOCAL_AGENTS = "localAgents"
 
-    def __init__(self, filename, fh=None):
+    def __init__(self, filename, fh=None, ignore_unknown=True):
         """Can raise IOError"""
         # Initialize this since it is used in __str
         self.build_id = None
+
+        # Should we ignore unknown elements? If true,
+        # we silently ignore htem. If false, we error out.
+        self.ignore_unknown = ignore_unknown
         
         # Other fields to initialize
         self.cm = None
@@ -534,7 +538,7 @@ class AnnotatedBuild(AnnoXMLNames):
             raise PyAnnolibError("filehandle was not set in Build object")
 
         # Create the parser
-        parser = AnnoXMLBodyParser(self)
+        parser = AnnoXMLBodyParser(self, self.ignore_unknown)
 
         # Parse the file
         return parser.parse(self.fh)
@@ -615,7 +619,7 @@ class Job(AnnoXMLNames):
     SUCCESS = 0
     PARTOF = "partof"   # for FOLLOW-type jobs
 
-    def __init__(self, elem):
+    def __init__(self, elem, ignore_unknown):
         self.job_id = elem.get(self.ID)
         self.status = elem.get(self.STATUS, JOB_STATUS_NORMAL)
         self.thread = elem.get(self.THREAD)
@@ -687,7 +691,8 @@ class Job(AnnoXMLNames):
                 self.commit_times = CommitTimes(child_elem)
 
             else:
-                assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
+                if not ignore_unknown:
+                    assert False, MSG_UNEXPECTED_XML_ELEM + child_elem.tag
 
     def __str__(self):
         return "<Job id=%s>" % (self.job_id,)
@@ -1187,10 +1192,11 @@ class Message:
 
 class AnnoXMLBodyParser(AnnoXMLNames):
 
-    def __init__(self, build):
+    def __init__(self, build, ignore_unknown):
         self.build = build
         self.chars = ""
         self.indent = 0
+        self.ignore_unknown = ignore_unknown
 
         # In local mode builds, make elements can nest,
         # so this list of make_elem's is a stack.
@@ -1260,7 +1266,7 @@ class AnnoXMLBodyParser(AnnoXMLNames):
 
             if elem.tag == self.ELEMENT_JOB:
                 assert len(self.make_elems) > 0
-                job = Job(elem)
+                job = Job(elem, self.ignore_unknown)
 
                 job.setMakeProcess(self.make_elems[-1])
 
@@ -1331,7 +1337,8 @@ class AnnoXMLBodyParser(AnnoXMLNames):
 
             # Catch my mistakes
             else:
-                assert False, MSG_UNEXPECTED_XML_ELEM + elem.tag
+                if not self.ignore_unknown:
+                    assert False, MSG_UNEXPECTED_XML_ELEM + elem.tag
 
             # If we reached here, we processed an END event for an element.
             # Free the memory for this element

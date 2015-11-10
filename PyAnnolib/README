@@ -46,9 +46,11 @@ AnnotatedBuild(filename, fh=None)
 This class models one entire build. You can pass it a filename,
 or an open filehandle:
 
-    build = AnnotatedBuild(my_filename)
+    build = AnnotatedBuild(my_filename[, ignore_unknown=True])
     or
-    build = AnnotatedBuild(filename=None, fh=my_fh)
+    build = AnnotatedBuild(filename=None, fh=my_fh[, ignore_unknown=True])
+
+
 
 If you pass in a filename (as opposed to an open file handle),
 AnnotatedBuild will automatically look for additional filenames with
@@ -61,6 +63,12 @@ so:
 
 But Electric Insight automatically knows to look for the "_1" file. So,
 PyAnnolib does the same.
+
+If PyAnnolib encounters any XML elements it wasn't programmed for,
+by default it will ignore such errors. Before the ignore_unknown flag
+was added, the behavior was opposite: if it encountered unknown elements,
+it would error out. You can still have it error out in such situations
+if you set ignore_unknown to False.
 
 The initialize will read the header of the annotation file.
 

@@ -51,6 +51,11 @@ Kernel \r on an \m
 <commitTimes start="4.048628" wait="4.048629" commit="4.048635" write="4.058635"/>
 <timing invoked="0.364035" completed="0.364044" node="sjc5-bc-504-1"/>
 <waitingJobs idList="J0000000012012d20"/>
+<jobcache type="parse" options="" slot="6f40cd56fb7aa233390b19c88dc38ef8" duration="509.062201" status="newslot">
+<triggers>
+<trigger type="commandline" option="--emake-parse-avoidance=1"/>
+</triggers>
+</jobcache>
 </job>
 </make>
 <metrics>
